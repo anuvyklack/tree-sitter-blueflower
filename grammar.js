@@ -31,14 +31,12 @@ const blueflower_grammar = {
 
   conflicts: $ => [
     [$.paragraph],
-    // [$.paragraph, $.line],
-    // [$.paragraph, $.line, $.verbatim_tag],
-    // [$.line, $.verbatim_tag],
+    [$.inline_tag, $.verbatim_tag]
   ],
 
   inline: $ => [
     // $.nl,
-    // $.eol,
+    $.eol,
     $.section,
     $.word
   ],
@@ -70,7 +68,7 @@ const blueflower_grammar = {
         // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
         // $.link, $.link_reference, $.short_link_reference,
       )),
-      // optional($.eol)
+      optional($.eol)
     ),
 
     escaped_sequence: $ => seq(
@@ -91,9 +89,7 @@ const blueflower_grammar = {
         $.raw_word)
     ),
 
-    // comment: $ => prec.right(
     comment: $ => seq(
-      // /#[^\n\r]/,
       '#',
       optional(seq(
         ' ',
@@ -103,69 +99,86 @@ const blueflower_grammar = {
     ),
 
     inline_tag: $ => seq(
-      alias(':', $.token),
+      alias(
+        choice($.tag_token, '@', ':'),
+        $.token),
       field('name',
             alias(
               expression($, 'immediate', token.immediate, '['),
               $.tag_name)),
 
-      optional( seq(
-        field('open_label',
-              alias(
-                token.immediate(prec('immediate', '[')),
-                $.token)),
-        alias(
-          repeat(choice(
-            $.escaped_sequence,
-            alias(/[^\[\]\s\\]+/, $.word),
-            // expression($, 'non-immediate', token, '[]\\'),
-            $.inline_tag,
-            $.nl
-          )),
-          $.label),
-        field('close_label',
-              alias(
-                token.immediate(prec('immediate', ']')),
-                $.token))
-      )),
-
-      optional( seq(
-        field('open_content',
-              alias(
-                token.immediate(prec('immediate', '(')),
-                $.token)),
-        alias(
-          repeat( choice(
-            $.escaped_sequence,
-            alias(/[^\(\)\s\\]+/, $.raw_word),
-            // expression($, 'non-immediate', token, '()\\'),
-            $.nl
-          )),
-          $.content),
-        field('close_content',
-              alias(
-                prec('non-immediate', ')'),
-                $.token))
-      )),
-
-      optional( seq(
-        field('open_parameters',
-              alias(
-                token.immediate(prec('immediate', '{')),
-                $.token)),
-        alias(
-          repeat(choice(
-            $.escaped_sequence,
-            alias(/[^\{\}\s\\]+/, $.raw_word),
-            // expression($, 'non-immediate', token, '{}\\'),
-            $.nl
-          )),
-          $.parameters),
-        field('close_parameters',
-              alias('}', $.token))
-      )),
+      choice(
+        seq(
+          $._inline_tag_label,
+          optional($._inline_tag_content),
+          optional($._inline_tag_patameters)),
+        seq(
+          optional($._inline_tag_label),
+          $._inline_tag_content,
+          optional($._inline_tag_patameters)),
+        seq(
+          optional($._inline_tag_label),
+          optional($._inline_tag_content),
+          $._inline_tag_patameters)
+      ),
 
       choice(' ', $.eol)
+    ),
+
+    _inline_tag_label: $ => seq(
+      field('open_label',
+            alias(
+              token.immediate(prec('immediate', '[')),
+              $.token)),
+      alias(
+        repeat(choice(
+          $.escaped_sequence,
+          alias(/[^\[\]\s\\]+/, $.word),
+          // expression($, 'non-immediate', token, '[]\\'),
+          $.inline_tag,
+          $.nl
+        )),
+        $.label),
+      field('close_label',
+            alias(
+              token.immediate(prec('immediate', ']')),
+              $.token)),
+    ),
+
+    _inline_tag_content: $ => seq(
+      field('open_content',
+            alias(
+              token.immediate(prec('immediate', '(')),
+              $.token)),
+      alias(
+        repeat( choice(
+          $.escaped_sequence,
+          alias(/[^\(\)\s\\]+/, $.raw_word),
+          // expression($, 'non-immediate', token, '()\\'),
+          $.nl
+        )),
+        $.content),
+      field('close_content',
+            alias(
+              prec('non-immediate', ')'),
+              $.token))
+    ),
+
+    _inline_tag_patameters: $ => seq(
+      field('open_parameters',
+            alias(
+              token.immediate(prec('immediate', '{')),
+              $.token)),
+      alias(
+        repeat(choice(
+          $.escaped_sequence,
+          alias(/[^\{\}\s\\]+/, $.raw_word),
+          // expression($, 'non-immediate', token, '{}\\'),
+          $.nl
+        )),
+        $.parameters),
+      field('close_parameters',
+            alias('}', $.token))
     ),
 
     verbatim_tag: $ => seq(
@@ -175,9 +188,12 @@ const blueflower_grammar = {
               expression($, 'immediate', token.immediate),
               $.tag_name)),
 
-      field('parameter',
-            repeat(
-              alias($.raw_word, $.tag_parameter))),
+      optional( seq(
+        ' ',
+        field('parameter',
+              repeat(
+                alias($.raw_word, $.tag_parameter))),
+      )),
       $.nl,
       alias(
         repeat( choice(
@@ -216,7 +232,7 @@ const blueflower_grammar = {
     // nl: _ => choice('\n', '\r'),
     // eol: $ => choice('\n', '\r', $._eof),
     nl: _ => /\r?\n/,
-    eol: $ => choice(/\r?\n/, $._eof),
+    eol: $ => choice($.nl, $._eof),
 
     word: $ => expression($, 'non-immediate', token, '@#'),
 
