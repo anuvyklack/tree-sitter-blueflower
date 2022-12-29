@@ -1,6 +1,10 @@
 const MAX_HEADING = 6
 const MAX_LIST_LEVEL = 10
 
+const asciiSymbols = [ '!', '"', '#', '$', '%', '&', "'", '(', ')', '*',
+  '+', ',', '-', '.', '/',  ':', ';', '<', '=', '>', '?', '@', '[', ']',
+  '\\', '^', '_', '`', '{', '|', '}', '~' ]
+
 const blueflower_grammar = {
   name: 'blueflower',
 
@@ -16,114 +20,211 @@ const blueflower_grammar = {
     $.tag_token,
     $.tag_parameter,
     $.end_tag,
+    $.tag_label_open,
 
-    $.blank_line,
+    // $.blank_line,
     $.soft_break,
     $.hard_break,
 
-    $._, // none
+    $._eof, // none
+  ],
+
+  conflicts: $ => [
+    [$.paragraph],
+    // [$.paragraph, $.line],
+    // [$.paragraph, $.line, $.verbatim_tag],
+    // [$.line, $.verbatim_tag],
   ],
 
   inline: $ => [
+    // $.nl,
+    // $.eol,
     $.section,
+    $.word
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
   precedences: _ => [
-    // ['link', 'long_link_reference', 'short_link_reference'],
-    ['inline_tag', 'tag', 'hashtag', 'comment', 'word'],
+    // ['document_directive', 'body_directive'],
+    ['special', 'immediate', 'non-immediate'],
   ],
 
   rules: {
     document: $ => repeat1(choice(
-      alias($.section, $.section),
+      // alias($.section, $.section),
       $.paragraph,
-      $.blank_line,
+      $.verbatim_tag,
+      // $.blank_line,
       $.hard_break,
       $.hashtag,
-      alias($.verbatim_tag, $.tag),
+      // alias($.verbatim_tag, $.tag),
+      $.comment,
     )),
 
-    paragraph: $ => prec.right(
+    paragraph: $ => seq(
       repeat1(choice(
+        $.escaped_sequence,
         $.word,
-        $.comment,
-        // $.escaped_sequence,
+        $.inline_tag,
+        $.eol,
         // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
         // $.link, $.link_reference, $.short_link_reference,
-        $.inline_tag
       )),
+      // optional($.eol)
     ),
 
-    section: $ => choice($.section1, $.section2, $.section3, $.section4, $.section5, $.section6),
+    escaped_sequence: $ => seq(
+      alias(
+        prec('special', '\\'),
+        $.token),
+      alias(
+        token.immediate(/\S+/),
+        $.raw_word)
+    ),
 
-    // inline_tag: $ => prec('inline_tag',
-    inline_tag: $ => prec(10,
-      seq(
+    immediate_escaped_sequence: $ => seq(
+      alias(
+        token.immediate(prec('special', '\\')),
+        $.token),
+      alias(
+        token.immediate(/\S+/),
+        $.raw_word)
+    ),
+
+    // comment: $ => prec.right(
+    comment: $ => seq(
+      // /#[^\n\r]/,
+      '#',
+      optional(seq(
+        ' ',
+        repeat(alias($.raw_word, "word"))
+      )),
+      $.eol,
+    ),
+
+    inline_tag: $ => seq(
+      alias(':', $.token),
+      field('name',
+            alias(
+              expression($, 'immediate', token.immediate, '['),
+              $.tag_name)),
+
+      optional( seq(
+        field('open_label',
+              alias(
+                token.immediate(prec('immediate', '[')),
+                $.token)),
         alias(
-          choice($.tag_token, '@'),
-          $.token),
+          repeat(choice(
+            $.escaped_sequence,
+            alias(/[^\[\]\s\\]+/, $.word),
+            // expression($, 'non-immediate', token, '[]\\'),
+            $.inline_tag,
+            $.nl
+          )),
+          $.label),
+        field('close_label',
+              alias(
+                token.immediate(prec('immediate', ']')),
+                $.token))
+      )),
 
-        // Any except:
-        //    `[`, `(`, `{`, white space
-        alias(token.immediate( /[^\[({\s]+/ ), $.tag_name),
-
-        alias(token.immediate('['), $.token),
-        alias(/[^\[\]\r\n\s]+/, $.label),
-        alias(token.immediate(']'), $.token)
-    )),
-
-    // verbatim_tag: $ => prec('tag',
-    verbatim_tag: $ => prec(6,
-      seq(
-        $.tag_token,
-
-        // Any except:
-        //    `[`, `(`, `{`, white space
-        alias(token.immediate( /[^\[({\s]+/ ), $.tag_name),
-
-        repeat($.tag_parameter),
-        // /\r?\n/,
-
+      optional( seq(
+        field('open_content',
+              alias(
+                token.immediate(prec('immediate', '(')),
+                $.token)),
         alias(
-          repeat1(choice(
-              alias($.raw_word, "word"),
-              alias($.blank_line, "blank_line"),
-              alias($.verbatim_tag, $.tag),
-              // $.tag
+          repeat( choice(
+            $.escaped_sequence,
+            alias(/[^\(\)\s\\]+/, $.raw_word),
+            // expression($, 'non-immediate', token, '()\\'),
+            $.nl
           )),
           $.content),
+        field('close_content',
+              alias(
+                prec('non-immediate', ')'),
+                $.token))
+      )),
 
-        $.end_tag
-    )),
+      optional( seq(
+        field('open_parameters',
+              alias(
+                token.immediate(prec('immediate', '{')),
+                $.token)),
+        alias(
+          repeat(choice(
+            $.escaped_sequence,
+            alias(/[^\{\}\s\\]+/, $.raw_word),
+            // expression($, 'non-immediate', token, '{}\\'),
+            $.nl
+          )),
+          $.parameters),
+        field('close_parameters',
+              alias('}', $.token))
+      )),
 
-    hashtag: $ => prec('hashtag',
-      seq(
-        alias($.hashtag_token, $.token),
+      choice(' ', $.eol)
+    ),
 
-        // Any except:
-        //    `[`, `(`, `{`, white space
-        alias(token.immediate( /[^\[({\s]+/ ), $.tag_name),
+    verbatim_tag: $ => seq(
+      alias($.tag_token, $.token),
+      field('name',
+            alias(
+              expression($, 'immediate', token.immediate),
+              $.tag_name)),
 
-        repeat(
-          seq(' ', alias($.raw_word, $.parameter))),
+      field('parameter',
+            repeat(
+              alias($.raw_word, $.tag_parameter))),
+      $.nl,
+      alias(
+        repeat( choice(
+          $.verbatim_tag,
+          seq( repeat($.raw_word), $.nl)
+        )),
+        $.content),
+      $.end_tag,
+      choice($.comment, $.eol)
+    ),
 
-        /\r?\n/
-    )),
+    hashtag: $ => seq(
+      alias($.hashtag_token, $.token),
 
-    comment: $ => prec('comment',
-      seq(
-        alias('# ', $.token),
-        repeat( alias($.raw_word, 'word')),
-        /\r?\n/
-    )),
+      // // Any except:
+      // //    `[`, `(`, `{`, white space
+      // alias(token.immediate(/[^\[({\s]+/), $.tag_name),
 
-    word: _ => prec('word', /[^\s@]\S*/),
-    raw_word: _ => /\S+/,
+      field('name',
+            alias(
+              expression($, 'immediate', token.immediate),
+              $.tag_name)),
+      field('parameter',
+            repeat(
+              alias($.raw_word, $.tag_parameter))),
+      $.eol
+    ),
 
-    // word: _ => /[^\s]+/
+    // blank_line: $ => seq($.nl, $.eol),
 
+    // The first symbol could not be any of:
+    //    white space, `\`
+    // word: _ => /[^\s\\]\S*/,
     // word: _ => choice(/\p{L}+/, /\p{N}+/),
+
+    // nl: _ => choice('\n', '\r'),
+    // eol: $ => choice('\n', '\r', $._eof),
+    nl: _ => /\r?\n/,
+    eol: $ => choice(/\r?\n/, $._eof),
+
+    word: $ => expression($, 'non-immediate', token, '@#'),
+
+    raw_word: _ => /\S+/,
+    // raw_word: _ => seq(
+    //   expression('non-immediate', token),
+    //   repeat(expression('immediate', token.immediate))
+    // ),
 
     // // - Alphabetic (Alpha) – letters,
     // // - Mark (M) – для акцентов,
@@ -135,57 +236,25 @@ const blueflower_grammar = {
   }
 }
 
-const sections = {
-  section1: $ => gen_section($, 1),
-  section2: $ => gen_section($, 2),
-  section3: $ => gen_section($, 3),
-  section4: $ => gen_section($, 4),
-  section5: $ => gen_section($, 5),
-  section6: $ => gen_section($, 6),
-
-  heading1: $ => gen_heading($, 1),
-  heading2: $ => gen_heading($, 2),
-  heading3: $ => gen_heading($, 3),
-  heading4: $ => gen_heading($, 4),
-  heading5: $ => gen_heading($, 5),
-  heading6: $ => gen_heading($, 6),
-}
-
-function gen_section($, level) {
-
-  let lower_level_sections = []
-  for (let i = 0; i + 1 + level <= MAX_HEADING; ++i) {
-    lower_level_sections[i] = $["section" + (i + 1 + level)]
-  }
-
-  return prec.right(
-    seq(
-      alias($["heading" + level], $.heading),
-      repeat(choice(
-          alias(choice(...lower_level_sections),
-                $.section),
-          // $.list,
-          // $.definition,
-          // // $.markdown_code_block,
-          alias($.verbatim_tag, $.tag),
-          // $.tag,
-          $.hashtag,
-          $.paragraph,
-          $.blank_line)),
-      optional($.soft_break)
-    ));
-}
-
-function gen_heading($, level) {
-  return seq(
-    field("level", alias($["heading_" + level + "_token"],
-                         $["token" + level])),
-    field("title", $.paragraph)
-  );
+/**
+ * @param {string} pr Precedence value
+ * @param {Function} tfunc Token function: `token` or `token.immediate`.
+ */
+function expression($, pr, tfunc, skip = '') {
+  skip = skip.split("")
+  return choice(
+    ...asciiSymbols.filter(c => !skip.includes(c))
+                   .map(c => alias(
+                               tfunc(prec(pr, c)),
+                               $.ascii_symbol)),
+    alias(tfunc(prec(pr, /\p{L}+/)), $.string),
+    alias(tfunc(prec(pr, /\p{N}+/)), $.number),
+    alias(tfunc(prec(pr, /[^\p{Z}\p{L}\p{N}\t\n\r]/)), $.symbol),
+  )
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)
-Object.assign(blueflower_grammar.rules, sections)
+// Object.assign(blueflower_grammar.rules, sections)
 
 module.exports = grammar(blueflower_grammar)
 

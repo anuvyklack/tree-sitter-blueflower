@@ -8,7 +8,7 @@
       "required": true,
       "types": [
         {
-          "type": "token",
+          "type": "eol",
           "named": true
         }
       ]
@@ -20,10 +20,22 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
-          "type": "tag",
+          "type": "escaped_sequence",
+          "named": true
+        },
+        {
+          "type": "nl",
+          "named": true
+        },
+        {
+          "type": "raw_word",
+          "named": true
+        },
+        {
+          "type": "verbatim_tag",
           "named": true
         }
       ]
@@ -38,7 +50,7 @@
       "required": true,
       "types": [
         {
-          "type": "blank_line",
+          "type": "comment",
           "named": true
         },
         {
@@ -54,11 +66,31 @@
           "named": true
         },
         {
-          "type": "section",
+          "type": "verbatim_tag",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "eol",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "escaped_sequence",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "raw_word",
           "named": true
         },
         {
-          "type": "tag",
+          "type": "token",
           "named": true
         }
       ]
@@ -67,17 +99,46 @@
   {
     "type": "hashtag",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ascii_symbol",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "symbol",
+            "named": true
+          }
+        ]
+      },
+      "parameter": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "tag_parameter",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "parameter",
-          "named": true
-        },
-        {
-          "type": "tag_name",
+          "type": "eol",
           "named": true
         },
         {
@@ -85,68 +146,113 @@
           "named": true
         }
       ]
-    }
-  },
-  {
-    "type": "heading",
-    "named": true,
-    "fields": {
-      "level": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token1",
-            "named": true
-          },
-          {
-            "type": "token2",
-            "named": true
-          },
-          {
-            "type": "token3",
-            "named": true
-          },
-          {
-            "type": "token4",
-            "named": true
-          },
-          {
-            "type": "token5",
-            "named": true
-          },
-          {
-            "type": "token6",
-            "named": true
-          }
-        ]
-      },
-      "title": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "paragraph",
-            "named": true
-          }
-        ]
-      }
     }
   },
   {
     "type": "inline_tag",
     "named": true,
-    "fields": {},
+    "fields": {
+      "close_content": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "close_label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "close_parameters": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ascii_symbol",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "symbol",
+            "named": true
+          }
+        ]
+      },
+      "open_content": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "open_label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "open_parameters": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
+          "type": "content",
+          "named": true
+        },
+        {
+          "type": "eol",
+          "named": true
+        },
+        {
           "type": "label",
           "named": true
         },
         {
-          "type": "tag_name",
+          "type": "parameters",
           "named": true
         },
         {
@@ -157,7 +263,7 @@
     }
   },
   {
-    "type": "paragraph",
+    "type": "label",
     "named": true,
     "fields": {},
     "children": {
@@ -165,11 +271,15 @@
       "required": true,
       "types": [
         {
-          "type": "comment",
+          "type": "escaped_sequence",
           "named": true
         },
         {
           "type": "inline_tag",
+          "named": true
+        },
+        {
+          "type": "nl",
           "named": true
         },
         {
@@ -180,7 +290,12 @@
     }
   },
   {
-    "type": "section",
+    "type": "nl",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "paragraph",
     "named": true,
     "fields": {},
     "children": {
@@ -188,38 +303,38 @@
       "required": true,
       "types": [
         {
-          "type": "blank_line",
+          "type": "ascii_symbol",
           "named": true
         },
         {
-          "type": "hashtag",
+          "type": "eol",
           "named": true
         },
         {
-          "type": "heading",
+          "type": "escaped_sequence",
           "named": true
         },
         {
-          "type": "paragraph",
+          "type": "inline_tag",
           "named": true
         },
         {
-          "type": "section",
+          "type": "number",
           "named": true
         },
         {
-          "type": "soft_break",
+          "type": "string",
           "named": true
         },
         {
-          "type": "tag",
+          "type": "symbol",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "section1",
+    "type": "parameters",
     "named": true,
     "fields": {},
     "children": {
@@ -227,235 +342,65 @@
       "required": true,
       "types": [
         {
-          "type": "blank_line",
+          "type": "escaped_sequence",
           "named": true
         },
         {
-          "type": "hashtag",
+          "type": "nl",
           "named": true
         },
         {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "section",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
+          "type": "raw_word",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "section2",
+    "type": "verbatim_tag",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ascii_symbol",
+            "named": true
+          },
+          {
+            "type": "number",
+            "named": true
+          },
+          {
+            "type": "string",
+            "named": true
+          },
+          {
+            "type": "symbol",
+            "named": true
+          }
+        ]
+      },
+      "parameter": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "tag_parameter",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "blank_line",
+          "type": "comment",
           "named": true
         },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "section",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "section3",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "section",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "section4",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "section",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "section5",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "section",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "section6",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "heading",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "soft_break",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "tag",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
         {
           "type": "content",
           "named": true
@@ -465,36 +410,31 @@
           "named": true
         },
         {
-          "type": "tag_name",
+          "type": "eol",
           "named": true
         },
         {
-          "type": "tag_parameter",
+          "type": "nl",
           "named": true
         },
         {
-          "type": "tag_token",
+          "type": "token",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "word",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": " ",
     "named": false
   },
   {
-    "type": "blank_line",
-    "named": true
+    "type": "#",
+    "named": false
   },
   {
-    "type": "blank_line",
-    "named": false
+    "type": "ascii_symbol",
+    "named": true
   },
   {
     "type": "end_tag",
@@ -505,19 +445,19 @@
     "named": true
   },
   {
-    "type": "label",
+    "type": "number",
     "named": true
   },
   {
-    "type": "parameter",
+    "type": "raw_word",
     "named": true
   },
   {
-    "type": "soft_break",
+    "type": "string",
     "named": true
   },
   {
-    "type": "tag_name",
+    "type": "symbol",
     "named": true
   },
   {
@@ -525,35 +465,11 @@
     "named": true
   },
   {
-    "type": "tag_token",
-    "named": true
-  },
-  {
     "type": "token",
     "named": true
   },
   {
-    "type": "token1",
-    "named": true
-  },
-  {
-    "type": "token2",
-    "named": true
-  },
-  {
-    "type": "token3",
-    "named": true
-  },
-  {
-    "type": "token4",
-    "named": true
-  },
-  {
-    "type": "token5",
-    "named": true
-  },
-  {
-    "type": "token6",
+    "type": "word",
     "named": true
   },
   {

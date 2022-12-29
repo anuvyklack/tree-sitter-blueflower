@@ -31,7 +31,9 @@ enum TokenType : unsigned char {
     TAG_PARAMETER,
     END_TAG,
 
-    BLANK_LINE,
+    TAG_LABEL_OPEN,
+
+    // BLANK_LINE,
     SOFT_BREAK,
     HARD_BREAK,
 
@@ -52,7 +54,9 @@ vector<string> tokens_names = {
     "tag_parameter",
     "end_tag",
 
-    "blank_line",
+    "tag_label_open",
+
+    // "blank_line",
     "soft_break",
     "hard_break",
 
@@ -129,7 +133,7 @@ struct Scanner
         //- after advance -------------------------------
 
         if (parse_tag_parameter()) return true;
-        // if (parse_inline_tag()) return true;
+        if (parse_inline_tag()) return true;
         //
         // if (parse_comment()) return true;
         // if (parse_escape_char()) return true;
@@ -224,11 +228,11 @@ struct Scanner
         // That's why if we are on the new line, then TAG_PARAMETER stops to be valid.
         tag_parameter_is_valid = false;
 
-        // Check if current line is empty line.
-        if (is_newline(lexer->lookahead)) {
-            advance();
-            return found(BLANK_LINE);
-        }
+        // // Check if current line is empty line.
+        // if (is_newline(lexer->lookahead)) {
+        //     advance();
+        //     return found(BLANK_LINE);
+        // }
 
         advance();
 
@@ -318,7 +322,6 @@ struct Scanner
         return true;
     }
 
-
     /**
      * Parse tag parameter. It is `param1` and `param2` in examples below:
      *   #tag param1 param2
@@ -335,6 +338,23 @@ struct Scanner
         }
         return false;
     }
+
+    inline bool parse_inline_tag() {
+        // if (valid_tokens[INLINE_TAG_TOKEN] && current == ':')
+        //     return found(INLINE_TAG_TOKEN);
+
+        // if (valid_tokens[TAG_LABEL_OPEN] && current == '[' && !previous)
+        //     return found(TAG_LABEL_OPEN);
+
+        // else if (valid_tokens[INLINE_TAG_LABEL_CLOSE] && current == ']' && !previous)
+        //     return found(INLINE_TAG_LABEL_CLOSE);
+        // else if (valid_tokens[INLINE_TAG_PARAMETERS_OPEN] && current == '{'  && !previous)
+        //     return found(INLINE_TAG_PARAMETERS_OPEN);
+        // else if (valid_tokens[INLINE_TAG_PARAMETERS_CLOSE] && current == '}')
+        //     return found(INLINE_TAG_PARAMETERS_CLOSE);
+        return false;
+    }
+
 
 
     inline bool found(TokenType token) {
