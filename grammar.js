@@ -1,10 +1,6 @@
 const MAX_HEADING = 6
 const MAX_LIST_LEVEL = 10
 
-const asciiSymbols = [ '!', '"', '#', '$', '%', '&', "'", '(', ')', '*',
-  '+', ',', '-', '.', '/',  ':', ';', '<', '=', '>', '?', '@', '[', ']',
-  '\\', '^', '_', '`', '{', '|', '}', '~' ]
-
 const blueflower_grammar = {
   name: 'blueflower',
 
@@ -16,59 +12,71 @@ const blueflower_grammar = {
     $.heading_5_token,
     $.heading_6_token,
 
-    $.hashtag_token,
+    $.list_1_token,
+    $.list_2_token,
+    $.list_3_token,
+    $.list_4_token,
+    $.list_5_token,
+    $.list_6_token,
+    $.list_7_token,
+    $.list_8_token,
+    $.list_9_token,
+    $.list_10_token,
+
     $.tag_token,
+    $.extended_tag_token,
+    $.hashtag_token,
     $.tag_parameter,
     $.end_tag,
-    $.tag_label_open,
 
-    // $.blank_line,
+    $.blank_line,
     $.soft_break,
     $.hard_break,
 
-    $._eof, // none
+    $._, // none
   ],
 
   conflicts: $ => [
     [$.paragraph],
-    [$.inline_tag, $.verbatim_tag]
+    [$.inline_tag, $.verbatim_tag],
+    [$.directives, $._hashtag_plus_newline],
   ],
 
   inline: $ => [
-    // $.nl,
-    $.eol,
     $.section,
     $.word
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
   precedences: _ => [
-    // ['document_directive', 'body_directive'],
     ['special', 'immediate', 'non-immediate'],
   ],
 
   rules: {
     document: $ => repeat1(choice(
       // alias($.section, $.section),
+      $._hashtag_plus_newline,
       $.paragraph,
-      $.verbatim_tag,
-      // $.blank_line,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.blank_line,
       $.hard_break,
-      $.hashtag,
-      // alias($.verbatim_tag, $.tag),
       $.comment,
+      $.list
     )),
 
+    directives: $ => repeat1(seq($.hashtag, $.new_line)),
+
     paragraph: $ => seq(
+      optional($.directives),
       repeat1(choice(
         $.escaped_sequence,
         $.word,
         $.inline_tag,
-        $.eol,
+        // $.new_line,
         // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
         // $.link, $.link_reference, $.short_link_reference,
       )),
-      optional($.eol)
     ),
 
     escaped_sequence: $ => seq(
@@ -80,13 +88,23 @@ const blueflower_grammar = {
         $.raw_word)
     ),
 
-    immediate_escaped_sequence: $ => seq(
-      alias(
-        token.immediate(prec('special', '\\')),
-        $.token),
-      alias(
-        token.immediate(/\S+/),
-        $.raw_word)
+    // immediate_escaped_sequence: $ => seq(
+    //   alias(
+    //     token.immediate(prec('special', '\\')),
+    //     $.token),
+    //   alias(
+    //     token.immediate(/\S+/),
+    //     $.raw_word)
+    // ),
+
+    list: $ => seq(
+      alias(repeat($.hashtag), $.directives),
+
+      choice(
+        repeat1( alias($.item_1, $.item)),
+        // repeat1( alias($.ordered_item_1, $.item))
+      ),
+      alias($.soft_break, $.list_break)
     ),
 
     comment: $ => seq(
@@ -95,7 +113,25 @@ const blueflower_grammar = {
         ' ',
         repeat(alias($.raw_word, "word"))
       )),
-      $.eol,
+      $.new_line,
+    ),
+
+    hashtag: $ => seq(
+      alias($.hashtag_token, $.token),
+
+      // // Any except:
+      // //    `[`, `(`, `{`, white space
+      // alias(token.immediate(/[^\[({\s]+/), $.tag_name),
+
+      field('name', alias($.raw_word, $.tag_name)),
+      field('parameter',
+            repeat(
+              alias($.raw_word, $.tag_parameter))),
+    ),
+
+    _hashtag_plus_newline: $ => seq(
+      $.hashtag,
+      choice($.blank_line, $.new_line)
     ),
 
     inline_tag: $ => seq(
@@ -104,7 +140,7 @@ const blueflower_grammar = {
         $.token),
       field('name',
             alias(
-              expression($, 'immediate', token.immediate, '['),
+              repeat1(expression($, 'immediate', token.immediate, '[({')),
               $.tag_name)),
 
       choice(
@@ -120,9 +156,7 @@ const blueflower_grammar = {
           optional($._inline_tag_label),
           optional($._inline_tag_content),
           $._inline_tag_patameters)
-      ),
-
-      choice(' ', $.eol)
+      )
     ),
 
     _inline_tag_label: $ => seq(
@@ -136,7 +170,7 @@ const blueflower_grammar = {
           alias(/[^\[\]\s\\]+/, $.word),
           // expression($, 'non-immediate', token, '[]\\'),
           $.inline_tag,
-          $.nl
+          $.new_line
         )),
         $.label),
       field('close_label',
@@ -155,7 +189,7 @@ const blueflower_grammar = {
           $.escaped_sequence,
           alias(/[^\(\)\s\\]+/, $.raw_word),
           // expression($, 'non-immediate', token, '()\\'),
-          $.nl
+          $.new_line
         )),
         $.content),
       field('close_content',
@@ -174,67 +208,78 @@ const blueflower_grammar = {
           $.escaped_sequence,
           alias(/[^\{\}\s\\]+/, $.raw_word),
           // expression($, 'non-immediate', token, '{}\\'),
-          $.nl
+          $.new_line
         )),
         $.parameters),
       field('close_parameters',
             alias('}', $.token))
     ),
 
+    // The content of this tag tree-sitter parser will skip.
     verbatim_tag: $ => seq(
+      alias(repeat($.hashtag), $.directives),
+
       alias($.tag_token, $.token),
       field('name',
             alias(
-              expression($, 'immediate', token.immediate),
+              repeat1(expression($, 'immediate', token.immediate)),
               $.tag_name)),
 
-      optional( seq(
+      optional(seq(
         ' ',
         field('parameter',
               repeat(
-                alias($.raw_word, $.tag_parameter))),
+                alias($.raw_word, $.tag_parameter)))
       )),
-      $.nl,
+      $.new_line,
       alias(
         repeat( choice(
-          $.verbatim_tag,
-          seq( repeat($.raw_word), $.nl)
+          alias($.verbatim_tag, $.tag),
+          alias($.tag_with_syntax, $.tag),
+          seq( repeat($.raw_word), $.new_line)
         )),
         $.content),
       $.end_tag,
-      choice($.comment, $.eol)
+      choice($.comment, $.new_line)
     ),
 
-    hashtag: $ => seq(
-      alias($.hashtag_token, $.token),
+    // The content of this tag will be parsed by this parser.
+    tag_with_syntax: $ => seq(
+      alias(repeat($.hashtag), $.directives),
 
-      // // Any except:
-      // //    `[`, `(`, `{`, white space
-      // alias(token.immediate(/[^\[({\s]+/), $.tag_name),
-
+      alias($.extended_tag_token, $.token),
       field('name',
             alias(
-              expression($, 'immediate', token.immediate),
+              repeat1(expression($, 'immediate', token.immediate)),
               $.tag_name)),
-      field('parameter',
-            repeat(
-              alias($.raw_word, $.tag_parameter))),
-      $.eol
+
+      optional(seq(
+        ' ',
+        field('parameter',
+              repeat(
+                alias($.raw_word, $.tag_parameter)))
+      )),
+      $.new_line,
+
+      alias(
+        repeat(choice(
+          alias($.verbatim_tag, $.tag),
+          alias($.tag_with_syntax, $.tag),
+          $._hashtag_plus_newline,
+          $.paragraph,
+          $.list,
+          $.comment,
+          $.blank_line,
+        )),
+        $.content),
+
+      $.end_tag,
+      choice($.comment, $.new_line)
     ),
 
-    // blank_line: $ => seq($.nl, $.eol),
+    new_line: _ => choice('\n', '\r'),
 
-    // The first symbol could not be any of:
-    //    white space, `\`
-    // word: _ => /[^\s\\]\S*/,
-    // word: _ => choice(/\p{L}+/, /\p{N}+/),
-
-    // nl: _ => choice('\n', '\r'),
-    // eol: $ => choice('\n', '\r', $._eof),
-    nl: _ => /\r?\n/,
-    eol: $ => choice($.nl, $._eof),
-
-    word: $ => expression($, 'non-immediate', token, '@#'),
+    word: $ => expression($, 'non-immediate', token, '@#['),
 
     raw_word: _ => /\S+/,
     // raw_word: _ => seq(
@@ -252,11 +297,89 @@ const blueflower_grammar = {
   }
 }
 
+const lists = {
+  checkbox: _ => token(
+    seq(
+      '[',
+      token.immediate( choice(' ', /\S/) ),
+      token.immediate(']'),
+  )),
+
+  item_1:  $ => gen_list_item($, 1),
+  item_2:  $ => gen_list_item($, 2),
+  item_3:  $ => gen_list_item($, 3),
+  item_4:  $ => gen_list_item($, 4),
+  item_5:  $ => gen_list_item($, 5),
+  item_6:  $ => gen_list_item($, 6),
+  item_7:  $ => gen_list_item($, 7),
+  item_8:  $ => gen_list_item($, 8),
+  item_9:  $ => gen_list_item($, 9),
+  item_10: $ => gen_list_item($, 10),
+
+  // ordered_item_1:  $ => gen_list_item($, 1,  true),
+  // ordered_item_2:  $ => gen_list_item($, 2,  true),
+  // ordered_item_3:  $ => gen_list_item($, 3,  true),
+  // ordered_item_4:  $ => gen_list_item($, 4,  true),
+  // ordered_item_5:  $ => gen_list_item($, 5,  true),
+  // ordered_item_6:  $ => gen_list_item($, 6,  true),
+  // ordered_item_7:  $ => gen_list_item($, 7,  true),
+  // ordered_item_8:  $ => gen_list_item($, 8,  true),
+  // ordered_item_9:  $ => gen_list_item($, 9,  true),
+  // ordered_item_10: $ => gen_list_item($, 10, true),
+}
+ 
+function gen_list_item($, level, ordered = false) {
+  let token = []
+  token[0] = field("level",
+    alias(
+      $["list_" + level + "_token"],
+      $["token" + level]))
+
+  // if (ordered)
+  //   token[1] = alias($.ordered_list_label, $.label)
+
+  let next_level_list = ''
+  if (level < MAX_LIST_LEVEL) {
+    next_level_list = optional(
+      alias(
+        // choice(
+          repeat1(
+            alias($["item_" + (level + 1)],
+                  $.item)),
+          // repeat1(
+          //   alias($["ordered_item_" + (level + 1)],
+          //         $.item))),
+        $.list)
+    )
+  }
+
+  return seq(
+    ...token,
+    optional($.checkbox),
+    repeat1( choice(
+      // $.markdown_code_block,
+      // alias($.verbatim_tag, $.tag),
+      // $.tag,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $._hashtag_plus_newline,
+      $.paragraph,
+      $.blank_line,
+      $.comment,
+    )),
+    next_level_list,
+  );
+}
+
 /**
  * @param {string} pr Precedence value
  * @param {Function} tfunc Token function: `token` or `token.immediate`.
  */
 function expression($, pr, tfunc, skip = '') {
+  const asciiSymbols = [ '!', '"', '#', '$', '%', '&', "'", '(', ')', '*',
+    '+', ',', '-', '.', '/',  ':', ';', '<', '=', '>', '?', '@', '[', ']',
+    '\\', '^', '_', '`', '{', '|', '}', '~' ]
+
   skip = skip.split("")
   return choice(
     ...asciiSymbols.filter(c => !skip.includes(c))
@@ -270,7 +393,7 @@ function expression($, pr, tfunc, skip = '') {
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)
-// Object.assign(blueflower_grammar.rules, sections)
+Object.assign(blueflower_grammar.rules, lists)
 
 module.exports = grammar(blueflower_grammar)
 

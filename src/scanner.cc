@@ -26,14 +26,24 @@ enum TokenType : unsigned char {
     HEADING_5,
     HEADING_6,
 
-    HASHTAG,
+    LIST_1,
+    LIST_2,
+    LIST_3,
+    LIST_4,
+    LIST_5,
+    LIST_6,
+    LIST_7,
+    LIST_8,
+    LIST_9,
+    LIST_10,
+
     TAG_TOKEN,
+    EXTENDED_TAG_TOKEN,
+    HASHTAG,
     TAG_PARAMETER,
     END_TAG,
 
-    TAG_LABEL_OPEN,
-
-    // BLANK_LINE,
+    BLANK_LINE,
     SOFT_BREAK,
     HARD_BREAK,
 
@@ -49,14 +59,24 @@ vector<string> tokens_names = {
     "heading_5",
     "heading_6",
 
-    "hashtag",
+    "list1",
+    "list2",
+    "list3",
+    "list4",
+    "list5",
+    "list6",
+    "list7",
+    "list8",
+    "list9",
+    "list10",
+
     "tag_token",
+    "extended_tag_token",
+    "hashtag",
     "tag_parameter",
     "end_tag",
 
-    "tag_label_open",
-
-    // "blank_line",
+    "blank_line",
     "soft_break",
     "hard_break",
 
@@ -105,6 +125,7 @@ struct Scanner
      *
      */
     bool scan () {
+        // Recover form error
         if (is_all_tokens_valid() || is_eof()) return false;
 
 #ifdef DEBUG
@@ -128,13 +149,13 @@ struct Scanner
 
         //- before advace -------------------------------
 
+        clog << "  before advace" << endl;
+        clog << get_column() << endl;
         if (parsed_chars == 0) advance();
+        clog << "  after advace" << endl;
 
         //- after advance -------------------------------
 
-        if (parse_tag_parameter()) return true;
-        if (parse_inline_tag()) return true;
-        //
         // if (parse_comment()) return true;
         // if (parse_escape_char()) return true;
         //
@@ -221,6 +242,8 @@ struct Scanner
     bool parse_newline() {
         // If we're here, then we're in column 0 on a new line.
 
+        clog << "  At 0 column" << endl;
+
         skip_spaces();
         if (is_eof()) return false;
 
@@ -228,11 +251,11 @@ struct Scanner
         // That's why if we are on the new line, then TAG_PARAMETER stops to be valid.
         tag_parameter_is_valid = false;
 
-        // // Check if current line is empty line.
-        // if (is_newline(lexer->lookahead)) {
-        //     advance();
-        //     return found(BLANK_LINE);
-        // }
+        // Check if current line is empty line.
+        if (is_newline(lexer->lookahead)) {
+            advance();
+            return found(BLANK_LINE);
+        }
 
         advance();
 
@@ -272,10 +295,10 @@ struct Scanner
             //     while (iswdigit(lexer->lookahead))
             //         advance();
             // }
-            //
-            // if (is_space(lexer->lookahead))
-            //     return found(static_cast<TokenType>(
-            //                  LIST_1 + (n < MAX_LIST ? n : MAX_LIST - 1)));
+
+            if (is_space(lexer->lookahead))
+                return found(static_cast<TokenType>(
+                             LIST_1 + (n < MAX_LIST ? n : MAX_LIST - 1)));
 
             break;
         }
@@ -298,7 +321,11 @@ struct Scanner
             break;
         }
         case '@': { // TAG_TOKEN
-            if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
+            if (valid_tokens[EXTENDED_TAG_TOKEN] && lexer->lookahead == '+') {
+                advance();
+                return found(EXTENDED_TAG_TOKEN);
+            }
+            else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
                 if (token("end") && iswspace(lexer->lookahead))
                     return found(END_TAG);
                 else if (!iswspace(lexer->lookahead))
@@ -321,41 +348,6 @@ struct Scanner
         }
         return true;
     }
-
-    /**
-     * Parse tag parameter. It is `param1` and `param2` in examples below:
-     *   #tag param1 param2
-     *        ^----- ^-----
-     * or
-     *   @tag param1 param2
-     *        ^----- ^-----
-     */
-    inline bool parse_tag_parameter() {
-        if (valid_tokens[TAG_PARAMETER] && tag_parameter_is_valid && is_space(previous)) {
-            while (not_space_or_newline(lexer->lookahead))
-                advance();
-            return found(TAG_PARAMETER);
-        }
-        return false;
-    }
-
-    inline bool parse_inline_tag() {
-        // if (valid_tokens[INLINE_TAG_TOKEN] && current == ':')
-        //     return found(INLINE_TAG_TOKEN);
-
-        // if (valid_tokens[TAG_LABEL_OPEN] && current == '[' && !previous)
-        //     return found(TAG_LABEL_OPEN);
-
-        // else if (valid_tokens[INLINE_TAG_LABEL_CLOSE] && current == ']' && !previous)
-        //     return found(INLINE_TAG_LABEL_CLOSE);
-        // else if (valid_tokens[INLINE_TAG_PARAMETERS_OPEN] && current == '{'  && !previous)
-        //     return found(INLINE_TAG_PARAMETERS_OPEN);
-        // else if (valid_tokens[INLINE_TAG_PARAMETERS_CLOSE] && current == '}')
-        //     return found(INLINE_TAG_PARAMETERS_CLOSE);
-        return false;
-    }
-
-
 
     inline bool found(TokenType token) {
         lexer->result_symbol = token;
