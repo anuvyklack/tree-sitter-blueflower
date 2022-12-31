@@ -225,13 +225,14 @@ const blueflower_grammar = {
               repeat1(expression($, 'immediate', token.immediate)),
               $.tag_name)),
 
-      optional(seq(
-        ' ',
+      repeat(seq(
+        token.immediate(' '),
         field('parameter',
               repeat(
-                alias($.raw_word, $.tag_parameter)))
+                alias($.raw_word, $.tag_parameter))),
       )),
       $.new_line,
+
       alias(
         repeat( choice(
           alias($.verbatim_tag, $.tag),
@@ -253,11 +254,11 @@ const blueflower_grammar = {
               repeat1(expression($, 'immediate', token.immediate)),
               $.tag_name)),
 
-      optional(seq(
-        ' ',
+      repeat(seq(
+        token.immediate(' '),
         field('parameter',
               repeat(
-                alias($.raw_word, $.tag_parameter)))
+                alias($.raw_word, $.tag_parameter))),
       )),
       $.new_line,
 
