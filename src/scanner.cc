@@ -326,7 +326,8 @@ struct Scanner
                 return found(EXTENDED_TAG_TOKEN);
             }
             else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
-                if (token("end") && iswspace(lexer->lookahead))
+                // if (token("end") && iswspace(lexer->lookahead))
+                if (token("end") && is_space_or_newline_or_eof(lexer->lookahead))
                     return found(END_TAG);
                 else if (!iswspace(lexer->lookahead))
                     return found(TAG_TOKEN);
