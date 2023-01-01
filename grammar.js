@@ -278,7 +278,7 @@ const blueflower_grammar = {
       choice($.comment, $.new_line)
     ),
 
-    new_line: _ => choice('\n', '\r'),
+    new_line: _ => choice('\n\r', '\n', '\r'),
 
     word: $ => expression($, 'non-immediate', token, '@#['),
 
