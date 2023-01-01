@@ -33,18 +33,21 @@ const blueflower_grammar = {
     $.soft_break,
     $.hard_break,
 
+    $.eof,
     $._, // none
   ],
 
   conflicts: $ => [
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
-    [$.directives, $._hashtag_plus_newline],
+    // [$.directives, $._hashtag_plus_newline],
+    [$.verbatim_tag],
   ],
 
   inline: $ => [
     $.section,
-    $.word
+    $.word,
+    $.eol
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
@@ -62,13 +65,13 @@ const blueflower_grammar = {
       $.blank_line,
       $.hard_break,
       $.comment,
-      $.list
+      $.list,
     )),
 
-    directives: $ => repeat1(seq($.hashtag, $.new_line)),
+    // directives: $ => repeat1(seq($.hashtag, $.new_line)),
 
     paragraph: $ => seq(
-      optional($.directives),
+      // optional($.directives),
       repeat1(choice(
         $.escaped_sequence,
         $.word,
@@ -119,18 +122,22 @@ const blueflower_grammar = {
     hashtag: $ => seq(
       alias($.hashtag_token, $.token),
 
-      // // Any except:
-      // //    `[`, `(`, `{`, white space
-      // alias(token.immediate(/[^\[({\s]+/), $.tag_name),
+      // Any except:
+      //    `[`, `(`, `{`, white space
+      alias(token.immediate(/[^\[({\s]+/), $.tag_name),
 
-      field('name', alias($.raw_word, $.tag_name)),
-      field('parameter',
-            repeat(
-              alias($.raw_word, $.tag_parameter))),
+      // field('name', alias($.raw_word, $.tag_name)),
+
+      // field('parameter',
+      //       repeat(
+      //         alias($.raw_word, $.tag_parameter))),
+      alias(
+        repeat(expression($, 'non-immediate', token)),
+        $.content)
     ),
 
     _hashtag_plus_newline: $ => seq(
-      $.hashtag,
+      repeat1($.hashtag),
       choice($.blank_line, $.new_line)
     ),
 
@@ -241,7 +248,8 @@ const blueflower_grammar = {
         )),
         $.content),
       $.end_tag,
-      choice($.comment, $.new_line)
+      // choice($.comment, $.new_line)
+      choice($.comment, $.eol)
     ),
 
     // The content of this tag will be parsed by this parser.
@@ -275,10 +283,12 @@ const blueflower_grammar = {
         $.content),
 
       $.end_tag,
-      choice($.comment, $.new_line)
+      choice($.comment, $.eol)
     ),
 
     new_line: _ => choice('\n\r', '\n', '\r'),
+    eol: $ => choice($.new_line, $.eof),
+
 
     word: $ => expression($, 'non-immediate', token, '@#['),
 
@@ -386,8 +396,8 @@ function expression($, pr, tfunc, skip = '') {
     ...asciiSymbols.filter(c => !skip.includes(c))
                    .map(c => alias(
                                tfunc(prec(pr, c)),
-                               $.ascii_symbol)),
-    alias(tfunc(prec(pr, /\p{L}+/)), $.string),
+                               $.symbol)),
+    alias(tfunc(prec(pr, /\p{L}+/)), $.word),
     alias(tfunc(prec(pr, /\p{N}+/)), $.number),
     alias(tfunc(prec(pr, /[^\p{Z}\p{L}\p{N}\t\n\r]/)), $.symbol),
   )

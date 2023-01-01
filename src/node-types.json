@@ -47,6 +47,10 @@
           "named": true
         },
         {
+          "type": "number",
+          "named": true
+        },
+        {
           "type": "paragraph",
           "named": true
         },
@@ -55,7 +59,15 @@
           "named": true
         },
         {
+          "type": "symbol",
+          "named": true
+        },
+        {
           "type": "tag",
+          "named": true
+        },
+        {
+          "type": "word",
           "named": true
         }
       ]
@@ -71,10 +83,6 @@
       "types": [
         {
           "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "new_line",
           "named": true
         }
       ]
@@ -145,32 +153,19 @@
   {
     "type": "hashtag",
     "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "tag_name",
-            "named": true
-          }
-        ]
-      },
-      "parameter": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "tag_parameter",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "content",
+          "named": true
+        },
+        {
+          "type": "tag_name",
+          "named": true
+        },
         {
           "type": "token",
           "named": true
@@ -430,14 +425,6 @@
       "required": true,
       "types": [
         {
-          "type": "ascii_symbol",
-          "named": true
-        },
-        {
-          "type": "directives",
-          "named": true
-        },
-        {
           "type": "escaped_sequence",
           "named": true
         },
@@ -450,11 +437,11 @@
           "named": true
         },
         {
-          "type": "string",
+          "type": "symbol",
           "named": true
         },
         {
-          "type": "symbol",
+          "type": "word",
           "named": true
         }
       ]
@@ -529,6 +516,10 @@
           "named": true
         },
         {
+          "type": "eof",
+          "named": true
+        },
+        {
           "type": "new_line",
           "named": true
         },
@@ -548,19 +539,15 @@
       "required": false,
       "types": [
         {
-          "type": "ascii_symbol",
-          "named": true
-        },
-        {
           "type": "number",
           "named": true
         },
         {
-          "type": "string",
+          "type": "symbol",
           "named": true
         },
         {
-          "type": "symbol",
+          "type": "word",
           "named": true
         }
       ]
@@ -572,6 +559,10 @@
   },
   {
     "type": "\n",
+    "named": false
+  },
+  {
+    "type": "\n\r",
     "named": false
   },
   {
@@ -587,10 +578,6 @@
     "named": false
   },
   {
-    "type": "ascii_symbol",
-    "named": true
-  },
-  {
     "type": "blank_line",
     "named": true
   },
@@ -600,6 +587,10 @@
   },
   {
     "type": "end_tag",
+    "named": true
+  },
+  {
+    "type": "eof",
     "named": true
   },
   {
@@ -616,10 +607,6 @@
   },
   {
     "type": "raw_word",
-    "named": true
-  },
-  {
-    "type": "string",
     "named": true
   },
   {

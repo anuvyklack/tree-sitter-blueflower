@@ -9,12 +9,12 @@
 #include <unordered_map>
 #include "tree_sitter/parser.h"
 
-#define DEBUG 1
+// #define DEBUG 1
 
 /**
  * Print the current character after every advance() call.
  */
-#define DEBUG_CURRENT_CHAR 1
+// #define DEBUG_CURRENT_CHAR 1
 
 using namespace std;
 
@@ -47,6 +47,7 @@ enum TokenType : unsigned char {
     SOFT_BREAK,
     HARD_BREAK,
 
+    END_OF_FILE,
     NONE,
 };
 
@@ -80,6 +81,7 @@ vector<string> tokens_names = {
     "soft_break",
     "hard_break",
 
+    "eof",
     "none",
 };
 #endif // DEBUG
@@ -126,12 +128,21 @@ struct Scanner
      */
     bool scan () {
         // Recover form error
-        if (is_all_tokens_valid() || is_eof()) return false;
+        if (is_all_tokens_valid()) return false;
 
 #ifdef DEBUG
         clog << "{" << endl;
         debug_valid_tokens();
 #endif
+
+        if (is_eof()) {
+            if (valid_tokens[END_OF_FILE])
+                return found(END_OF_FILE);
+#ifdef DEBUG
+            clog << "  false" << endl << "}" << endl;
+#endif
+            return false;
+        }
 
         if (is_newline(lexer->lookahead))
             skip_newline();
@@ -145,14 +156,14 @@ struct Scanner
         if (parsed_chars == 0) {
             skip_spaces();
             if (is_eof()) return false;
+#ifdef DEBUG
+            clog << "  false" << endl << "}" << endl;
+#endif
         }
 
         //- before advace -------------------------------
 
-        clog << "  before advace" << endl;
-        clog << get_column() << endl;
         if (parsed_chars == 0) advance();
-        clog << "  after advace" << endl;
 
         //- after advance -------------------------------
 
@@ -211,12 +222,12 @@ struct Scanner
 
     /// Skips the next character without including it in the final result.
     void skip() {
-//         if (!lexer->lookahead) {
-// #ifdef DEBUG_CURRENT_CHAR
-//             clog << "  Next char is \\0" << endl;
-// #endif
-//             return;
-//         }
+        if (!lexer->lookahead) {
+#ifdef DEBUG_CURRENT_CHAR
+            clog << "  Next char is \\0" << endl;
+#endif
+            return;
+        }
         previous = current;
         current = lexer->lookahead;
         lexer->advance(lexer, true);
@@ -241,8 +252,6 @@ struct Scanner
     /// Rules that decide based on the first token on the next line.
     bool parse_newline() {
         // If we're here, then we're in column 0 on a new line.
-
-        clog << "  At 0 column" << endl;
 
         skip_spaces();
         if (is_eof()) return false;
