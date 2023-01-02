@@ -34,7 +34,6 @@ const blueflower_grammar = {
     $.hard_break,
 
     $.eof,
-    $._, // none
   ],
 
   conflicts: $ => [

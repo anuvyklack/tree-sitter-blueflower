@@ -48,7 +48,6 @@ enum TokenType : unsigned char {
     HARD_BREAK,
 
     END_OF_FILE,
-    NONE,
 };
 
 #ifdef DEBUG
@@ -82,7 +81,6 @@ vector<string> tokens_names = {
     "hard_break",
 
     "eof",
-    "none",
 };
 #endif // DEBUG
 
@@ -143,9 +141,6 @@ struct Scanner
 #endif
             return false;
         }
-
-        if (is_newline(lexer->lookahead))
-            skip_newline();
 
         if (get_column() == 0)
             if (parse_newline()) return true;
@@ -408,7 +403,7 @@ struct Scanner
      * after it encountered an error. This function defines such a case.
      */
     inline bool is_all_tokens_valid() {
-        for (int i = 0; i <= NONE; ++i)
+        for (int i = 0; i <= END_OF_FILE; ++i)
             if (!valid_tokens[i]) return false;
         return true;
     }
@@ -422,7 +417,7 @@ struct Scanner
             return;
         }
 
-        for (int i = 0; i <= NONE; ++i) {
+        for (int i = 0; i <= END_OF_FILE; ++i) {
             if (valid_tokens[i])
                 clog << tokens_names[i] << ' ';
         }
