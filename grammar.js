@@ -83,12 +83,12 @@ const blueflower_grammar = {
     ),
 
     escaped_sequence: $ => seq(
-      alias(
-        prec('special', '\\'),
-        $.token),
-      alias(
-        token.immediate(/\S+/),
-        $.raw_word)
+      // alias(prec('special', '\\'), $.token),
+      alias('\\', $.token),
+      choice(
+        alias(token.immediate(/\S+/), $.raw_word),
+        alias(/\s/, $.space)
+      )
     ),
 
     // immediate_escaped_sequence: $ => seq(
