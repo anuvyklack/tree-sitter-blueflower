@@ -1,0 +1,192 @@
+================================================================================
+Tag.1 - Verbatim tag
+================================================================================
+@tag
+    text
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (tag
+        (token)
+        name: (tag_name
+          (word))
+        (new_line)
+        (content
+          (raw_word)
+          (new_line))
+        (end_tag)
+        (eof)))
+
+================================================================================
+Tag.2 - Tag with syntax
+================================================================================
+@+tag
+    text text
+
+    text
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (tag
+        (token)
+        name: (tag_name
+          (word))
+        (new_line)
+        (content
+          (paragraph
+            (word)
+            (word))
+          (blank_line)
+          (paragraph
+            (word)))
+        (end_tag)
+        (eof)))
+
+================================================================================
+Tag.3 - Nested tags
+================================================================================
+@tag
+    @+nested_tag
+        text
+    @end
+    @code lua
+        local M = {}
+        return M
+    @end
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (tag
+        (token)
+        name: (tag_name
+          (word))
+        (new_line)
+        (content
+          (tag
+            (token)
+            name: (tag_name
+              (word)
+              (symbol)
+              (word))
+            (new_line)
+            (content
+              (paragraph
+                (word)))
+            (end_tag)
+            (new_line))
+          (tag
+            (token)
+            name: (tag_name
+              (word))
+            parameter: (tag_parameter)
+            (new_line)
+            (content
+              (raw_word)
+              (raw_word)
+              (raw_word)
+              (raw_word)
+              (new_line)
+              (raw_word)
+              (raw_word)
+              (new_line))
+            (end_tag)
+            (new_line)))
+        (end_tag)
+        (eof)))
+
+================================================================================
+Tag.4 - Verbatim tag with directives
+================================================================================
+#propertie val
+#propertie val
+@footnote name
+    text
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (tag
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word))
+            (new_line))
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word))
+            (new_line)))
+        (token)
+        name: (tag_name
+          (word))
+        parameter: (tag_parameter)
+        (new_line)
+        (content
+          (raw_word)
+          (new_line))
+        (end_tag)
+        (eof)))
+
+================================================================================
+Tag.5 - Verbatim tag with directives and blank_line after
+================================================================================
+#propertie val
+#propertie val
+@footnote name
+    text
+@end
+
+text
+--------------------------------------------------------------------------------
+
+    (document
+      (tag
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word))
+            (new_line))
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word))
+            (new_line)))
+        (token)
+        name: (tag_name
+          (word))
+        parameter: (tag_parameter)
+        (new_line)
+        (content
+          (raw_word)
+          (new_line))
+        (end_tag)
+        (new_line))
+      (blank_line)
+      (paragraph
+        (word))
+      (eof))
+
+================================================================================
+Hashtag.1 - Hashtag
+================================================================================
+#tags home hobby
+--------------------------------------------------------------------------------
+
+    (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word)
+          (word))
+        (eof))
+      (eof))

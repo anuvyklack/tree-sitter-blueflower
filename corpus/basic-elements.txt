@@ -1,0 +1,322 @@
+================================================================================
+Paragraph.1
+================================================================================
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (eof))
+
+================================================================================
+Paragraph.2 - Two paragraphs
+================================================================================
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (blank_line)
+      (paragraph
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (eof))
+
+================================================================================
+Paragraph.3 - Paragraph with one directive
+================================================================================
+#tag param1 param2
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word)
+              (number)
+              (word)
+              (number))
+            (new_line)))
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (eof))
+
+================================================================================
+Paragraph.4 - Hashtag and separate paragraph
+================================================================================
+#tag param1 param2
+
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word)
+          (number)
+          (word)
+          (number))
+        (new_line))
+      (blank_line)
+      (paragraph
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (eof))
+
+================================================================================
+List.1 - Simple list
+================================================================================
+- item
+- item
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (list
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (list_break)))
+
+================================================================================
+List.2a - List with one directive
+================================================================================
+#tag :key value
+- item
+- item
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (list
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (symbol)
+              (word)
+              (word))
+            (new_line)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (list_break)))
+
+================================================================================
+List.2b - Separate hashtag and list
+================================================================================
+#tag :key value
+
+- item
+- item
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (symbol)
+          (word)
+          (word))
+        (new_line))
+      (blank_line)
+      (list
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (list_break)))
+
+================================================================================
+List.2c - List with two directives
+================================================================================
+#tag
+#tag :key value
+- i
+- i
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (list
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (new_line))
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (symbol)
+              (word)
+              (word))
+            (new_line)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (list_break)))
+
+================================================================================
+List.2d - Hashtag and list with directive
+================================================================================
+#tag :key value
+#tag :key value
+
+#tag :key value
+- i
+- i
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (symbol)
+          (word)
+          (word))
+        (new_line))
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (symbol)
+          (word)
+          (word))
+        (new_line))
+      (blank_line)
+      (list
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (symbol)
+              (word)
+              (word))
+            (new_line)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (item
+          level: (token1)
+          (paragraph
+            (word)))
+        (list_break)))
