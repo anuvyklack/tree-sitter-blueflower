@@ -31,6 +31,10 @@
           "named": true
         },
         {
+          "type": "eof",
+          "named": true
+        },
+        {
           "type": "escaped_sequence",
           "named": true
         },
@@ -105,6 +109,10 @@
           "named": true
         },
         {
+          "type": "eof",
+          "named": true
+        },
+        {
           "type": "hard_break",
           "named": true
         },
@@ -144,6 +152,10 @@
           "named": true
         },
         {
+          "type": "space",
+          "named": true
+        },
+        {
           "type": "token",
           "named": true
         }
@@ -160,6 +172,14 @@
       "types": [
         {
           "type": "content",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "new_line",
           "named": true
         },
         {
@@ -339,23 +359,11 @@
           "named": true
         },
         {
-          "type": "hashtag",
-          "named": true
-        },
-        {
           "type": "list",
           "named": true
         },
         {
-          "type": "new_line",
-          "named": true
-        },
-        {
           "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "tag",
           "named": true
         }
       ]
@@ -424,6 +432,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "directives",
+          "named": true
+        },
         {
           "type": "escaped_sequence",
           "named": true
@@ -499,6 +511,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "blank_line",
+          "named": true
+        },
         {
           "type": "comment",
           "named": true
@@ -607,6 +623,10 @@
   },
   {
     "type": "raw_word",
+    "named": true
+  },
+  {
+    "type": "space",
     "named": true
   },
   {

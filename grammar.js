@@ -39,14 +39,17 @@ const blueflower_grammar = {
   conflicts: $ => [
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
-    // [$.directives, $._hashtag_plus_newline],
-    [$.verbatim_tag],
+    // [$.directives, $._hashtag_plus_blank_line],
+
+    [$._body_contents, $._element],
+    [$._body_contents]
   ],
 
   inline: $ => [
     $.section,
     $.word,
-    $.eol
+    $.eol,
+    $._hashtag_plus_blank_line
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
@@ -55,22 +58,53 @@ const blueflower_grammar = {
   ],
 
   rules: {
-    document: $ => repeat1(choice(
-      // alias($.section, $.section),
-      $._hashtag_plus_newline,
-      $.paragraph,
+    // document: $ => repeat1(choice(
+    //   // alias($.section, $.section),
+    //   // $._hashtag_plus_blank_line,
+    //   // alias($.verbatim_tag, $.tag),
+    //   // alias($.tag_with_syntax, $.tag),
+    //   // $.blank_line,
+    //   // $.hard_break,
+    //   // $.comment,
+    //   // $.list,
+    //   $.paragraph,
+    //   // seq(
+    //   //   $.paragraph,
+    //   //   repeat($.blank_line),
+    //   //   $.verbatim_tag
+    //   // ),
+    // )),
+
+    document: $ => repeat1($._body_contents),
+
+    _body_contents: $ => choice(
+      repeat1($._element),
+      seq(
+        $.paragraph,
+        choice($.blank_line, $.eof),
+      ),
+      seq(
+        $.paragraph,
+        optional($.blank_line),
+        $._element
+      ),
+    ),
+
+    // Any non-paragrapg element.
+    _element: $ => choice(
+      $._hashtag_plus_blank_line,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.blank_line,
       $.hard_break,
       $.comment,
       $.list,
-    )),
+    ),
 
     // directives: $ => repeat1(seq($.hashtag, $.new_line)),
 
     paragraph: $ => seq(
-      // optional($.directives),
+      alias(repeat($.hashtag), $.directives),
       repeat1(choice(
         $.escaped_sequence,
         $.word,
@@ -125,19 +159,15 @@ const blueflower_grammar = {
       //    `[`, `(`, `{`, white space
       alias(token.immediate(/[^\[({\s]+/), $.tag_name),
 
-      // field('name', alias($.raw_word, $.tag_name)),
-
-      // field('parameter',
-      //       repeat(
-      //         alias($.raw_word, $.tag_parameter))),
       alias(
         repeat(expression($, 'non-immediate', token)),
-        $.content)
+        $.content),
+      $.eol
     ),
 
-    _hashtag_plus_newline: $ => seq(
+    _hashtag_plus_blank_line: $ => seq(
       repeat1($.hashtag),
-      choice($.blank_line, $.new_line)
+      choice($.blank_line, $.eol)
     ),
 
     inline_tag: $ => seq(
@@ -247,8 +277,7 @@ const blueflower_grammar = {
         )),
         $.content),
       $.end_tag,
-      // choice($.comment, $.new_line)
-      choice($.comment, $.eol)
+      choice($.comment, $.eol, $.blank_line)
     ),
 
     // The content of this tag will be parsed by this parser.
@@ -273,7 +302,7 @@ const blueflower_grammar = {
         repeat(choice(
           alias($.verbatim_tag, $.tag),
           alias($.tag_with_syntax, $.tag),
-          $._hashtag_plus_newline,
+          $._hashtag_plus_blank_line,
           $.paragraph,
           $.list,
           $.comment,
@@ -369,10 +398,8 @@ function gen_list_item($, level, ordered = false) {
     repeat1( choice(
       // $.markdown_code_block,
       // alias($.verbatim_tag, $.tag),
-      // $.tag,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $._hashtag_plus_newline,
+      // alias($.tag_with_syntax, $.tag),
+      // $._hashtag_plus_blank_line,
       $.paragraph,
       $.blank_line,
       $.comment,
