@@ -9,12 +9,14 @@
 #include <unordered_map>
 #include "tree_sitter/parser.h"
 
-// #define DEBUG 1
+typedef uint16_t stack_t;
+
+#define DEBUG 1
 
 /**
  * Print the current character after every advance() call.
  */
-// #define DEBUG_CURRENT_CHAR 1
+#define DEBUG_CURRENT_CHAR 1
 
 using namespace std;
 
@@ -26,16 +28,9 @@ enum TokenType : unsigned char {
     HEADING_5,
     HEADING_6,
 
-    LIST_1,
-    LIST_2,
-    LIST_3,
-    LIST_4,
-    LIST_5,
-    LIST_6,
-    LIST_7,
-    LIST_8,
-    LIST_9,
-    LIST_10,
+    LIST_START,
+    LIST_TOKEN,
+    LIST_END,
 
     TAG_TOKEN,
     EXTENDED_TAG_TOKEN,
@@ -48,6 +43,7 @@ enum TokenType : unsigned char {
     HARD_BREAK,
 
     END_OF_FILE,
+    ERROR
 };
 
 #ifdef DEBUG
@@ -59,16 +55,9 @@ vector<string> tokens_names = {
     "heading_5",
     "heading_6",
 
-    "list1",
-    "list2",
-    "list3",
-    "list4",
-    "list5",
-    "list6",
-    "list7",
-    "list8",
-    "list9",
-    "list10",
+    "list_start",
+    "list_token",
+    "list_end",
 
     "tag_token",
     "extended_tag_token",
@@ -81,6 +70,7 @@ vector<string> tokens_names = {
     "hard_break",
 
     "eof",
+    "error"
 };
 #endif // DEBUG
 
@@ -110,6 +100,8 @@ struct Scanner
     /// Number of parsed chars since last space char.
     size_t parsed_chars = 0;
 
+    vector<stack_t> heading_stack;
+    vector<stack_t> list_stack;
     deque<char> markup_stack;
 
     bool tag_parameter_is_valid = true;
@@ -261,38 +253,96 @@ struct Scanner
             return found(BLANK_LINE);
         }
 
-        advance();
+        // advance();
 
-        uint8_t n = 0; //< Number of parsed chars
-        switch (current) {
-        case '*': { // HEADING
-            constexpr auto expected = '*';
-            if (lexer->lookahead == expected || is_space(lexer->lookahead)) {
-                while (lexer->lookahead == expected) {
-                    advance();
-                    ++n;
-                }
-
-                if (!is_space(lexer->lookahead))
-                    return false;
-
-                return found(static_cast<TokenType>(
-                             HEADING_1 + (n < MAX_HEADING ? n : MAX_HEADING - 1)));
+        stack_t n = 0; //< Number of parsed chars
+        switch (lexer->lookahead) {
+        // case '*': { // HEADING
+        //     constexpr auto expected = '*';
+        //     if (lexer->lookahead == expected || is_space(lexer->lookahead)) {
+        //         while (lexer->lookahead == expected) {
+        //             advance();
+        //             ++n;
+        //         }
+        //
+        //         if (!is_space(lexer->lookahead))
+        //             return false;
+        //
+        //         return found(static_cast<TokenType>(
+        //                      HEADING_1 + (n < MAX_HEADING ? n : MAX_HEADING - 1)));
+        //     }
+        //     // // We are on the first non-blank character of the line, and it is '*',
+        //     // // need to check bold markup.
+        //     // else if (parse_open_markup()) return true;
+        //     break;
+        // }
+        case '=': // HARD_BREAK
+            while (lexer->lookahead == '=') {
+                advance();
+                ++n;
             }
-            // // We are on the first non-blank character of the line, and it is '*',
-            // // need to check bold markup.
-            // else if (parse_open_markup()) return true;
+            if (n == 3 && (is_newline_or_eof(lexer->lookahead)))
+                return found(HARD_BREAK);
             break;
-        }
+        case '#': // HASHTAG
+            if (valid_tokens[HASHTAG]) {
+                advance();
+                if (not_space_or_newline(lexer->lookahead)
+                    && !is_inline_tag_control_character(lexer->lookahead))
+                {
+                    return found(HASHTAG);
+                }
+            }
+            break;
+        case '@': // TAG_TOKEN
+            if (valid_tokens[TAG_TOKEN]) {
+                advance();
+                if (valid_tokens[EXTENDED_TAG_TOKEN] && lexer->lookahead == '+') {
+                    advance();
+                    return found(EXTENDED_TAG_TOKEN);
+                }
+                else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
+                    if (token("end") && is_space_or_newline_or_eof(lexer->lookahead))
+                        return found(END_TAG);
+                    else if (not_space_or_newline(lexer->lookahead))
+                        return found(TAG_TOKEN);
+                }
+            }
+            break;
         case '-': { // LIST, SOFT_BREAK
-            constexpr auto expected = '-';
-            while (lexer->lookahead == expected) {
+            lexer->mark_end(lexer);
+            while (lexer->lookahead == '-') {
                 advance();
                 ++n;
             }
 
-            if (1 + n == 3 && (is_newline_or_eof(lexer->lookahead)))
+            if (n == 3 && is_newline_or_eof(lexer->lookahead)) {
+                lexer->mark_end(lexer);
                 return found(SOFT_BREAK);
+            }
+
+            if (valid_tokens[LIST_START] || valid_tokens[LIST_END] || valid_tokens[LIST_TOKEN]
+                && is_space(lexer->lookahead))
+            {
+                if (list_stack.empty() || n > list_stack.back())
+                {
+                    list_stack.push_back(n);
+                    return found(LIST_START);
+                }
+                else if (n == list_stack.back()) {
+                    lexer->mark_end(lexer);
+                    return found(LIST_TOKEN);
+                }
+                else if (n < list_stack.back()) {
+                    list_stack.pop_back();
+                    return found(LIST_END);
+
+                    // if (n == list_stack.back())
+                    //     return found(LIST_END);
+                    // else
+                    //     return found(ERROR);
+                }
+            }
 
             // if (iswdigit(lexer->lookahead)) {
             //     lexer->mark_end(lexer);
@@ -300,42 +350,10 @@ struct Scanner
             //         advance();
             // }
 
-            if (is_space(lexer->lookahead))
-                return found(static_cast<TokenType>(
-                             LIST_1 + (n < MAX_LIST ? n : MAX_LIST - 1)));
+            // if (is_space(lexer->lookahead))
+            //     return found(static_cast<TokenType>(
+            //                  LIST_1 + (n < MAX_LIST ? n : MAX_LIST - 1)));
 
-            break;
-        }
-        case '=': { // HARD_BREAK
-            while (lexer->lookahead == '=') {
-                advance();
-                ++n;
-            }
-            if (1 + n == 3 && (is_newline_or_eof(lexer->lookahead)))
-                return found(HARD_BREAK);
-            break;
-        }
-        case '#': { // HASHTAG
-            if (valid_tokens[HASHTAG]
-                && not_space_or_newline(lexer->lookahead)
-                && !is_inline_tag_control_character(lexer->lookahead))
-            {
-                return found(HASHTAG);
-            }
-            break;
-        }
-        case '@': { // TAG_TOKEN
-            if (valid_tokens[EXTENDED_TAG_TOKEN] && lexer->lookahead == '+') {
-                advance();
-                return found(EXTENDED_TAG_TOKEN);
-            }
-            else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
-                // if (token("end") && iswspace(lexer->lookahead))
-                if (token("end") && is_space_or_newline_or_eof(lexer->lookahead))
-                    return found(END_TAG);
-                else if (!iswspace(lexer->lookahead))
-                    return found(TAG_TOKEN);
-            }
             break;
         }
         }
@@ -426,14 +444,24 @@ struct Scanner
 #endif
     }
 
-    inline void debug_markup_stack() {
+    inline void debug_list_stack() {
 #ifdef DEBUG
-        cout << "  markup stack: ";
-        for (auto m : markup_stack)
-            cout << m << ", ";
+        cout << "  list stack: ";
+        for (uint16_t m : list_stack)
+            cout << m << " ";
         cout << endl;
 #endif
     }
+
+//     inline void debug_markup_stack() {
+// #ifdef DEBUG
+//         cout << "  markup stack: ";
+//         for (auto m : markup_stack)
+//             cout << m << ", ";
+//         cout << endl;
+// #endif
+//     }
+
 };
 
 extern "C"
@@ -448,7 +476,7 @@ extern "C"
 
     /// Main logic entry point
     bool tree_sitter_blueflower_external_scanner_scan(void* payload, TSLexer* lexer,
-                                                 const bool* valid_tokens)
+                                                      const bool* valid_tokens)
     {
         Scanner* scanner = static_cast<Scanner*>(payload);
         scanner->lexer = lexer;
@@ -461,35 +489,84 @@ extern "C"
     {
         Scanner* scanner = static_cast<Scanner*>(payload);
 
-        char stack_length = scanner->markup_stack.size();
+        // UINT16_MAX;
 
-        if (static_cast<int>(stack_length) >= TREE_SITTER_SERIALIZATION_BUFFER_SIZE) return 0;
+        /// Heading stack length in bytes.
+        stack_t hsl = scanner->heading_stack.size() * sizeof(stack_t);
 
-        int n = 0;
+        /// List stack length in bytes.
+        stack_t lsl = scanner->list_stack.size() * sizeof(stack_t);
 
-        if (stack_length)
-            for (char m : scanner->markup_stack) {
-                buffer[n] = m;
-                ++n;
-            }
+        /// Markup stack length.
+        uint8_t msl = scanner->markup_stack.size();
 
-        scanner->markup_stack.clear();
+        if (sizeof(hsl) + hsl + sizeof(lsl) + lsl + sizeof(msl) + msl
+            >= TREE_SITTER_SERIALIZATION_BUFFER_SIZE)
+            return 0;
+
+        uint16_t n = 0;
+
+        memcpy(buffer + n, &hsl, sizeof(hsl));
+        n += sizeof(hsl);
+        if (hsl) {
+            memcpy(buffer + n, scanner->heading_stack.data(), hsl);
+            n += hsl;
+        }
+
+        memcpy(buffer + n, &lsl, sizeof(lsl));
+        n += sizeof(lsl);
+        if (lsl) {
+            memcpy(buffer + n, scanner->list_stack.data(), lsl);
+            n += lsl;
+        }
+
+        memcpy(buffer + n, &msl, sizeof(msl));
+        n += sizeof(msl);
+        if (msl)
+            for (char m : scanner->markup_stack)
+                buffer[n++] = m;
+
         return n;
     }
 
     /// Load another Scanner state into Scanner object,
-    void tree_sitter_blueflower_external_scanner_deserialize(void* payload, const char* buffer,
-                                                        unsigned length)
+    void tree_sitter_blueflower_external_scanner_deserialize(
+                            void* payload, const char* buffer, unsigned length)
     {
         Scanner* scanner = static_cast<Scanner*>(payload);
         scanner->current = 0;
         scanner->parsed_chars = 0;
         scanner->tag_parameter_is_valid = true;
 
+        scanner->heading_stack.clear();
+        scanner->list_stack.clear();
+        scanner->markup_stack.clear();
+
         if (!length) return;
 
-        int n = 0;
-        for (int8_t i = 0; i < length - n; ++i)
+        uint16_t n = 0;
+        stack_t sl; //< stack length
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        if (sl) {
+            scanner->list_stack.resize(sl / sizeof(stack_t));
+            memcpy(scanner->heading_stack.data(), buffer + n, sl);
+            n += sl;
+        }
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        if (sl) {
+            scanner->list_stack.resize(sl / sizeof(stack_t));
+            memcpy(scanner->list_stack.data(), buffer + n, sl);
+            n += sl;
+        }
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        for (uint8_t i = 0; i < n; ++i)
             scanner->markup_stack.push_back(buffer[n + i]);
+
     }
 }

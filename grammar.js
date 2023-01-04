@@ -12,16 +12,9 @@ const blueflower_grammar = {
     $.heading_5_token,
     $.heading_6_token,
 
-    $.list_1_token,
-    $.list_2_token,
-    $.list_3_token,
-    $.list_4_token,
-    $.list_5_token,
-    $.list_6_token,
-    $.list_7_token,
-    $.list_8_token,
-    $.list_9_token,
-    $.list_10_token,
+    $.list_start,
+    $.list_token,
+    $.list_end,
 
     $.tag_token,
     $.extended_tag_token,
@@ -34,6 +27,7 @@ const blueflower_grammar = {
     $.hard_break,
 
     $.eof,
+    $.error
   ],
 
   conflicts: $ => [
@@ -41,8 +35,14 @@ const blueflower_grammar = {
     [$.inline_tag, $.verbatim_tag],
     // [$.directives, $._hashtag_plus_blank_line],
 
-    [$._body_contents, $._element],
-    [$._body_contents]
+    // [$._body_contents, $._element],
+    // [$._body_contents],
+
+    [$.document],
+    [$._list_element, $.list_item],
+
+    [$.list],
+    [$.list_item]
   ],
 
   inline: $ => [
@@ -58,48 +58,44 @@ const blueflower_grammar = {
   ],
 
   rules: {
-    // document: $ => repeat1(choice(
-    //   // alias($.section, $.section),
-    //   // $._hashtag_plus_blank_line,
-    //   // alias($.verbatim_tag, $.tag),
-    //   // alias($.tag_with_syntax, $.tag),
-    //   // $.blank_line,
-    //   // $.hard_break,
-    //   // $.comment,
-    //   // $.list,
-    //   $.paragraph,
-    //   // seq(
-    //   //   $.paragraph,
-    //   //   repeat($.blank_line),
-    //   //   $.verbatim_tag
-    //   // ),
-    // )),
 
-    document: $ => repeat1($._body_contents),
-
-    _body_contents: $ => choice(
-      repeat1($._element),
-      seq(
-        $.paragraph,
-        choice($.blank_line, $.eof),
-      ),
-      seq(
-        $.paragraph,
-        optional($.blank_line),
-        $._element
-      ),
+    document: $ => repeat1(
+      content($, [
+        $._hashtag_plus_blank_line,
+        alias($.verbatim_tag, $.tag),
+        alias($.tag_with_syntax, $.tag),
+        $.blank_line,
+        $.hard_break,
+        $.comment,
+        $.list_block,
+      ])
     ),
 
-    // Any non-paragrapg element.
-    _element: $ => choice(
-      $._hashtag_plus_blank_line,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.blank_line,
-      $.hard_break,
-      $.comment,
-      $.list,
-    ),
+    // document: $ => repeat1($._body_contents),
+    //
+    // _body_contents: $ => choice(
+    //   repeat1($._element),
+    //   seq(
+    //     $.paragraph,
+    //     choice($.blank_line, $.eof),
+    //   ),
+    //   seq(
+    //     $.paragraph,
+    //     optional($.blank_line),
+    //     $._element
+    //   ),
+    // ),
+    //
+    // // Any non-paragrapg element.
+    // _element: $ => choice(
+    //   $._hashtag_plus_blank_line,
+    //   alias($.verbatim_tag, $.tag),
+    //   alias($.tag_with_syntax, $.tag),
+    //   $.blank_line,
+    //   $.hard_break,
+    //   $.comment,
+    //   $.list_block,
+    // ),
 
     // directives: $ => repeat1(seq($.hashtag, $.new_line)),
 
@@ -132,16 +128,6 @@ const blueflower_grammar = {
     //     token.immediate(/\S+/),
     //     $.raw_word)
     // ),
-
-    list: $ => seq(
-      alias(repeat($.hashtag), $.directives),
-
-      choice(
-        repeat1( alias($.item_1, $.item)),
-        // repeat1( alias($.ordered_item_1, $.item))
-      ),
-      alias($.soft_break, $.list_break)
-    ),
 
     comment: $ => seq(
       '#',
@@ -337,34 +323,55 @@ const blueflower_grammar = {
 }
 
 const lists = {
-  checkbox: _ => token(
-    seq(
-      '[',
-      token.immediate( choice(' ', /\S/) ),
-      token.immediate(']'),
+  list_block: $ => seq(
+    $.list,
+    $.soft_break
+  ),
+
+  list: $ => seq(
+    alias(repeat($.hashtag), $.directives),
+    $.list_start,
+    repeat1($.list_item),
+    optional($.list_end),
+  ),
+
+  _list_element: $ => choice(
+    $._hashtag_plus_blank_line,
+    alias($.verbatim_tag, $.tag),
+    alias($.tag_with_syntax, $.tag),
+    $.blank_line,
+    $.hard_break,
+    $.comment,
+  ),
+
+  list_item: $ => seq(
+    field("level", alias($.list_token, $.token)),
+    optional($.checkbox),
+    choice(
+      $.paragraph,
+      repeat1(
+        choice(
+          $._list_element,
+          seq(
+            $.paragraph,
+            choice($.blank_line, $.eof),
+          ),
+          seq(
+            $.paragraph,
+            optional($.blank_line),
+            $._list_element,
+          ),
+        )
+      ),
+    ),
+    optional($.list)
+  ),
+
+  checkbox: _ => token(seq(
+    '[',
+    token.immediate( choice(' ', /\S/) ),
+    token.immediate(']'),
   )),
-
-  item_1:  $ => gen_list_item($, 1),
-  item_2:  $ => gen_list_item($, 2),
-  item_3:  $ => gen_list_item($, 3),
-  item_4:  $ => gen_list_item($, 4),
-  item_5:  $ => gen_list_item($, 5),
-  item_6:  $ => gen_list_item($, 6),
-  item_7:  $ => gen_list_item($, 7),
-  item_8:  $ => gen_list_item($, 8),
-  item_9:  $ => gen_list_item($, 9),
-  item_10: $ => gen_list_item($, 10),
-
-  // ordered_item_1:  $ => gen_list_item($, 1,  true),
-  // ordered_item_2:  $ => gen_list_item($, 2,  true),
-  // ordered_item_3:  $ => gen_list_item($, 3,  true),
-  // ordered_item_4:  $ => gen_list_item($, 4,  true),
-  // ordered_item_5:  $ => gen_list_item($, 5,  true),
-  // ordered_item_6:  $ => gen_list_item($, 6,  true),
-  // ordered_item_7:  $ => gen_list_item($, 7,  true),
-  // ordered_item_8:  $ => gen_list_item($, 8,  true),
-  // ordered_item_9:  $ => gen_list_item($, 9,  true),
-  // ordered_item_10: $ => gen_list_item($, 10, true),
 }
  
 function gen_list_item($, level, ordered = false) {
@@ -427,6 +434,22 @@ function expression($, pr, tfunc, skip = '') {
     alias(tfunc(prec(pr, /\p{N}+/)), $.number),
     alias(tfunc(prec(pr, /[^\p{Z}\p{L}\p{N}\t\n\r]/)), $.symbol),
   )
+}
+
+function content($, elements) {
+  return choice(
+    $.paragraph,
+    repeat1(choice(...elements)),
+    seq(
+      $.paragraph,
+      choice($.blank_line, $.eof),
+    ),
+    seq(
+      $.paragraph,
+      optional($.blank_line),
+      choice(...elements)
+    ),
+  );
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)

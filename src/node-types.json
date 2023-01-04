@@ -121,7 +121,7 @@
           "named": true
         },
         {
-          "type": "list",
+          "type": "list_block",
           "named": true
         },
         {
@@ -292,84 +292,6 @@
     }
   },
   {
-    "type": "item",
-    "named": true,
-    "fields": {
-      "level": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token1",
-            "named": true
-          },
-          {
-            "type": "token10",
-            "named": true
-          },
-          {
-            "type": "token2",
-            "named": true
-          },
-          {
-            "type": "token3",
-            "named": true
-          },
-          {
-            "type": "token4",
-            "named": true
-          },
-          {
-            "type": "token5",
-            "named": true
-          },
-          {
-            "type": "token6",
-            "named": true
-          },
-          {
-            "type": "token7",
-            "named": true
-          },
-          {
-            "type": "token8",
-            "named": true
-          },
-          {
-            "type": "token9",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "checkbox",
-          "named": true
-        },
-        {
-          "type": "comment",
-          "named": true
-        },
-        {
-          "type": "list",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "label",
     "named": true,
     "fields": {},
@@ -409,11 +331,96 @@
           "named": true
         },
         {
-          "type": "item",
+          "type": "list_end",
           "named": true
         },
         {
-          "type": "list_break",
+          "type": "list_item",
+          "named": true
+        },
+        {
+          "type": "list_start",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "list_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "list",
+          "named": true
+        },
+        {
+          "type": "soft_break",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "list_item",
+    "named": true,
+    "fields": {
+      "level": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "blank_line",
+          "named": true
+        },
+        {
+          "type": "checkbox",
+          "named": true
+        },
+        {
+          "type": "comment",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "hard_break",
+          "named": true
+        },
+        {
+          "type": "hashtag",
+          "named": true
+        },
+        {
+          "type": "list",
+          "named": true
+        },
+        {
+          "type": "new_line",
+          "named": true
+        },
+        {
+          "type": "paragraph",
+          "named": true
+        },
+        {
+          "type": "tag",
           "named": true
         }
       ]
@@ -570,10 +577,6 @@
     }
   },
   {
-    "type": "",
-    "named": false
-  },
-  {
     "type": "\n",
     "named": false
   },
@@ -614,7 +617,11 @@
     "named": true
   },
   {
-    "type": "list_break",
+    "type": "list_end",
+    "named": true
+  },
+  {
+    "type": "list_start",
     "named": true
   },
   {
@@ -623,6 +630,10 @@
   },
   {
     "type": "raw_word",
+    "named": true
+  },
+  {
+    "type": "soft_break",
     "named": true
   },
   {
@@ -639,46 +650,6 @@
   },
   {
     "type": "token",
-    "named": true
-  },
-  {
-    "type": "token1",
-    "named": true
-  },
-  {
-    "type": "token10",
-    "named": true
-  },
-  {
-    "type": "token2",
-    "named": true
-  },
-  {
-    "type": "token3",
-    "named": true
-  },
-  {
-    "type": "token4",
-    "named": true
-  },
-  {
-    "type": "token5",
-    "named": true
-  },
-  {
-    "type": "token6",
-    "named": true
-  },
-  {
-    "type": "token7",
-    "named": true
-  },
-  {
-    "type": "token8",
-    "named": true
-  },
-  {
-    "type": "token9",
     "named": true
   },
   {
