@@ -1,16 +1,9 @@
-const MAX_HEADING = 6
-const MAX_LIST_LEVEL = 10
-
 const blueflower_grammar = {
   name: 'blueflower',
 
   externals: $ => [
-    $.heading_1_token,
-    $.heading_2_token,
-    $.heading_3_token,
-    $.heading_4_token,
-    $.heading_5_token,
-    $.heading_6_token,
+    $.heading_token,
+    $.section_end,
 
     $.list_start,
     $.list_token,
@@ -31,25 +24,19 @@ const blueflower_grammar = {
   ],
 
   conflicts: $ => [
+    [$._document_content],
+    [$.section],
+    [$.section_content],
+
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
-    // [$.directives, $._hashtag_plus_blank_line],
-
-    // [$._body_contents, $._element],
-    // [$._body_contents],
-
-    [$.document],
-    [$._list_element, $.list_item],
-
     [$.list],
-    [$.list_item]
   ],
 
   inline: $ => [
-    $.section,
     $.word,
     $.eol,
-    $._hashtag_plus_blank_line
+    // $._hashtag_plus_blank_line
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
@@ -59,45 +46,43 @@ const blueflower_grammar = {
 
   rules: {
 
-    document: $ => repeat1(
+    document: $ => seq(
+      repeat(choice(
+        seq(
+          $._document_content,
+          $.section),
+        seq(
+          $.section,
+          $._document_content),
+        $.section,
+      )),
+      optional($._document_content)
+    ),
+
+    _document_content: $ => prec(1,
       content($, [
-        $._hashtag_plus_blank_line,
-        alias($.verbatim_tag, $.tag),
-        alias($.tag_with_syntax, $.tag),
-        $.blank_line,
-        $.hard_break,
-        $.comment,
-        $.list_block,
+          $._hashtag_plus_blank_line,
+          alias($.verbatim_tag, $.tag),
+          alias($.tag_with_syntax, $.tag),
+          $.list_block,
+          $.comment,
+          $.hard_break,
+          // $.blank_line
       ])
     ),
 
-    // document: $ => repeat1($._body_contents),
-    //
-    // _body_contents: $ => choice(
-    //   repeat1($._element),
-    //   seq(
-    //     $.paragraph,
-    //     choice($.blank_line, $.eof),
-    //   ),
-    //   seq(
-    //     $.paragraph,
-    //     optional($.blank_line),
-    //     $._element
-    //   ),
-    // ),
-    //
-    // // Any non-paragrapg element.
-    // _element: $ => choice(
-    //   $._hashtag_plus_blank_line,
-    //   alias($.verbatim_tag, $.tag),
-    //   alias($.tag_with_syntax, $.tag),
-    //   $.blank_line,
-    //   $.hard_break,
-    //   $.comment,
-    //   $.list_block,
-    // ),
-
-    // directives: $ => repeat1(seq($.hashtag, $.new_line)),
+    // document: $ => repeat1(choice(
+    //   $.section,
+    //   content($, [
+    //     $._hashtag_plus_blank_line,
+    //     alias($.verbatim_tag, $.tag),
+    //     alias($.tag_with_syntax, $.tag),
+    //     $.list_block,
+    //     $.comment,
+    //     $.hard_break,
+    //     // $.blank_line
+    //   ]),
+    // )),
 
     paragraph: $ => seq(
       alias(repeat($.hashtag), $.directives),
@@ -256,10 +241,10 @@ const blueflower_grammar = {
       $.new_line,
 
       alias(
-        repeat( choice(
+        repeat(choice(
           alias($.verbatim_tag, $.tag),
           alias($.tag_with_syntax, $.tag),
-          seq( repeat($.raw_word), $.new_line)
+          seq( repeat($.raw_word), $.new_line),
         )),
         $.content),
       $.end_tag,
@@ -284,21 +269,22 @@ const blueflower_grammar = {
       )),
       $.new_line,
 
-      alias(
-        repeat(choice(
-          alias($.verbatim_tag, $.tag),
-          alias($.tag_with_syntax, $.tag),
-          $._hashtag_plus_blank_line,
-          $.paragraph,
-          $.list,
-          $.comment,
-          $.blank_line,
-        )),
-        $.content),
-
+      optional(
+        alias($.tag_content, $.content)),
       $.end_tag,
       choice($.comment, $.eol)
     ),
+
+    // Content move into separate node, make it appears in a tree as one node,
+    // not a sequence of "$.content" nodes.
+    tag_content: $ => content($, [
+      $._hashtag_plus_blank_line,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.list_block,
+      $.comment,
+      // $.blank_line
+    ]),
 
     new_line: _ => choice('\n\r', '\n', '\r'),
     eol: $ => choice($.new_line, $.eof),
@@ -322,10 +308,37 @@ const blueflower_grammar = {
   }
 }
 
+const sections = {
+  section: $ => seq(
+    $.heading,
+    optional(alias($.section_content, $.content)),
+    choice($.section_end, $.eof),
+    (optional($.soft_break))
+  ),
+
+  section_content: $ => prec(2, repeat1(choice(
+    $.section,
+    content($, [
+      $._hashtag_plus_blank_line,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.list_block,
+      $.comment,
+      // $.blank_line
+    ]),
+  ))),
+
+  heading: $ => seq(
+    field("level", alias($.heading_token, $.token)),
+    alias($.paragraph, $.title),
+    optional($.blank_line)
+  )
+}
+
 const lists = {
   list_block: $ => seq(
     $.list,
-    $.soft_break
+    alias($.soft_break, $.list_break)
   ),
 
   list: $ => seq(
@@ -335,35 +348,16 @@ const lists = {
     optional($.list_end),
   ),
 
-  _list_element: $ => choice(
-    $._hashtag_plus_blank_line,
-    alias($.verbatim_tag, $.tag),
-    alias($.tag_with_syntax, $.tag),
-    $.blank_line,
-    $.hard_break,
-    $.comment,
-  ),
-
   list_item: $ => seq(
     field("level", alias($.list_token, $.token)),
     optional($.checkbox),
-    choice(
-      $.paragraph,
-      repeat1(
-        choice(
-          $._list_element,
-          seq(
-            $.paragraph,
-            choice($.blank_line, $.eof),
-          ),
-          seq(
-            $.paragraph,
-            optional($.blank_line),
-            $._list_element,
-          ),
-        )
-      ),
-    ),
+    content($, [
+      $._hashtag_plus_blank_line,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.comment,
+      // $.blank_line
+    ]),
     optional($.list)
   ),
 
@@ -372,47 +366,6 @@ const lists = {
     token.immediate( choice(' ', /\S/) ),
     token.immediate(']'),
   )),
-}
- 
-function gen_list_item($, level, ordered = false) {
-  let token = []
-  token[0] = field("level",
-    alias(
-      $["list_" + level + "_token"],
-      $["token" + level]))
-
-  // if (ordered)
-  //   token[1] = alias($.ordered_list_label, $.label)
-
-  let next_level_list = ''
-  if (level < MAX_LIST_LEVEL) {
-    next_level_list = optional(
-      alias(
-        // choice(
-          repeat1(
-            alias($["item_" + (level + 1)],
-                  $.item)),
-          // repeat1(
-          //   alias($["ordered_item_" + (level + 1)],
-          //         $.item))),
-        $.list)
-    )
-  }
-
-  return seq(
-    ...token,
-    optional($.checkbox),
-    repeat1( choice(
-      // $.markdown_code_block,
-      // alias($.verbatim_tag, $.tag),
-      // alias($.tag_with_syntax, $.tag),
-      // $._hashtag_plus_blank_line,
-      $.paragraph,
-      $.blank_line,
-      $.comment,
-    )),
-    next_level_list,
-  );
 }
 
 /**
@@ -437,23 +390,28 @@ function expression($, pr, tfunc, skip = '') {
 }
 
 function content($, elements) {
-  return choice(
-    $.paragraph,
-    repeat1(choice(...elements)),
-    seq(
+    return choice(
       $.paragraph,
-      choice($.blank_line, $.eof),
-    ),
-    seq(
-      $.paragraph,
-      optional($.blank_line),
-      choice(...elements)
-    ),
-  );
+      seq(
+        repeat1(choice(
+          seq(
+            $.paragraph,
+            choice($.blank_line, $.eof),
+          ),
+          ...elements,
+          seq(
+            $.paragraph,
+            // optional($.blank_line),
+            choice(...elements)
+          ),
+        )),
+        optional($.paragraph)
+      ),
+    );
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)
-Object.assign(blueflower_grammar.rules, lists)
+Object.assign(blueflower_grammar.rules, sections, lists)
 
 module.exports = grammar(blueflower_grammar)
 

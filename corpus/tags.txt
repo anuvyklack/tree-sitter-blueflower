@@ -170,7 +170,6 @@ text
           (new_line))
         (end_tag)
         (new_line))
-      (blank_line)
       (paragraph
         (word))
       (eof))

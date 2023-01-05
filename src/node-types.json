@@ -43,7 +43,7 @@
           "named": true
         },
         {
-          "type": "list",
+          "type": "list_block",
           "named": true
         },
         {
@@ -60,6 +60,10 @@
         },
         {
           "type": "raw_word",
+          "named": true
+        },
+        {
+          "type": "section",
           "named": true
         },
         {
@@ -98,7 +102,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "blank_line",
@@ -130,6 +134,10 @@
         },
         {
           "type": "paragraph",
+          "named": true
+        },
+        {
+          "type": "section",
           "named": true
         },
         {
@@ -188,6 +196,36 @@
         },
         {
           "type": "token",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "heading",
+    "named": true,
+    "fields": {
+      "level": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "blank_line",
+          "named": true
+        },
+        {
+          "type": "title",
           "named": true
         }
       ]
@@ -358,7 +396,7 @@
           "named": true
         },
         {
-          "type": "soft_break",
+          "type": "list_break",
           "named": true
         }
       ]
@@ -397,10 +435,6 @@
         },
         {
           "type": "eof",
-          "named": true
-        },
-        {
-          "type": "hard_break",
           "named": true
         },
         {
@@ -484,6 +518,37 @@
         },
         {
           "type": "raw_word",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "section",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "content",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "heading",
+          "named": true
+        },
+        {
+          "type": "section_end",
+          "named": true
+        },
+        {
+          "type": "soft_break",
           "named": true
         }
       ]
@@ -577,6 +642,41 @@
     }
   },
   {
+    "type": "title",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directives",
+          "named": true
+        },
+        {
+          "type": "escaped_sequence",
+          "named": true
+        },
+        {
+          "type": "inline_tag",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "symbol",
+          "named": true
+        },
+        {
+          "type": "word",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "\n",
     "named": false
   },
@@ -617,6 +717,10 @@
     "named": true
   },
   {
+    "type": "list_break",
+    "named": true
+  },
+  {
     "type": "list_end",
     "named": true
   },
@@ -630,6 +734,10 @@
   },
   {
     "type": "raw_word",
+    "named": true
+  },
+  {
+    "type": "section_end",
     "named": true
   },
   {

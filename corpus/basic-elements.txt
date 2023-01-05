@@ -164,15 +164,17 @@ List.1 - Simple list
 --------------------------------------------------------------------------------
 
     (document
-      (list
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
+      (list_block
+        (list
+          (list_start)
+          (list_item
+            level: (token)
+            (paragraph
+              (word)))
+          (list_item
+            level: (token)
+            (paragraph
+              (word))))
         (list_break)))
 
 ================================================================================
@@ -185,24 +187,26 @@ List.2a - List with one directive
 --------------------------------------------------------------------------------
 
     (document
-      (list
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (symbol)
-              (word)
-              (word))
-            (new_line)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
+      (list_block
+        (list
+          (directives
+            (hashtag
+              (token)
+              (tag_name)
+              (content
+                (symbol)
+                (word)
+                (word))
+              (new_line)))
+          (list_start)
+          (list_item
+            level: (token)
+            (paragraph
+              (word)))
+          (list_item
+            level: (token)
+            (paragraph
+              (word))))
         (list_break)))
 
 ================================================================================
@@ -225,15 +229,17 @@ List.2b - Separate hashtag and list
           (word))
         (new_line))
       (blank_line)
-      (list
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
+      (list_block
+        (list
+          (list_start)
+          (list_item
+            level: (token)
+            (paragraph
+              (word)))
+          (list_item
+            level: (token)
+            (paragraph
+              (word))))
         (list_break)))
 
 ================================================================================
@@ -247,28 +253,30 @@ List.2c - List with two directives
 --------------------------------------------------------------------------------
 
     (document
-      (list
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (new_line))
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (symbol)
-              (word)
-              (word))
-            (new_line)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
+      (list_block
+        (list
+          (directives
+            (hashtag
+              (token)
+              (tag_name)
+              (new_line))
+            (hashtag
+              (token)
+              (tag_name)
+              (content
+                (symbol)
+                (word)
+                (word))
+              (new_line)))
+          (list_start)
+          (list_item
+            level: (token)
+            (paragraph
+              (word)))
+          (list_item
+            level: (token)
+            (paragraph
+              (word))))
         (list_break)))
 
 ================================================================================
@@ -301,22 +309,24 @@ List.2d - Hashtag and list with directive
           (word))
         (new_line))
       (blank_line)
-      (list
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (symbol)
-              (word)
-              (word))
-            (new_line)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
-        (item
-          level: (token1)
-          (paragraph
-            (word)))
+      (list_block
+        (list
+          (directives
+            (hashtag
+              (token)
+              (tag_name)
+              (content
+                (symbol)
+                (word)
+                (word))
+              (new_line)))
+          (list_start)
+          (list_item
+            level: (token)
+            (paragraph
+              (word)))
+          (list_item
+            level: (token)
+            (paragraph
+              (word))))
         (list_break)))

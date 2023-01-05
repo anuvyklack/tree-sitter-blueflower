@@ -11,22 +11,25 @@
 
 typedef uint16_t stack_t;
 
-#define DEBUG 1
+// #define DEBUG 1
 
 /**
  * Print the current character after every advance() call.
  */
-#define DEBUG_CURRENT_CHAR 1
+// #define DEBUG_CURRENT_CHAR 1
 
 using namespace std;
 
 enum TokenType : unsigned char {
-    HEADING_1,
-    HEADING_2,
-    HEADING_3,
-    HEADING_4,
-    HEADING_5,
-    HEADING_6,
+    HEADING,
+    SECTION_END,
+
+    // HEADING_1,
+    // HEADING_2,
+    // HEADING_3,
+    // HEADING_4,
+    // HEADING_5,
+    // HEADING_6,
 
     LIST_START,
     LIST_TOKEN,
@@ -48,12 +51,8 @@ enum TokenType : unsigned char {
 
 #ifdef DEBUG
 vector<string> tokens_names = {
-    "heading_1",
-    "heading_2",
-    "heading_3",
-    "heading_4",
-    "heading_5",
-    "heading_6",
+    "heading",
+    "section_end",
 
     "list_start",
     "list_token",
@@ -248,7 +247,7 @@ struct Scanner
         tag_parameter_is_valid = false;
 
         // Check if current line is empty line.
-        if (is_newline(lexer->lookahead)) {
+        if (valid_tokens[BLANK_LINE] && is_newline(lexer->lookahead)) {
             advance();
             return found(BLANK_LINE);
         }
@@ -257,32 +256,93 @@ struct Scanner
 
         stack_t n = 0; //< Number of parsed chars
         switch (lexer->lookahead) {
-        // case '*': { // HEADING
-        //     constexpr auto expected = '*';
-        //     if (lexer->lookahead == expected || is_space(lexer->lookahead)) {
-        //         while (lexer->lookahead == expected) {
-        //             advance();
-        //             ++n;
-        //         }
-        //
-        //         if (!is_space(lexer->lookahead))
-        //             return false;
-        //
-        //         return found(static_cast<TokenType>(
-        //                      HEADING_1 + (n < MAX_HEADING ? n : MAX_HEADING - 1)));
-        //     }
-        //     // // We are on the first non-blank character of the line, and it is '*',
-        //     // // need to check bold markup.
-        //     // else if (parse_open_markup()) return true;
-        //     break;
-        // }
+        case '*': { // HEADING
+            lexer->mark_end(lexer);
+            while (lexer->lookahead == '*') {
+                advance();
+                ++n;
+            }
+
+            if (valid_tokens[HEADING] && is_space(lexer->lookahead)) {
+                if (heading_stack.empty() || n > heading_stack.back()) {
+                    heading_stack.push_back(n);
+                    lexer->mark_end(lexer);
+                    return found(HEADING);
+                }
+                else {
+                    heading_stack.pop_back();
+                    return found(SECTION_END);
+                }
+            }
+
+            // // We are on the first non-blank character of the line, and it is '*',
+            // // need to check bold markup.
+            // if (n == 1)
+            //     if (parse_open_markup()) return true;
+            break;
+        }
+        case '-': { // LIST, SOFT_BREAK
+            lexer->mark_end(lexer);
+            while (lexer->lookahead == '-') {
+                advance();
+                ++n;
+            }
+
+            if (n == 3 && is_newline_or_eof(lexer->lookahead)) {
+                if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
+                    heading_stack.pop_back();
+                    return found(SECTION_END);
+                }
+                else {
+                    lexer->mark_end(lexer);
+                    return found(SOFT_BREAK);
+                }
+            }
+
+            if (valid_tokens[LIST_START] || valid_tokens[LIST_END] || valid_tokens[LIST_TOKEN]
+                && is_space(lexer->lookahead))
+            {
+                if (list_stack.empty() || n > list_stack.back())
+                {
+                    list_stack.push_back(n);
+                    return found(LIST_START);
+                }
+                else if (n == list_stack.back()) {
+                    lexer->mark_end(lexer);
+                    return found(LIST_TOKEN);
+                }
+                else if (n < list_stack.back()) {
+                    list_stack.pop_back();
+                    return found(LIST_END);
+
+                    // if (n == list_stack.back())
+                    //     return found(LIST_END);
+                    // else
+                    //     return found(ERROR);
+                }
+            }
+
+            break;
+        }
         case '=': // HARD_BREAK
+            lexer->mark_end(lexer);
             while (lexer->lookahead == '=') {
                 advance();
                 ++n;
             }
-            if (n == 3 && (is_newline_or_eof(lexer->lookahead)))
-                return found(HARD_BREAK);
+            if (n == 3 && (is_newline_or_eof(lexer->lookahead))) {
+                if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
+                    heading_stack.pop_back();
+                    return found(SECTION_END);
+                }
+                else {
+                    lexer->mark_end(lexer);
+                    return found(HARD_BREAK);
+                }
+            }
+
+            // if (n == 3 && (is_newline_or_eof(lexer->lookahead)))
+            //     return found(HARD_BREAK);
             break;
         case '#': // HASHTAG
             if (valid_tokens[HASHTAG]) {
@@ -309,53 +369,6 @@ struct Scanner
                 }
             }
             break;
-        case '-': { // LIST, SOFT_BREAK
-            lexer->mark_end(lexer);
-            while (lexer->lookahead == '-') {
-                advance();
-                ++n;
-            }
-
-            if (n == 3 && is_newline_or_eof(lexer->lookahead)) {
-                lexer->mark_end(lexer);
-                return found(SOFT_BREAK);
-            }
-
-            if (valid_tokens[LIST_START] || valid_tokens[LIST_END] || valid_tokens[LIST_TOKEN]
-                && is_space(lexer->lookahead))
-            {
-                if (list_stack.empty() || n > list_stack.back())
-                {
-                    list_stack.push_back(n);
-                    return found(LIST_START);
-                }
-                else if (n == list_stack.back()) {
-                    lexer->mark_end(lexer);
-                    return found(LIST_TOKEN);
-                }
-                else if (n < list_stack.back()) {
-                    list_stack.pop_back();
-                    return found(LIST_END);
-
-                    // if (n == list_stack.back())
-                    //     return found(LIST_END);
-                    // else
-                    //     return found(ERROR);
-                }
-            }
-
-            // if (iswdigit(lexer->lookahead)) {
-            //     lexer->mark_end(lexer);
-            //     while (iswdigit(lexer->lookahead))
-            //         advance();
-            // }
-
-            // if (is_space(lexer->lookahead))
-            //     return found(static_cast<TokenType>(
-            //                  LIST_1 + (n < MAX_LIST ? n : MAX_LIST - 1)));
-
-            break;
-        }
         }
 
         return false;
@@ -447,8 +460,17 @@ struct Scanner
     inline void debug_list_stack() {
 #ifdef DEBUG
         cout << "  list stack: ";
-        for (uint16_t m : list_stack)
-            cout << m << " ";
+        for (uint16_t l : list_stack)
+            cout << l << " ";
+        cout << endl;
+#endif
+    }
+
+    inline void debug_heading_stack() {
+#ifdef DEBUG
+        cout << "  heading stack: ";
+        for (uint16_t h : heading_stack)
+            cout << h << " ";
         cout << endl;
 #endif
     }
@@ -550,7 +572,7 @@ extern "C"
         memcpy(&sl, buffer + n, sizeof(sl));
         n += sizeof(sl);
         if (sl) {
-            scanner->list_stack.resize(sl / sizeof(stack_t));
+            scanner->heading_stack.resize(sl / sizeof(stack_t));
             memcpy(scanner->heading_stack.data(), buffer + n, sl);
             n += sl;
         }
