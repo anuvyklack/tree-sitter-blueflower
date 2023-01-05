@@ -31,7 +31,7 @@ Tag.2 - Tag with syntax
     (document
       (tag
         (token)
-        name: (tag_name
+        (tag_name
           (word))
         (new_line)
         (content

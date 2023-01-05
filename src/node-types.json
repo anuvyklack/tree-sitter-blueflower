@@ -102,7 +102,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "blank_line",
@@ -217,13 +217,9 @@
       }
     },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
         {
           "type": "title",
           "named": true
@@ -532,6 +528,10 @@
       "required": true,
       "types": [
         {
+          "type": "blank_line",
+          "named": true
+        },
+        {
           "type": "content",
           "named": true
         },
@@ -650,7 +650,7 @@
       "required": true,
       "types": [
         {
-          "type": "directives",
+          "type": "eof",
           "named": true
         },
         {
@@ -659,6 +659,10 @@
         },
         {
           "type": "inline_tag",
+          "named": true
+        },
+        {
+          "type": "new_line",
           "named": true
         },
         {

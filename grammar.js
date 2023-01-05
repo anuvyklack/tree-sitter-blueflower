@@ -24,13 +24,15 @@ const blueflower_grammar = {
   ],
 
   conflicts: $ => [
-    [$._document_content],
     [$.section],
+    [$.title],
     [$.section_content],
 
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
     [$.list],
+
+    [$.paragraph, $._hashtag_plus_blank_line],
   ],
 
   inline: $ => [
@@ -46,43 +48,16 @@ const blueflower_grammar = {
 
   rules: {
 
-    document: $ => seq(
-      repeat(choice(
-        seq(
-          $._document_content,
-          $.section),
-        seq(
-          $.section,
-          $._document_content),
-        $.section,
-      )),
-      optional($._document_content)
-    ),
-
-    _document_content: $ => prec(1,
-      content($, [
-          $._hashtag_plus_blank_line,
-          alias($.verbatim_tag, $.tag),
-          alias($.tag_with_syntax, $.tag),
-          $.list_block,
-          $.comment,
-          $.hard_break,
-          // $.blank_line
-      ])
-    ),
-
-    // document: $ => repeat1(choice(
-    //   $.section,
-    //   content($, [
-    //     $._hashtag_plus_blank_line,
-    //     alias($.verbatim_tag, $.tag),
-    //     alias($.tag_with_syntax, $.tag),
-    //     $.list_block,
-    //     $.comment,
-    //     $.hard_break,
-    //     // $.blank_line
-    //   ]),
-    // )),
+    document: $ => content($, [
+      $.section,
+      $._hashtag_plus_blank_line,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.list_block,
+      $.comment,
+      // $.blank_line
+      $.hard_break,
+    ]),
 
     paragraph: $ => seq(
       alias(repeat($.hashtag), $.directives),
@@ -90,10 +65,11 @@ const blueflower_grammar = {
         $.escaped_sequence,
         $.word,
         $.inline_tag,
-        // $.new_line,
         // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
         // $.link, $.link_reference, $.short_link_reference,
+        // $.new_line,
       )),
+      // $.eol
     ),
 
     escaped_sequence: $ => seq(
@@ -291,6 +267,7 @@ const blueflower_grammar = {
 
 
     word: $ => expression($, 'non-immediate', token, '@#['),
+    // word: $ => /[^\s@#\[]+/,
 
     raw_word: _ => /\S+/,
     // raw_word: _ => seq(
@@ -311,28 +288,40 @@ const blueflower_grammar = {
 const sections = {
   section: $ => seq(
     $.heading,
+    // optional(prec.dynamic(2, $.blank_line)),
+    optional(prec(1, $.blank_line)),
     optional(alias($.section_content, $.content)),
     choice($.section_end, $.eof),
     (optional($.soft_break))
   ),
 
-  section_content: $ => prec(2, repeat1(choice(
-    $.section,
-    content($, [
-      $._hashtag_plus_blank_line,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.list_block,
-      $.comment,
-      // $.blank_line
-    ]),
-  ))),
+  section_content: $ => content($, [
+    $._hashtag_plus_blank_line,
+    alias($.verbatim_tag, $.tag),
+    alias($.tag_with_syntax, $.tag),
+    $.list_block,
+    $.comment,
+    // $.blank_line
+    $.section
+  ]),
 
   heading: $ => seq(
     field("level", alias($.heading_token, $.token)),
-    alias($.paragraph, $.title),
-    optional($.blank_line)
-  )
+    $.title,
+  ),
+
+  title: $ => seq(
+    repeat1(choice(
+      $.escaped_sequence,
+      $.word,
+      $.inline_tag,
+      // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
+      // $.link, $.link_reference, $.short_link_reference,
+      // prec.dynamic(2, $.new_line),
+      prec(1, $.new_line),
+    )),
+    $.eol,
+  ),
 }
 
 const lists = {
@@ -390,24 +379,24 @@ function expression($, pr, tfunc, skip = '') {
 }
 
 function content($, elements) {
-    return choice(
-      $.paragraph,
-      seq(
-        repeat1(choice(
-          seq(
-            $.paragraph,
-            choice($.blank_line, $.eof),
-          ),
-          ...elements,
-          seq(
-            $.paragraph,
-            // optional($.blank_line),
-            choice(...elements)
-          ),
-        )),
-        optional($.paragraph)
-      ),
-    );
+  return choice(
+    $.paragraph,
+    seq(
+      repeat1(choice(
+        seq(
+          $.paragraph,
+          choice($.blank_line, $.eof)
+        ),
+        ...elements,
+        seq(
+          $.paragraph,
+          // optional($.blank_line),
+          choice(...elements)
+        ),
+      )),
+      optional($.paragraph)
+    )
+  );
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)

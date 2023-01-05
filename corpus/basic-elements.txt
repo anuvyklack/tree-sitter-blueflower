@@ -168,11 +168,11 @@ List.1 - Simple list
         (list
           (list_start)
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word)))
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word))))
         (list_break)))
@@ -200,11 +200,11 @@ List.2a - List with one directive
               (new_line)))
           (list_start)
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word)))
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word))))
         (list_break)))
@@ -270,11 +270,11 @@ List.2c - List with two directives
               (new_line)))
           (list_start)
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word)))
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word))))
         (list_break)))
@@ -322,11 +322,12 @@ List.2d - Hashtag and list with directive
               (new_line)))
           (list_start)
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word)))
           (list_item
-            level: (token)
+            (token)
             (paragraph
               (word))))
         (list_break)))
+
