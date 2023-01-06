@@ -148,41 +148,24 @@
       ]
     },
     "paragraph": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "hashtag"
-            }
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escaped_sequence"
           },
-          "named": true,
-          "value": "directives"
-        },
-        {
-          "type": "REPEAT1",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "escaped_sequence"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "word"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "inline_tag"
-              }
-            ]
+          {
+            "type": "SYMBOL",
+            "name": "word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "inline_tag"
           }
-        }
-      ]
+        ]
+      }
     },
     "escaped_sequence": {
       "type": "SEQ",
@@ -887,8 +870,7 @@
               "name": "blank_line"
             },
             {
-              "type": "SYMBOL",
-              "name": "eol"
+              "type": "BLANK"
             }
           ]
         }
@@ -4362,12 +4344,6 @@
   ],
   "conflicts": [
     [
-      "section"
-    ],
-    [
-      "title"
-    ],
-    [
       "section_content"
     ],
     [
@@ -4381,8 +4357,19 @@
       "list"
     ],
     [
-      "paragraph",
       "_hashtag_plus_blank_line"
+    ],
+    [
+      "_hashtag_plus_blank_line",
+      "list"
+    ],
+    [
+      "_hashtag_plus_blank_line",
+      "verbatim_tag"
+    ],
+    [
+      "_hashtag_plus_blank_line",
+      "tag_with_syntax"
     ]
   ],
   "precedences": [

@@ -24,21 +24,19 @@ const blueflower_grammar = {
   ],
 
   conflicts: $ => [
-    [$.section],
-    [$.title],
     [$.section_content],
-
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
     [$.list],
-
-    [$.paragraph, $._hashtag_plus_blank_line],
+    [$._hashtag_plus_blank_line],
+    [$._hashtag_plus_blank_line, $.list],
+    [$._hashtag_plus_blank_line, $.verbatim_tag],
+    [$._hashtag_plus_blank_line, $.tag_with_syntax],
   ],
 
   inline: $ => [
     $.word,
     $.eol,
-    // $._hashtag_plus_blank_line
   ],
 
   // https://github.com/tree-sitter/tree-sitter/pull/939
@@ -55,25 +53,20 @@ const blueflower_grammar = {
       alias($.tag_with_syntax, $.tag),
       $.list_block,
       $.comment,
-      // $.blank_line
+      // $.blank_line,
       $.hard_break,
     ]),
 
-    paragraph: $ => seq(
-      alias(repeat($.hashtag), $.directives),
-      repeat1(choice(
-        $.escaped_sequence,
-        $.word,
-        $.inline_tag,
-        // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-        // $.link, $.link_reference, $.short_link_reference,
-        // $.new_line,
-      )),
-      // $.eol
-    ),
+    paragraph: $ => repeat1(choice(
+      $.escaped_sequence,
+      $.word,
+      $.inline_tag,
+      // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
+      // $.link, $.link_reference, $.short_link_reference,
+      // $.new_line,
+    )),
 
     escaped_sequence: $ => seq(
-      // alias(prec('special', '\\'), $.token),
       alias('\\', $.token),
       choice(
         alias(token.immediate(/\S+/), $.raw_word),
@@ -114,7 +107,7 @@ const blueflower_grammar = {
 
     _hashtag_plus_blank_line: $ => seq(
       repeat1($.hashtag),
-      choice($.blank_line, $.eol)
+      optional($.blank_line)
     ),
 
     inline_tag: $ => seq(
@@ -130,15 +123,18 @@ const blueflower_grammar = {
         seq(
           $._inline_tag_label,
           optional($._inline_tag_content),
-          optional($._inline_tag_patameters)),
+          optional($._inline_tag_patameters)
+        ),
         seq(
           optional($._inline_tag_label),
           $._inline_tag_content,
-          optional($._inline_tag_patameters)),
+          optional($._inline_tag_patameters)
+        ),
         seq(
           optional($._inline_tag_label),
           optional($._inline_tag_content),
-          $._inline_tag_patameters)
+          $._inline_tag_patameters
+        )
       )
     ),
 
@@ -264,7 +260,6 @@ const blueflower_grammar = {
 
     new_line: _ => choice('\n\r', '\n', '\r'),
     eol: $ => choice($.new_line, $.eof),
-
 
     word: $ => expression($, 'non-immediate', token, '@#['),
     // word: $ => /[^\s@#\[]+/,

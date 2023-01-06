@@ -129,10 +129,6 @@
           "named": true
         },
         {
-          "type": "new_line",
-          "named": true
-        },
-        {
           "type": "paragraph",
           "named": true
         },
@@ -442,10 +438,6 @@
           "named": true
         },
         {
-          "type": "new_line",
-          "named": true
-        },
-        {
           "type": "paragraph",
           "named": true
         },
@@ -469,10 +461,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "directives",
-          "named": true
-        },
         {
           "type": "escaped_sequence",
           "named": true

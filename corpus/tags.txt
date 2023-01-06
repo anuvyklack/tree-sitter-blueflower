@@ -175,6 +175,44 @@ text
       (eof))
 
 ================================================================================
+Tag.6 - Hashtag and verbatim tag with directive
+================================================================================
+#propertie val
+
+#propertie val
+@footnote name
+    text
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word))
+        (new_line))
+      (blank_line)
+      (tag
+        (directives
+          (hashtag
+            (token)
+            (tag_name)
+            (content
+              (word))
+            (new_line)))
+        (token)
+        (tag_name
+          (word))
+        (tag_parameter)
+        (new_line)
+        (content
+          (raw_word)
+          (new_line))
+        (end_tag)
+        (eof)))
+
+================================================================================
 Hashtag.1 - Hashtag
 ================================================================================
 #tags home hobby
@@ -187,5 +225,4 @@ Hashtag.1 - Hashtag
         (content
           (word)
           (word))
-        (eof))
-      (eof))
+        (eof)))

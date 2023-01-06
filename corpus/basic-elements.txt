@@ -85,17 +85,16 @@ consectetur cupidatat.
 --------------------------------------------------------------------------------
 
     (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word)
+          (number)
+          (word)
+          (number))
+        (new_line))
       (paragraph
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word)
-              (number)
-              (word)
-              (number))
-            (new_line)))
         (word)
         (word)
         (word)
@@ -247,8 +246,8 @@ List.2c - List with two directives
 ================================================================================
 #tag
 #tag :key value
-- i
-- i
+- item
+- item
 ---
 --------------------------------------------------------------------------------
 
@@ -286,8 +285,8 @@ List.2d - Hashtag and list with directive
 #tag :key value
 
 #tag :key value
-- i
-- i
+- item
+- item
 ---
 --------------------------------------------------------------------------------
 
