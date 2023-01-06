@@ -24,13 +24,6 @@ enum TokenType : unsigned char {
     HEADING,
     SECTION_END,
 
-    // HEADING_1,
-    // HEADING_2,
-    // HEADING_3,
-    // HEADING_4,
-    // HEADING_5,
-    // HEADING_6,
-
     LIST_START,
     LIST_TOKEN,
     LIST_END,
@@ -105,16 +98,6 @@ struct Scanner
 
     bool tag_parameter_is_valid = true;
 
-    /** 
-     * The scanner analyzes the current character --- the last character the
-     * "advanced" function passed, not the next (i.e lexer->lookahead) char.
-     *
-     *     abc
-     *     ││└─ lexer->lookahead
-     *     │└─ current
-     *     └─ previous
-     *
-     */
     bool scan () {
         // Recover form error
         if (is_all_tokens_valid()) return false;
@@ -146,12 +129,6 @@ struct Scanner
             clog << "  false" << endl << "}" << endl;
 #endif
         }
-
-        //- before advace -------------------------------
-
-        if (parsed_chars == 0) advance();
-
-        //- after advance -------------------------------
 
         // if (parse_comment()) return true;
         // if (parse_escape_char()) return true;
@@ -239,6 +216,7 @@ struct Scanner
     bool parse_newline() {
         // If we're here, then we're in column 0 on a new line.
 
+        lexer->mark_end(lexer);
         skip_spaces();
         if (is_eof()) return false;
 
@@ -248,16 +226,15 @@ struct Scanner
 
         // Check if current line is empty line.
         if (valid_tokens[BLANK_LINE] && is_newline(lexer->lookahead)) {
-            advance();
+            if (lexer->lookahead == 13) advance(); // \r
+            if (lexer->lookahead == 10) advance(); // \n
+            lexer->mark_end(lexer);
             return found(BLANK_LINE);
         }
-
-        // advance();
 
         stack_t n = 0; //< Number of parsed chars
         switch (lexer->lookahead) {
         case '*': { // HEADING
-            lexer->mark_end(lexer);
             while (lexer->lookahead == '*') {
                 advance();
                 ++n;
@@ -282,7 +259,6 @@ struct Scanner
             break;
         }
         case '-': { // LIST, SOFT_BREAK
-            lexer->mark_end(lexer);
             while (lexer->lookahead == '-') {
                 advance();
                 ++n;
@@ -325,7 +301,6 @@ struct Scanner
             break;
         }
         case '=': // HARD_BREAK
-            lexer->mark_end(lexer);
             while (lexer->lookahead == '=') {
                 advance();
                 ++n;
@@ -350,6 +325,7 @@ struct Scanner
                 if (not_space_or_newline(lexer->lookahead)
                     && !is_inline_tag_control_character(lexer->lookahead))
                 {
+                    lexer->mark_end(lexer);
                     return found(HASHTAG);
                 }
             }
@@ -359,13 +335,18 @@ struct Scanner
                 advance();
                 if (valid_tokens[EXTENDED_TAG_TOKEN] && lexer->lookahead == '+') {
                     advance();
+                    lexer->mark_end(lexer);
                     return found(EXTENDED_TAG_TOKEN);
                 }
                 else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
-                    if (token("end") && is_space_or_newline_or_eof(lexer->lookahead))
+                    if (token("end") && is_space_or_newline_or_eof(lexer->lookahead)) {
+                        lexer->mark_end(lexer);
                         return found(END_TAG);
-                    else if (not_space_or_newline(lexer->lookahead))
+                    }
+                    else if (not_space_or_newline(lexer->lookahead)) {
+                        lexer->mark_end(lexer);
                         return found(TAG_TOKEN);
+                    }
                 }
             }
             break;
