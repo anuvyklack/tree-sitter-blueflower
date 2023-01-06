@@ -2744,7 +2744,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "_inline_tag_patameters"
+                      "name": "_inline_tag_parameters"
                     },
                     {
                       "type": "BLANK"
@@ -2777,7 +2777,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "_inline_tag_patameters"
+                      "name": "_inline_tag_parameters"
                     },
                     {
                       "type": "BLANK"
@@ -2815,7 +2815,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "_inline_tag_patameters"
+                  "name": "_inline_tag_parameters"
                 }
               ]
             }
@@ -2974,7 +2974,7 @@
         }
       ]
     },
-    "_inline_tag_patameters": {
+    "_inline_tag_parameters": {
       "type": "SEQ",
       "members": [
         {

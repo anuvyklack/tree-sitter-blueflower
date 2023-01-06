@@ -124,172 +124,6 @@ const blueflower_grammar = {
       $.new_line,
     ),
 
-    hashtag: $ => seq(
-      alias($.hashtag_token, $.token),
-
-      // Any except:
-      //    `[`, `(`, `{`, white space
-      alias(token.immediate(/[^\[({\s]+/), $.tag_name),
-
-      alias(
-        repeat(expression($, 'non-immediate', token)),
-        $.content),
-      $.eol
-    ),
-
-    _hashtag_plus_blank_line: $ => seq(
-      repeat1($.hashtag),
-      optional($.blank_line)
-    ),
-
-    inline_tag: $ => seq(
-      alias(
-        choice($.tag_token, '@', ':'),
-        $.token),
-      field('name',
-            alias(
-              repeat1(expression($, 'immediate', token.immediate, '[({')),
-              $.tag_name)),
-
-      choice(
-        seq(
-          $._inline_tag_label,
-          optional($._inline_tag_content),
-          optional($._inline_tag_patameters)
-        ),
-        seq(
-          optional($._inline_tag_label),
-          $._inline_tag_content,
-          optional($._inline_tag_patameters)
-        ),
-        seq(
-          optional($._inline_tag_label),
-          optional($._inline_tag_content),
-          $._inline_tag_patameters
-        )
-      )
-    ),
-
-    _inline_tag_label: $ => seq(
-      field('open_label',
-            alias(
-              token.immediate(prec('immediate', '[')),
-              $.token)),
-      alias(
-        repeat(choice(
-          $.escaped_sequence,
-          alias(/[^\[\]\s\\]+/, $.word),
-          // expression($, 'non-immediate', token, '[]\\'),
-          $.inline_tag,
-          $.new_line
-        )),
-        $.label),
-      field('close_label',
-            alias(
-              token.immediate(prec('immediate', ']')),
-              $.token)),
-    ),
-
-    _inline_tag_content: $ => seq(
-      field('open_content',
-            alias(
-              token.immediate(prec('immediate', '(')),
-              $.token)),
-      alias(
-        repeat( choice(
-          $.escaped_sequence,
-          alias(/[^\(\)\s\\]+/, $.raw_word),
-          // expression($, 'non-immediate', token, '()\\'),
-          $.new_line
-        )),
-        $.content),
-      field('close_content',
-            alias(
-              prec('non-immediate', ')'),
-              $.token))
-    ),
-
-    _inline_tag_patameters: $ => seq(
-      field('open_parameters',
-            alias(
-              token.immediate(prec('immediate', '{')),
-              $.token)),
-      alias(
-        repeat(choice(
-          $.escaped_sequence,
-          alias(/[^\{\}\s\\]+/, $.raw_word),
-          // expression($, 'non-immediate', token, '{}\\'),
-          $.new_line
-        )),
-        $.parameters),
-      field('close_parameters',
-            alias('}', $.token))
-    ),
-
-    // The content of this tag tree-sitter parser will skip.
-    verbatim_tag: $ => seq(
-      alias(repeat($.hashtag), $.directives),
-
-      alias($.tag_token, $.token),
-      field('name',
-            alias(
-              repeat1(expression($, 'immediate', token.immediate)),
-              $.tag_name)),
-
-      repeat(seq(
-        token.immediate(' '),
-        field('parameter',
-              repeat(
-                alias($.raw_word, $.tag_parameter))),
-      )),
-      $.new_line,
-
-      alias(
-        repeat(choice(
-          alias($.verbatim_tag, $.tag),
-          alias($.tag_with_syntax, $.tag),
-          seq( repeat($.raw_word), $.new_line),
-        )),
-        $.content),
-      $.end_tag,
-      choice($.comment, $.eol, $.blank_line)
-    ),
-
-    // The content of this tag will be parsed by this parser.
-    tag_with_syntax: $ => seq(
-      alias(repeat($.hashtag), $.directives),
-
-      alias($.extended_tag_token, $.token),
-      field('name',
-            alias(
-              repeat1(expression($, 'immediate', token.immediate)),
-              $.tag_name)),
-
-      repeat(seq(
-        token.immediate(' '),
-        field('parameter',
-              repeat(
-                alias($.raw_word, $.tag_parameter))),
-      )),
-      $.new_line,
-
-      optional(
-        alias($.tag_content, $.content)),
-      $.end_tag,
-      choice($.comment, $.eol)
-    ),
-
-    // Content move into separate node, make it appears in a tree as one node,
-    // not a sequence of "$.content" nodes.
-    tag_content: $ => content($, [
-      $._hashtag_plus_blank_line,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.list_block,
-      $.comment,
-      // $.blank_line
-    ]),
-
     new_line: _ => choice('\n\r', '\n', '\r'),
     eol: $ => choice($.new_line, $.eof),
 
@@ -384,6 +218,174 @@ const lists = {
   )),
 }
 
+const tags = {
+  hashtag: $ => seq(
+    alias($.hashtag_token, $.token),
+
+    // Any except:
+    //    `[`, `(`, `{`, white space
+    alias(token.immediate(/[^\[({\s]+/), $.tag_name),
+
+    alias(
+      repeat(expression($, 'non-immediate', token)),
+      $.content),
+    $.eol
+  ),
+
+  _hashtag_plus_blank_line: $ => seq(
+    repeat1($.hashtag),
+    optional($.blank_line)
+  ),
+
+  inline_tag: $ => seq(
+    alias(
+      choice($.tag_token, '@', ':'),
+      $.token),
+    field('name',
+          alias(
+            repeat1(expression($, 'immediate', token.immediate, '[({' )),
+            $.tag_name)),
+
+    choice(
+      seq(
+        $._inline_tag_label,
+        optional($._inline_tag_content),
+        optional($._inline_tag_parameters)
+      ),
+      seq(
+        optional($._inline_tag_label),
+        $._inline_tag_content,
+        optional($._inline_tag_parameters)
+      ),
+      seq(
+        optional($._inline_tag_label),
+        optional($._inline_tag_content),
+        $._inline_tag_parameters
+      )
+    )
+  ),
+
+  _inline_tag_label: $ => seq(
+    field('open_label',
+          alias(
+            token.immediate(prec('immediate', '[')),
+            $.token)),
+    alias(
+      repeat(choice(
+        $.escaped_sequence,
+        alias(/[^\[\]\s\\]+/, $.word),
+        // expression($, 'non-immediate', token, '[]\\'),
+        $.inline_tag,
+        $.new_line
+      )),
+      $.label),
+    field('close_label',
+          alias(
+            token.immediate(prec('immediate', ']')),
+            $.token)),
+  ),
+
+  _inline_tag_content: $ => seq(
+    field('open_content',
+          alias(
+            token.immediate(prec('immediate', '(')),
+            $.token)),
+    alias(
+      repeat( choice(
+        $.escaped_sequence,
+        alias(/[^\(\)\s\\]+/, $.raw_word),
+        // expression($, 'non-immediate', token, '()\\'),
+        $.new_line
+      )),
+      $.content),
+    field('close_content',
+          alias(
+            prec('non-immediate', ')'),
+            $.token))
+  ),
+
+  _inline_tag_parameters: $ => seq(
+    field('open_parameters',
+          alias(
+            token.immediate(prec('immediate', '{')),
+            $.token)),
+    alias(
+      repeat(choice(
+        $.escaped_sequence,
+        alias(/[^\{\}\s\\]+/, $.raw_word),
+        // expression($, 'non-immediate', token, '{}\\'),
+        $.new_line
+      )),
+      $.parameters),
+    field('close_parameters',
+          alias('}', $.token))
+  ),
+
+  // The content of this tag tree-sitter parser will skip.
+  verbatim_tag: $ => seq(
+    alias(repeat($.hashtag), $.directives),
+
+    alias($.tag_token, $.token),
+    field('name',
+          alias(
+            repeat1(expression($, 'immediate', token.immediate)),
+            $.tag_name)),
+
+    repeat(seq(
+      token.immediate(' '),
+      field('parameter',
+            repeat(
+              alias($.raw_word, $.tag_parameter))),
+    )),
+    $.new_line,
+
+    alias(
+      repeat(choice(
+        alias($.verbatim_tag, $.tag),
+        alias($.tag_with_syntax, $.tag),
+        seq( repeat($.raw_word), $.new_line),
+      )),
+      $.content),
+    $.end_tag,
+    choice($.comment, $.eol, $.blank_line)
+  ),
+
+  // The content of this tag will be parsed by this parser.
+  tag_with_syntax: $ => seq(
+    alias(repeat($.hashtag), $.directives),
+
+    alias($.extended_tag_token, $.token),
+    field('name',
+          alias(
+            repeat1(expression($, 'immediate', token.immediate)),
+            $.tag_name)),
+
+    repeat(seq(
+      token.immediate(' '),
+      field('parameter',
+            repeat(
+              alias($.raw_word, $.tag_parameter))),
+    )),
+    $.new_line,
+
+    optional(
+      alias($.tag_content, $.content)),
+    $.end_tag,
+    choice($.comment, $.eol)
+  ),
+
+  // Content move into separate node, make it appears in a tree as one node,
+  // not a sequence of "$.content" nodes.
+  tag_content: $ => content($, [
+    $._hashtag_plus_blank_line,
+    alias($.verbatim_tag, $.tag),
+    alias($.tag_with_syntax, $.tag),
+    $.list_block,
+    $.comment,
+    // $.blank_line
+  ]),
+}
+
 /**
  * @param {string} pr Precedence value
  * @param {Function} tfunc Token function: `token` or `token.immediate`.
@@ -427,7 +429,7 @@ function content($, elements) {
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)
-Object.assign(blueflower_grammar.rules, sections, lists)
+Object.assign(blueflower_grammar.rules, sections, lists, tags)
 
 module.exports = grammar(blueflower_grammar)
 
