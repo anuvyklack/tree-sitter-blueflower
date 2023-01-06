@@ -276,7 +276,7 @@ struct Scanner
                 lexer->mark_end(lexer);
                 return found(DEFINITION_TERM_BEGIN);
             }
-            else if (valid_tokens[DEFINITION_END] && is_newline(lexer->lookahead)) {
+            else if (valid_tokens[DEFINITION_END] && is_newline_or_eof(lexer->lookahead)) {
                 lexer->mark_end(lexer);
                 return found(DEFINITION_END);
             }
@@ -387,7 +387,7 @@ struct Scanner
             advance();
             if (valid_tokens[DEFINITION_TERM_END] && iswspace(lexer->lookahead))
                 return found(DEFINITION_TERM_END);
-            else if (valid_tokens[DEFINITION_END] && is_newline(lexer->lookahead))
+            else if (valid_tokens[DEFINITION_END] && is_newline_or_eof(lexer->lookahead))
                 return found(DEFINITION_END);
         }
         return false;
