@@ -5,6 +5,10 @@ const blueflower_grammar = {
     $.heading_token,
     $.section_end,
 
+    $.definition_term_begin,
+    $.definition_term_end,
+    $.definition_end,
+
     $.list_start,
     $.list_token,
     $.list_end,
@@ -45,9 +49,9 @@ const blueflower_grammar = {
   ],
 
   rules: {
-
     document: $ => content($, [
       $.section,
+      $.definition,
       $._hashtag_plus_blank_line,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
@@ -72,6 +76,34 @@ const blueflower_grammar = {
         alias(token.immediate(/\S+/), $.raw_word),
         alias(/\s/, $.space)
       )
+    ),
+
+    definition: $ => seq(
+      $.definition_term_begin,
+      alias($.paragraph, $.term),
+      $.definition_term_end,
+
+      repeat(
+        seq(
+          optional(alias($.paragraph, $.description)),
+          $.definition_term_begin,
+          alias($.paragraph, $.term),
+          $.definition_term_end,
+        )
+      ),
+
+      alias(
+        content($, [
+          $.list_block,
+          $._hashtag_plus_blank_line,
+          alias($.verbatim_tag, $.tag),
+          alias($.tag_with_syntax, $.tag),
+          $.comment,
+        ]),
+        $.description),
+
+      $.definition_end,
+      $.eol
     ),
 
     // immediate_escaped_sequence: $ => seq(

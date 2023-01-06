@@ -24,6 +24,10 @@ enum TokenType : unsigned char {
     HEADING,
     SECTION_END,
 
+    DEFINITION_TERM_BEGIN,
+    DEFINITION_TERM_END,
+    DEFINITION_END,
+
     LIST_START,
     LIST_TOKEN,
     LIST_END,
@@ -46,6 +50,10 @@ enum TokenType : unsigned char {
 vector<string> tokens_names = {
     "heading",
     "section_end",
+
+    "definition_term_begin",
+    "definition_term_end",
+    "definition_end",
 
     "list_start",
     "list_token",
@@ -124,10 +132,14 @@ struct Scanner
 
         if (parsed_chars == 0) {
             skip_spaces();
-            if (is_eof()) return false;
+            if (is_eof()) {
+                if (valid_tokens[END_OF_FILE])
+                    return found(END_OF_FILE);
 #ifdef DEBUG
-            clog << "  false" << endl << "}" << endl;
+                clog << "  false" << endl << "}" << endl;
 #endif
+                return false;
+            }
         }
 
         // if (parse_comment()) return true;
@@ -136,7 +148,7 @@ struct Scanner
         // if (parse_checkbox()) return true;
         // if (prase_link()) return true;
         //
-        // if (parse_definition()) return true;
+        if (parse_definition()) return true;
         // if (parse_open_markup()) return true;
         // if (parse_close_markup()) return true;
         //
@@ -258,6 +270,18 @@ struct Scanner
             //     if (parse_open_markup()) return true;
             break;
         }
+        case ':': { // DEFINITION
+            advance();
+            if (valid_tokens[DEFINITION_TERM_BEGIN] && is_space(lexer->lookahead)) {
+                lexer->mark_end(lexer);
+                return found(DEFINITION_TERM_BEGIN);
+            }
+            else if (valid_tokens[DEFINITION_END] && is_newline(lexer->lookahead)) {
+                lexer->mark_end(lexer);
+                return found(DEFINITION_END);
+            }
+            break;
+        }
         case '-': { // LIST, SOFT_BREAK
             while (lexer->lookahead == '-') {
                 advance();
@@ -352,6 +376,20 @@ struct Scanner
             break;
         }
 
+        return false;
+    }
+
+    bool parse_definition() {
+        if ((valid_tokens[DEFINITION_TERM_END] || valid_tokens[DEFINITION_END])
+            && is_space(current)
+            && lexer->lookahead == ':')
+        {
+            advance();
+            if (valid_tokens[DEFINITION_TERM_END] && iswspace(lexer->lookahead))
+                return found(DEFINITION_TERM_END);
+            else if (valid_tokens[DEFINITION_END] && is_newline(lexer->lookahead))
+                return found(DEFINITION_END);
+        }
         return false;
     }
 
