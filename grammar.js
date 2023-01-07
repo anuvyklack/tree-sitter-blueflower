@@ -76,32 +76,31 @@ const blueflower_grammar = {
     ),
 
     definition: $ => seq(
-      $.definition_term_begin,
+      field('term_open', alias($.definition_term_begin, $.token)),
       alias($.paragraph, $.term),
-      $.definition_term_end,
+      field('term_close', alias($.definition_term_end, $.token)),
 
       repeat(
         seq(
           optional(alias($.paragraph, $.description)),
-          $.definition_term_begin,
+          field('term_open', alias($.definition_term_begin, $.token)),
           alias($.paragraph, $.term),
-          $.definition_term_end,
+          field('term_close', alias($.definition_term_end, $.token)),
         )
       ),
 
-      alias(
-        content($, [
-          $.list_block,
-          $.hashtag,
-          alias($.verbatim_tag, $.tag),
-          alias($.tag_with_syntax, $.tag),
-          $.comment,
-        ]),
-        $.description),
-
-      $.definition_end,
+      $.description,
+      field('description_end', alias($.definition_end, $.token)),
       $.eol
     ),
+
+    description: $ => content($, [
+      $.list_block,
+      $.hashtag,
+      alias($.verbatim_tag, $.tag),
+      alias($.tag_with_syntax, $.tag),
+      $.comment,
+    ]),
 
     // immediate_escaped_sequence: $ => seq(
     //   alias(

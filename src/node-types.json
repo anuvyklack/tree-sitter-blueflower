@@ -84,23 +84,42 @@
   {
     "type": "definition",
     "named": true,
-    "fields": {},
+    "fields": {
+      "description_end": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "term_close": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "term_open": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "definition_end",
-          "named": true
-        },
-        {
-          "type": "definition_term_begin",
-          "named": true
-        },
-        {
-          "type": "definition_term_end",
-          "named": true
-        },
         {
           "type": "description",
           "named": true
@@ -800,18 +819,6 @@
   },
   {
     "type": "checkbox",
-    "named": true
-  },
-  {
-    "type": "definition_end",
-    "named": true
-  },
-  {
-    "type": "definition_term_begin",
-    "named": true
-  },
-  {
-    "type": "definition_term_end",
     "named": true
   },
   {

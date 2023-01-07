@@ -239,8 +239,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "definition_term_begin"
+          "type": "FIELD",
+          "name": "term_open",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "definition_term_begin"
+            },
+            "named": true,
+            "value": "token"
+          }
         },
         {
           "type": "ALIAS",
@@ -252,8 +261,17 @@
           "value": "term"
         },
         {
-          "type": "SYMBOL",
-          "name": "definition_term_end"
+          "type": "FIELD",
+          "name": "term_close",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "definition_term_end"
+            },
+            "named": true,
+            "value": "token"
+          }
         },
         {
           "type": "REPEAT",
@@ -278,8 +296,17 @@
                 ]
               },
               {
-                "type": "SYMBOL",
-                "name": "definition_term_begin"
+                "type": "FIELD",
+                "name": "term_open",
+                "content": {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "definition_term_begin"
+                  },
+                  "named": true,
+                  "value": "token"
+                }
               },
               {
                 "type": "ALIAS",
@@ -291,166 +318,183 @@
                 "value": "term"
               },
               {
-                "type": "SYMBOL",
-                "name": "definition_term_end"
+                "type": "FIELD",
+                "name": "term_close",
+                "content": {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "definition_term_end"
+                  },
+                  "named": true,
+                  "value": "token"
+                }
               }
             ]
           }
         },
         {
-          "type": "ALIAS",
+          "type": "SYMBOL",
+          "name": "description"
+        },
+        {
+          "type": "FIELD",
+          "name": "description_end",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "paragraph"
-              },
-              {
-                "type": "SEQ",
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "definition_end"
+            },
+            "named": true,
+            "value": "token"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "eol"
+        }
+      ]
+    },
+    "description": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "paragraph"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "CHOICE",
                 "members": [
                   {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "SYMBOL",
-                              "name": "paragraph"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "blank_line"
-                                },
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "eof"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "list_block"
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "hashtag"
-                        },
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "SYMBOL",
-                            "name": "verbatim_tag"
-                          },
-                          "named": true,
-                          "value": "tag"
-                        },
-                        {
-                          "type": "ALIAS",
-                          "content": {
-                            "type": "SYMBOL",
-                            "name": "tag_with_syntax"
-                          },
-                          "named": true,
-                          "value": "tag"
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "comment"
-                        },
-                        {
-                          "type": "SEQ",
-                          "members": [
-                            {
-                              "type": "SYMBOL",
-                              "name": "paragraph"
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "blank_line"
-                                },
-                                {
-                                  "type": "BLANK"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "list_block"
-                                },
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "hashtag"
-                                },
-                                {
-                                  "type": "ALIAS",
-                                  "content": {
-                                    "type": "SYMBOL",
-                                    "name": "verbatim_tag"
-                                  },
-                                  "named": true,
-                                  "value": "tag"
-                                },
-                                {
-                                  "type": "ALIAS",
-                                  "content": {
-                                    "type": "SYMBOL",
-                                    "name": "tag_with_syntax"
-                                  },
-                                  "named": true,
-                                  "value": "tag"
-                                },
-                                {
-                                  "type": "SYMBOL",
-                                  "name": "comment"
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "type": "CHOICE",
+                    "type": "SEQ",
                     "members": [
                       {
                         "type": "SYMBOL",
                         "name": "paragraph"
                       },
                       {
-                        "type": "BLANK"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "blank_line"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "eof"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "list_block"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "hashtag"
+                  },
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "verbatim_tag"
+                    },
+                    "named": true,
+                    "value": "tag"
+                  },
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "tag_with_syntax"
+                    },
+                    "named": true,
+                    "value": "tag"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "comment"
+                  },
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "paragraph"
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "blank_line"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "list_block"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "hashtag"
+                          },
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "verbatim_tag"
+                            },
+                            "named": true,
+                            "value": "tag"
+                          },
+                          {
+                            "type": "ALIAS",
+                            "content": {
+                              "type": "SYMBOL",
+                              "name": "tag_with_syntax"
+                            },
+                            "named": true,
+                            "value": "tag"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "comment"
+                          }
+                        ]
                       }
                     ]
                   }
                 ]
               }
-            ]
-          },
-          "named": true,
-          "value": "description"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "definition_end"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "eol"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "paragraph"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
