@@ -160,15 +160,7 @@
           "named": true
         },
         {
-          "type": "escaped_sequence",
-          "named": true
-        },
-        {
           "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "inline_tag",
           "named": true
         },
         {
@@ -176,23 +168,11 @@
           "named": true
         },
         {
-          "type": "number",
-          "named": true
-        },
-        {
           "type": "paragraph",
           "named": true
         },
         {
-          "type": "symbol",
-          "named": true
-        },
-        {
           "type": "tag",
-          "named": true
-        },
-        {
-          "type": "word",
           "named": true
         }
       ]

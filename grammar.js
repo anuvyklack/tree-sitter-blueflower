@@ -82,12 +82,20 @@ const blueflower_grammar = {
 
       repeat(
         seq(
-          optional(alias($.paragraph, $.description)),
           field('term_open', alias($.definition_term_begin, $.token)),
           alias($.paragraph, $.term),
           field('term_close', alias($.definition_term_end, $.token)),
         )
       ),
+
+      // repeat(
+      //   seq(
+      //     optional(alias($.paragraph, $.description)),
+      //     field('term_open', alias($.definition_term_begin, $.token)),
+      //     alias($.paragraph, $.term),
+      //     field('term_close', alias($.definition_term_end, $.token)),
+      //   )
+      // ),
 
       $.description,
       field('description_end', alias($.definition_end, $.token)),
