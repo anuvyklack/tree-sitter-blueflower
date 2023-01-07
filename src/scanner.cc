@@ -42,6 +42,7 @@ enum TokenType : unsigned char {
     SOFT_BREAK,
     HARD_BREAK,
 
+    NEW_LINE,
     END_OF_FILE,
     ERROR
 };
@@ -69,6 +70,7 @@ vector<string> tokens_names = {
     "soft_break",
     "hard_break",
 
+    "new_line",
     "eof",
     "error"
 };
@@ -145,6 +147,12 @@ struct Scanner
 #endif
                 return false;
             }
+        }
+
+        if (is_newline(lexer->lookahead)) {
+            if (lexer->lookahead == 13) advance(); // \r
+            if (lexer->lookahead == 10) advance(); // \n
+            return found(NEW_LINE);
         }
 
         // if (parse_comment()) return true;
@@ -299,6 +307,10 @@ struct Scanner
                     heading_stack.pop_back();
                     return found(SECTION_END);
                 }
+                else if (valid_tokens[LIST_END]) {
+                    list_stack.pop_back();
+                    return found(LIST_END);
+                }
                 else {
                     lexer->mark_end(lexer);
                     return found(SOFT_BREAK);
@@ -438,8 +450,8 @@ struct Scanner
 
     inline bool is_newline(const int32_t c) {
         switch (c) {
-        case 10: // \n
         case 13: // \r
+        case 10: // \n
             return true;
         default:
             return false;
@@ -458,7 +470,7 @@ struct Scanner
 #ifdef DEBUG
         clog << "  Valid: ";
 
-        if (is_all_tokens_valid()) {
+        if (valid_tokens[ERROR]) {
             cout << "all" << endl;
             return;
         }

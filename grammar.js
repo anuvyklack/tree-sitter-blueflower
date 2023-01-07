@@ -23,11 +23,17 @@ const blueflower_grammar = {
     $.soft_break,
     $.hard_break,
 
+    // I need to parse new lines myself, becausea
+    //    new_line: $ => choice('\r\n', '\r', '\n')
+    // rule return two new line chars in a row as one new_line token, and
+    // I miss blank lines, which I need, to separate paragraphs.
+    $.new_line,
     $.eof,
     $.error
   ],
 
   conflicts: $ => [
+    [$.section],
     [$.section, $.section_content],
     [$.section_content],
     [$.paragraph],
@@ -65,7 +71,7 @@ const blueflower_grammar = {
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
       // $.link, $.link_reference, $.short_link_reference,
-      // $.new_line,
+      $.new_line,
     )),
 
     // escaped_sequence: $ => seq(
@@ -126,7 +132,8 @@ const blueflower_grammar = {
       $.new_line,
     ),
 
-    new_line: _ => choice('\n\r', '\n', '\r'),
+    // new_line: _ => choice('\n\r', '\n', '\r'),
+    // new_line: _ => /\n|\r\n?/,
     eol: $ => choice($.new_line, $.eof),
 
     word: $ => expression($, 'non-immediate', token, '@#['),
@@ -154,7 +161,10 @@ const sections = {
     // optional(prec(1, $.blank_line)),
     optional(alias($.section_content, $.content)),
     choice($.section_end, $.eof),
-    (optional($.soft_break))
+    optional(seq(
+      (optional($.soft_break)),
+      $.eol
+    ))
   ),
 
   section_content: $ => content($, [
@@ -189,13 +199,13 @@ const sections = {
 const lists = {
   list_block: $ => seq(
     $.list,
-    alias($.soft_break, $.list_break)
+    seq(alias($.soft_break, $.list_break), $.eol),
   ),
 
   list: $ => seq(
     $.list_start,
     repeat1($.list_item),
-    optional($.list_end),
+    $.list_end,
   ),
 
   list_item: $ => seq(
@@ -340,6 +350,7 @@ const tags = {
       $.content),
     $.end_tag,
     // choice($.comment, $.eol, $.blank_line)
+    $.eol
   ),
 
   // The content of this tag will be parsed by this parser.
@@ -362,6 +373,7 @@ const tags = {
       alias($.tag_content, $.content)),
     $.end_tag,
     // choice($.comment, $.eol)
+    $.eol
   ),
 
   // Content move into separate node, make it appears in a tree as one node,

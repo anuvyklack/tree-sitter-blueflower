@@ -507,11 +507,19 @@
       "required": true,
       "types": [
         {
+          "type": "eof",
+          "named": true
+        },
+        {
           "type": "list",
           "named": true
         },
         {
           "type": "list_break",
+          "named": true
+        },
+        {
+          "type": "new_line",
           "named": true
         }
       ]
@@ -572,11 +580,6 @@
     }
   },
   {
-    "type": "new_line",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "paragraph",
     "named": true,
     "fields": {},
@@ -586,6 +589,10 @@
       "types": [
         {
           "type": "inline_tag",
+          "named": true
+        },
+        {
+          "type": "new_line",
           "named": true
         },
         {
@@ -643,6 +650,10 @@
           "named": true
         },
         {
+          "type": "new_line",
+          "named": true
+        },
+        {
           "type": "section_end",
           "named": true
         },
@@ -691,6 +702,10 @@
           "named": true
         },
         {
+          "type": "eof",
+          "named": true
+        },
+        {
           "type": "new_line",
           "named": true
         },
@@ -734,6 +749,10 @@
       "types": [
         {
           "type": "inline_tag",
+          "named": true
+        },
+        {
+          "type": "new_line",
           "named": true
         },
         {
@@ -787,18 +806,6 @@
     }
   },
   {
-    "type": "\n",
-    "named": false
-  },
-  {
-    "type": "\n\r",
-    "named": false
-  },
-  {
-    "type": "\r",
-    "named": false
-  },
-  {
     "type": " ",
     "named": false
   },
@@ -836,6 +843,10 @@
   },
   {
     "type": "list_start",
+    "named": true
+  },
+  {
+    "type": "new_line",
     "named": true
   },
   {
