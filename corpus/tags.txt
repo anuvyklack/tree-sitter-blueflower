@@ -37,10 +37,12 @@ Tag.2 - Tag with syntax
         (content
           (paragraph
             (word)
-            (word))
+            (word)
+            (new_line))
           (blank_line)
           (paragraph
-            (word)))
+            (word)
+            (new_line)))
         (end_tag)
         (eof)))
 
@@ -61,27 +63,28 @@ Tag.3 - Nested tags
     (document
       (tag
         (token)
-        name: (tag_name
+        (tag_name
           (word))
         (new_line)
         (content
           (tag
             (token)
-            name: (tag_name
+            (tag_name
               (word)
               (symbol)
               (word))
             (new_line)
             (content
               (paragraph
-                (word)))
+                (word)
+                (new_line)))
             (end_tag)
             (new_line))
           (tag
             (token)
-            name: (tag_name
+            (tag_name
               (word))
-            parameter: (tag_parameter)
+            (tag_parameter)
             (new_line)
             (content
               (raw_word)

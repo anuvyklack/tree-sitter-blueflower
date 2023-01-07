@@ -21,6 +21,7 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
+        (new_line)
         (word)
         (word)
         (symbol))
@@ -52,9 +53,11 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
+        (new_line)
         (word)
         (word)
-        (symbol))
+        (symbol)
+        (new_line))
       (blank_line)
       (paragraph
         (word)
@@ -71,6 +74,7 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
+        (new_line)
         (word)
         (word)
         (symbol))
@@ -109,6 +113,7 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
+        (new_line)
         (word)
         (word)
         (symbol))
@@ -149,6 +154,7 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
+        (new_line)
         (word)
         (word)
         (symbol))
@@ -186,15 +192,17 @@ description :
         (term
           (word))
         (token)
-        (token)
-        (term
-          (word))
-        (token)
         (description
           (paragraph
+            (new_line)
+            (symbol)
             (word)))
         (token)
-        (eof)))
+        (new_line))
+      (paragraph
+        (word)
+        (symbol))
+      (eof))
 
 ================================================================================
 Definition.3 - End token on new line
@@ -212,7 +220,9 @@ Definition.3 - End token on new line
         (token)
         (description
           (paragraph
-            (word)))
+            (new_line)
+            (word)
+            (new_line)))
         (token)
         (eof)))
 
@@ -228,6 +238,7 @@ Definition.4 - Multiline term
         (token)
         (term
           (word)
+          (new_line)
           (word))
         (token)
         (description
@@ -254,26 +265,31 @@ Definition.5 - Complex description with list
         (term
           (word))
         (token)
-        (token)
-        (term
-          (word))
-        (token)
         (description
           (paragraph
+            (new_line)
+            (symbol)
             (word)
-            (symbol))
+            (symbol)
+            (word)
+            (symbol)
+            (new_line))
           (list_block
             (list
               (list_start)
               (list_item
                 (token)
                 (paragraph
-                  (word)))
+                  (word)
+                  (new_line)))
               (list_item
                 (token)
                 (paragraph
-                  (word))))
-            (list_break))
+                  (word)
+                  (new_line)))
+              (list_end))
+            (list_break)
+            (new_line))
           (paragraph
             (word)
             (word)
@@ -298,14 +314,15 @@ Definition.6 - Complex description with list
         (term
           (word))
         (token)
-        (token)
-        (term
-          (word))
-        (token)
         (description
           (paragraph
+            (new_line)
+            (symbol)
             (word)
-            (symbol))
+            (symbol)
+            (word)
+            (symbol)
+            (new_line))
           (tag
             (token)
             (tag_name
@@ -339,12 +356,16 @@ List.1 - Simple list
           (list_item
             (token)
             (paragraph
-              (word)))
+              (word)
+              (new_line)))
           (list_item
             (token)
             (paragraph
-              (word))))
-        (list_break)))
+              (word)
+              (new_line)))
+          (list_end))
+        (list_break)
+        (eof)))
 
 ================================================================================
 List.2a - Hashtag with immediate list
@@ -370,12 +391,16 @@ List.2a - Hashtag with immediate list
           (list_item
             (token)
             (paragraph
-              (word)))
+              (word)
+              (new_line)))
           (list_item
             (token)
             (paragraph
-              (word))))
-        (list_break)))
+              (word)
+              (new_line)))
+          (list_end))
+        (list_break)
+        (eof)))
 
 ================================================================================
 List.2b - Hashtag blank line and list
@@ -401,17 +426,21 @@ List.2b - Hashtag blank line and list
         (list
           (list_start)
           (list_item
-            level: (token)
+            (token)
             (paragraph
-              (word)))
+              (word)
+              (new_line)))
           (list_item
-            level: (token)
+            (token)
             (paragraph
-              (word))))
-        (list_break)))
+              (word)
+              (new_line)))
+          (list_end))
+        (list_break)
+        (eof)))
 
 ================================================================================
-List.2d - Two hashtags, blank_line, hashtag and list
+List.2c - Two hashtags, blank_line, hashtag and list
 ================================================================================
 #tag :key value
 #tag :key value
@@ -454,12 +483,16 @@ List.2d - Two hashtags, blank_line, hashtag and list
           (list_item
             (token)
             (paragraph
-              (word)))
+              (word)
+              (new_line)))
           (list_item
             (token)
             (paragraph
-              (word))))
-        (list_break)))
+              (word)
+              (new_line)))
+          (list_end))
+        (list_break)
+        (eof)))
 
 ================================================================================
 List.3 - Arbitrary indented list
@@ -478,23 +511,29 @@ List.3 - Arbitrary indented list
           (list_item
             (token)
             (paragraph
-              (word))
+              (word)
+              (new_line))
             (list
               (list_start)
               (list_item
                 (token)
                 (paragraph
-                  (word))
+                  (word)
+                  (new_line))
                 (list
                   (list_start)
                   (list_item
                     (token)
                     (paragraph
-                      (word)))
+                      (word)
+                      (new_line)))
                   (list_end)))
               (list_end)))
           (list_item
             (token)
             (paragraph
-              (word))))
-        (list_break)))
+              (word)
+              (new_line)))
+          (list_end))
+        (list_break)
+        (eof)))
