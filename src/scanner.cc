@@ -107,8 +107,13 @@ struct Scanner
     bool tag_parameter_is_valid = true;
 
     bool scan () {
-        // Recover form error
-        if (is_all_tokens_valid()) return false;
+        /**
+         * Recover form error
+         * The parser appears to call `scan` with all symbols declared as valid
+         * directly after it encountered an error. ERROR token can never be
+         * requested in normal, so if it is requested, that error occurred.
+         */
+        if (valid_tokens[ERROR]) return false;
 
 #ifdef DEBUG
         clog << "{" << endl;
@@ -448,16 +453,6 @@ struct Scanner
     inline bool not_space_or_newline(const int32_t c) { return c && !iswspace(c); }
 
     inline bool is_eof() { return lexer->eof(lexer); }
-
-    /**
-     * The parser appears to call `scan` with all symbols declared as valid directly
-     * after it encountered an error. This function defines such a case.
-     */
-    inline bool is_all_tokens_valid() {
-        for (int i = 0; i <= END_OF_FILE; ++i)
-            if (!valid_tokens[i]) return false;
-        return true;
-    }
 
     inline void debug_valid_tokens() {
 #ifdef DEBUG
