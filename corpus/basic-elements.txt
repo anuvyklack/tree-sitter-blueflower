@@ -167,7 +167,8 @@ Definition.1 - The simplest case
           (word))
         (token)
         (description
-          (word))
+          (paragraph
+            (word)))
         (token)
         (eof)))
 
@@ -190,7 +191,8 @@ description :
           (word))
         (token)
         (description
-          (word))
+          (paragraph
+            (word)))
         (token)
         (eof)))
 
@@ -209,12 +211,34 @@ Definition.3 - End token on new line
           (word))
         (token)
         (description
-          (word))
+          (paragraph
+            (word)))
         (token)
         (eof)))
 
 ================================================================================
-Definition.4 - Complex description with list
+Definition.4 - Multiline term
+================================================================================
+: term
+  term :                Description. :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word)
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)
+            (symbol)))
+        (token)
+        (eof)))
+
+================================================================================
+Definition.5 - Complex description with list
 ================================================================================
 : term :
 : term :                List:
@@ -249,11 +273,54 @@ Definition.4 - Complex description with list
                 (token)
                 (paragraph
                   (word))))
-            (list_break)))
+            (list_break))
+          (paragraph
+            (word)
+            (word)
+            (symbol)))
+        (token)
+        (eof)))
+
+================================================================================
+Definition.6 - Complex description with list
+================================================================================
+: term :
+: term :                Description:
+                        @code lua
+                        ...
+                        @end
+                        continue description. :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (token)
+        (term
+          (word))
+        (token)
         (description
-          (word)
-          (word)
-          (symbol))
+          (paragraph
+            (word)
+            (symbol))
+          (tag
+            (token)
+            (tag_name
+              (word))
+            (tag_parameter)
+            (new_line)
+            (content
+              (raw_word)
+              (new_line))
+            (end_tag)
+            (new_line))
+          (paragraph
+            (word)
+            (word)
+            (symbol)))
         (token)
         (eof)))
 
