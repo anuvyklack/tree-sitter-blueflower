@@ -48,7 +48,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "_hashtag_plus_blank_line"
+                    "name": "hashtag"
                   },
                   {
                     "type": "ALIAS",
@@ -78,6 +78,10 @@
                   },
                   {
                     "type": "SYMBOL",
+                    "name": "blank_line"
+                  },
+                  {
+                    "type": "SYMBOL",
                     "name": "hard_break"
                   },
                   {
@@ -92,6 +96,18 @@
                         "members": [
                           {
                             "type": "SYMBOL",
+                            "name": "blank_line"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
                             "name": "section"
                           },
                           {
@@ -100,7 +116,7 @@
                           },
                           {
                             "type": "SYMBOL",
-                            "name": "_hashtag_plus_blank_line"
+                            "name": "hashtag"
                           },
                           {
                             "type": "ALIAS",
@@ -127,6 +143,10 @@
                           {
                             "type": "SYMBOL",
                             "name": "comment"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "blank_line"
                           },
                           {
                             "type": "SYMBOL",
@@ -322,7 +342,7 @@
                         },
                         {
                           "type": "SYMBOL",
-                          "name": "_hashtag_plus_blank_line"
+                          "name": "hashtag"
                         },
                         {
                           "type": "ALIAS",
@@ -358,11 +378,23 @@
                               "members": [
                                 {
                                   "type": "SYMBOL",
+                                  "name": "blank_line"
+                                },
+                                {
+                                  "type": "BLANK"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "CHOICE",
+                              "members": [
+                                {
+                                  "type": "SYMBOL",
                                   "name": "list_block"
                                 },
                                 {
                                   "type": "SYMBOL",
-                                  "name": "_hashtag_plus_blank_line"
+                                  "name": "hashtag"
                                 },
                                 {
                                   "type": "ALIAS",
@@ -1026,22 +1058,6 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "PREC",
-              "value": 1,
-              "content": {
-                "type": "SYMBOL",
-                "name": "blank_line"
-              }
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
               "type": "ALIAS",
               "content": {
                 "type": "SYMBOL",
@@ -1121,7 +1137,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "_hashtag_plus_blank_line"
+                    "name": "hashtag"
                   },
                   {
                     "type": "ALIAS",
@@ -1151,6 +1167,10 @@
                   },
                   {
                     "type": "SYMBOL",
+                    "name": "blank_line"
+                  },
+                  {
+                    "type": "SYMBOL",
                     "name": "section"
                   },
                   {
@@ -1165,7 +1185,19 @@
                         "members": [
                           {
                             "type": "SYMBOL",
-                            "name": "_hashtag_plus_blank_line"
+                            "name": "blank_line"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "hashtag"
                           },
                           {
                             "type": "ALIAS",
@@ -1192,6 +1224,10 @@
                           {
                             "type": "SYMBOL",
                             "name": "comment"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "blank_line"
                           },
                           {
                             "type": "SYMBOL",
@@ -1301,18 +1337,6 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "hashtag"
-            }
-          },
-          "named": true,
-          "value": "directives"
-        },
-        {
           "type": "SYMBOL",
           "name": "list_start"
         },
@@ -1404,7 +1428,7 @@
                       },
                       {
                         "type": "SYMBOL",
-                        "name": "_hashtag_plus_blank_line"
+                        "name": "hashtag"
                       },
                       {
                         "type": "ALIAS",
@@ -1429,6 +1453,10 @@
                         "name": "comment"
                       },
                       {
+                        "type": "SYMBOL",
+                        "name": "blank_line"
+                      },
+                      {
                         "type": "SEQ",
                         "members": [
                           {
@@ -1440,7 +1468,19 @@
                             "members": [
                               {
                                 "type": "SYMBOL",
-                                "name": "_hashtag_plus_blank_line"
+                                "name": "blank_line"
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "hashtag"
                               },
                               {
                                 "type": "ALIAS",
@@ -1463,6 +1503,10 @@
                               {
                                 "type": "SYMBOL",
                                 "name": "comment"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "blank_line"
                               }
                             ]
                           }
@@ -2136,30 +2180,6 @@
         {
           "type": "SYMBOL",
           "name": "eol"
-        }
-      ]
-    },
-    "_hashtag_plus_blank_line": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "REPEAT1",
-          "content": {
-            "type": "SYMBOL",
-            "name": "hashtag"
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "blank_line"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         }
       ]
     },
@@ -3048,18 +3068,6 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "hashtag"
-            }
-          },
-          "named": true,
-          "value": "directives"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
             "type": "SYMBOL",
             "name": "tag_token"
           },
@@ -3751,18 +3759,6 @@
     "tag_with_syntax": {
       "type": "SEQ",
       "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "hashtag"
-            }
-          },
-          "named": true,
-          "value": "directives"
-        },
         {
           "type": "ALIAS",
           "content": {
@@ -4459,7 +4455,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "_hashtag_plus_blank_line"
+                    "name": "hashtag"
                   },
                   {
                     "type": "ALIAS",
@@ -4488,6 +4484,10 @@
                     "name": "comment"
                   },
                   {
+                    "type": "SYMBOL",
+                    "name": "blank_line"
+                  },
+                  {
                     "type": "SEQ",
                     "members": [
                       {
@@ -4499,7 +4499,19 @@
                         "members": [
                           {
                             "type": "SYMBOL",
-                            "name": "_hashtag_plus_blank_line"
+                            "name": "blank_line"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "hashtag"
                           },
                           {
                             "type": "ALIAS",
@@ -4526,6 +4538,10 @@
                           {
                             "type": "SYMBOL",
                             "name": "comment"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "blank_line"
                           }
                         ]
                       }
@@ -4559,6 +4575,10 @@
   ],
   "conflicts": [
     [
+      "section",
+      "section_content"
+    ],
+    [
       "section_content"
     ],
     [
@@ -4570,21 +4590,6 @@
     ],
     [
       "list"
-    ],
-    [
-      "_hashtag_plus_blank_line"
-    ],
-    [
-      "_hashtag_plus_blank_line",
-      "list"
-    ],
-    [
-      "_hashtag_plus_blank_line",
-      "verbatim_tag"
-    ],
-    [
-      "_hashtag_plus_blank_line",
-      "tag_with_syntax"
     ]
   ],
   "precedences": [

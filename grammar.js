@@ -28,14 +28,11 @@ const blueflower_grammar = {
   ],
 
   conflicts: $ => [
+    [$.section, $.section_content],
     [$.section_content],
     [$.paragraph],
     [$.inline_tag, $.verbatim_tag],
     [$.list],
-    [$._hashtag_plus_blank_line],
-    [$._hashtag_plus_blank_line, $.list],
-    [$._hashtag_plus_blank_line, $.verbatim_tag],
-    [$._hashtag_plus_blank_line, $.tag_with_syntax],
   ],
 
   inline: $ => [
@@ -52,12 +49,12 @@ const blueflower_grammar = {
     document: $ => content($, [
       $.section,
       $.definition,
-      $._hashtag_plus_blank_line,
+      $.hashtag,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.list_block,
       $.comment,
-      // $.blank_line,
+      $.blank_line,
       $.hard_break,
     ]),
 
@@ -95,7 +92,7 @@ const blueflower_grammar = {
       alias(
         content($, [
           $.list_block,
-          $._hashtag_plus_blank_line,
+          $.hashtag,
           alias($.verbatim_tag, $.tag),
           alias($.tag_with_syntax, $.tag),
           $.comment,
@@ -149,20 +146,19 @@ const blueflower_grammar = {
 const sections = {
   section: $ => seq(
     $.heading,
-    // optional(prec.dynamic(2, $.blank_line)),
-    optional(prec(1, $.blank_line)),
+    // optional(prec(1, $.blank_line)),
     optional(alias($.section_content, $.content)),
     choice($.section_end, $.eof),
     (optional($.soft_break))
   ),
 
   section_content: $ => content($, [
-    $._hashtag_plus_blank_line,
+    $.hashtag,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
     $.list_block,
     $.comment,
-    // $.blank_line
+    $.blank_line,
     $.section
   ]),
 
@@ -192,7 +188,6 @@ const lists = {
   ),
 
   list: $ => seq(
-    alias(repeat($.hashtag), $.directives),
     $.list_start,
     repeat1($.list_item),
     optional($.list_end),
@@ -202,11 +197,11 @@ const lists = {
     field("level", alias($.list_token, $.token)),
     optional($.checkbox),
     content($, [
-      $._hashtag_plus_blank_line,
+      $.hashtag,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.comment,
-      // $.blank_line
+      $.blank_line
     ]),
     optional($.list)
   ),
@@ -230,11 +225,6 @@ const tags = {
       repeat(expression($, 'non-immediate', token)),
       $.content),
     $.eol
-  ),
-
-  _hashtag_plus_blank_line: $ => seq(
-    repeat1($.hashtag),
-    optional($.blank_line)
   ),
 
   inline_tag: $ => seq(
@@ -323,8 +313,6 @@ const tags = {
 
   // The content of this tag tree-sitter parser will skip.
   verbatim_tag: $ => seq(
-    alias(repeat($.hashtag), $.directives),
-
     alias($.tag_token, $.token),
     field('name',
           alias(
@@ -352,8 +340,6 @@ const tags = {
 
   // The content of this tag will be parsed by this parser.
   tag_with_syntax: $ => seq(
-    alias(repeat($.hashtag), $.directives),
-
     alias($.extended_tag_token, $.token),
     field('name',
           alias(
@@ -377,12 +363,12 @@ const tags = {
   // Content move into separate node, make it appears in a tree as one node,
   // not a sequence of "$.content" nodes.
   tag_content: $ => content($, [
-    $._hashtag_plus_blank_line,
+    $.hashtag,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
     $.list_block,
     $.comment,
-    // $.blank_line
+    $.blank_line,
   ]),
 }
 
@@ -419,7 +405,7 @@ function content($, elements) {
         ...elements,
         seq(
           $.paragraph,
-          // optional($.blank_line),
+          optional($.blank_line),
           choice(...elements)
         ),
       )),

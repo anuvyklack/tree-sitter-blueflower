@@ -115,7 +115,7 @@ consectetur cupidatat.
       (eof))
 
 ================================================================================
-Paragraph.4 - Hashtag and separate paragraph
+Paragraph.4 - Hashtag, blank_line and paragraph
 ================================================================================
 #tag param1 param2
 
@@ -177,7 +177,7 @@ List.1 - Simple list
         (list_break)))
 
 ================================================================================
-List.2a - List with one directive
+List.2a - Hashtag with immediate list
 ================================================================================
 #tag :key value
 - item
@@ -186,17 +186,16 @@ List.2a - List with one directive
 --------------------------------------------------------------------------------
 
     (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (symbol)
+          (word)
+          (word))
+        (new_line))
       (list_block
         (list
-          (directives
-            (hashtag
-              (token)
-              (tag_name)
-              (content
-                (symbol)
-                (word)
-                (word))
-              (new_line)))
           (list_start)
           (list_item
             (token)
@@ -209,7 +208,7 @@ List.2a - List with one directive
         (list_break)))
 
 ================================================================================
-List.2b - Separate hashtag and list
+List.2b - Hashtag blank line and list
 ================================================================================
 #tag :key value
 
@@ -242,44 +241,7 @@ List.2b - Separate hashtag and list
         (list_break)))
 
 ================================================================================
-List.2c - List with two directives
-================================================================================
-#tag
-#tag :key value
-- item
-- item
----
---------------------------------------------------------------------------------
-
-    (document
-      (list_block
-        (list
-          (directives
-            (hashtag
-              (token)
-              (tag_name)
-              (new_line))
-            (hashtag
-              (token)
-              (tag_name)
-              (content
-                (symbol)
-                (word)
-                (word))
-              (new_line)))
-          (list_start)
-          (list_item
-            (token)
-            (paragraph
-              (word)))
-          (list_item
-            (token)
-            (paragraph
-              (word))))
-        (list_break)))
-
-================================================================================
-List.2d - Hashtag and list with directive
+List.2d - Two hashtags, blank_line, hashtag and list
 ================================================================================
 #tag :key value
 #tag :key value
@@ -308,17 +270,16 @@ List.2d - Hashtag and list with directive
           (word))
         (new_line))
       (blank_line)
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (symbol)
+          (word)
+          (word))
+        (new_line))
       (list_block
         (list
-          (directives
-            (hashtag
-              (token)
-              (tag_name)
-              (content
-                (symbol)
-                (word)
-                (word))
-              (new_line)))
           (list_start)
           (list_item
             (token)

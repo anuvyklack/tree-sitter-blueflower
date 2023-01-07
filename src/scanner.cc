@@ -237,7 +237,8 @@ struct Scanner
         tag_parameter_is_valid = false;
 
         // Check if current line is empty line.
-        if (valid_tokens[BLANK_LINE] && is_newline(lexer->lookahead)) {
+        // if (valid_tokens[BLANK_LINE] && is_newline(lexer->lookahead)) {
+        if (is_newline(lexer->lookahead)) {
             if (lexer->lookahead == 13) advance(); // \r
             if (lexer->lookahead == 10) advance(); // \n
             lexer->mark_end(lexer);

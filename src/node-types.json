@@ -180,21 +180,6 @@
     }
   },
   {
-    "type": "directives",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "hashtag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "document",
     "named": true,
     "fields": {},
@@ -459,10 +444,6 @@
       "required": true,
       "types": [
         {
-          "type": "directives",
-          "named": true
-        },
-        {
           "type": "list_end",
           "named": true
         },
@@ -618,10 +599,6 @@
       "required": true,
       "types": [
         {
-          "type": "blank_line",
-          "named": true
-        },
-        {
           "type": "content",
           "named": true
         },
@@ -683,10 +660,6 @@
         },
         {
           "type": "content",
-          "named": true
-        },
-        {
-          "type": "directives",
           "named": true
         },
         {

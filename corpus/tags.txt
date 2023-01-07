@@ -98,43 +98,7 @@ Tag.3 - Nested tags
         (eof)))
 
 ================================================================================
-Tag.4 - Verbatim tag with directives
-================================================================================
-#propertie val
-#propertie val
-@footnote name
-    text
-@end
---------------------------------------------------------------------------------
-
-    (document
-      (tag
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word))
-            (new_line))
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word))
-            (new_line)))
-        (token)
-        name: (tag_name
-          (word))
-        parameter: (tag_parameter)
-        (new_line)
-        (content
-          (raw_word)
-          (new_line))
-        (end_tag)
-        (eof)))
-
-================================================================================
-Tag.5 - Verbatim tag with directives and blank_line after
+Tag.4 - Hashtags, verbatim tag and blank_line after
 ================================================================================
 #propertie val
 #propertie val
@@ -146,20 +110,19 @@ text
 --------------------------------------------------------------------------------
 
     (document
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word))
+        (new_line))
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word))
+        (new_line))
       (tag
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word))
-            (new_line))
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word))
-            (new_line)))
         (token)
         name: (tag_name
           (word))
@@ -170,12 +133,13 @@ text
           (new_line))
         (end_tag)
         (new_line))
+      (blank_line)
       (paragraph
         (word))
       (eof))
 
 ================================================================================
-Tag.6 - Hashtag and verbatim tag with directive
+Tag.6 - Hashtags and verbatim tag
 ================================================================================
 #propertie val
 
@@ -193,14 +157,13 @@ Tag.6 - Hashtag and verbatim tag with directive
           (word))
         (new_line))
       (blank_line)
+      (hashtag
+        (token)
+        (tag_name)
+        (content
+          (word))
+        (new_line))
       (tag
-        (directives
-          (hashtag
-            (token)
-            (tag_name)
-            (content
-              (word))
-            (new_line)))
         (token)
         (tag_name
           (word))
