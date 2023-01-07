@@ -53,13 +53,14 @@ const blueflower_grammar = {
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.list_block,
+      $.link,
       $.comment,
       $.blank_line,
       $.hard_break,
     ]),
 
     paragraph: $ => repeat1(choice(
-      $.escaped_sequence,
+      // $.escaped_sequence,
       $.word,
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
@@ -67,35 +68,41 @@ const blueflower_grammar = {
       // $.new_line,
     )),
 
-    escaped_sequence: $ => seq(
-      alias('\\', $.token),
-      choice(
-        alias(token.immediate(/\S+/), $.raw_word),
-        alias(/\s/, $.space)
-      )
-    ),
+    // escaped_sequence: $ => seq(
+    //   alias('\\', $.token),
+    //     choice(
+    //       alias(/\S+/, $.raw_word),
+    //       alias(/\s/, $.space)
+    //     )
+    //   // )
+    // ),
+
+    // immediate_escaped_sequence: $ => seq(
+    //   alias(
+    //     token.immediate(prec('special', '\\')),
+    //     $.token),
+    //   alias(
+    //     token.immediate(/\S+/),
+    //     $.raw_word)
+    // ),
 
     definition: $ => seq(
       field('term_open', alias($.definition_term_begin, $.token)),
       alias($.paragraph, $.term),
       field('term_close', alias($.definition_term_end, $.token)),
 
-      repeat(
-        seq(
-          field('term_open', alias($.definition_term_begin, $.token)),
-          alias($.paragraph, $.term),
-          field('term_close', alias($.definition_term_end, $.token)),
-        )
-      ),
+      repeat(seq(
+        field('term_open', alias($.definition_term_begin, $.token)),
+        alias($.paragraph, $.term),
+        field('term_close', alias($.definition_term_end, $.token)),
+      )),
 
-      // repeat(
-      //   seq(
-      //     optional(alias($.paragraph, $.description)),
-      //     field('term_open', alias($.definition_term_begin, $.token)),
-      //     alias($.paragraph, $.term),
-      //     field('term_close', alias($.definition_term_end, $.token)),
-      //   )
-      // ),
+      // repeat(seq(
+      //   optional(alias($.paragraph, $.description)),
+      //   field('term_open', alias($.definition_term_begin, $.token)),
+      //   alias($.paragraph, $.term),
+      //   field('term_close', alias($.definition_term_end, $.token)),
+      // )),
 
       $.description,
       field('description_end', alias($.definition_end, $.token)),
@@ -109,15 +116,6 @@ const blueflower_grammar = {
       alias($.tag_with_syntax, $.tag),
       $.comment,
     ]),
-
-    // immediate_escaped_sequence: $ => seq(
-    //   alias(
-    //     token.immediate(prec('special', '\\')),
-    //     $.token),
-    //   alias(
-    //     token.immediate(/\S+/),
-    //     $.raw_word)
-    // ),
 
     comment: $ => seq(
       '#',
@@ -176,7 +174,7 @@ const sections = {
 
   title: $ => seq(
     repeat1(choice(
-      $.escaped_sequence,
+      // $.escaped_sequence,
       $.word,
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
@@ -265,31 +263,30 @@ const tags = {
   _inline_tag_label: $ => seq(
     field('open_label',
           alias(
-            token.immediate(prec('immediate', '[')),
+            token.immediate('['),
             $.token)),
     alias(
       repeat(choice(
-        $.escaped_sequence,
-        alias(/[^\[\]\s\\]+/, $.word),
-        // expression($, 'non-immediate', token, '[]\\'),
+        // $.escaped_sequence,
+        // alias(/[^\[\]\s\\]+/, $.word),
+        expression($, 'non-immediate', token, '[]\\'),
         $.inline_tag,
         $.new_line
       )),
       $.label),
     field('close_label',
-          alias(
-            token.immediate(prec('immediate', ']')),
-            $.token)),
+          alias(']', $.token)),
   ),
 
   _inline_tag_content: $ => seq(
     field('open_content',
           alias(
-            token.immediate(prec('immediate', '(')),
+            // token.immediate(prec('immediate', '(')),
+            token.immediate('('),
             $.token)),
     alias(
       repeat( choice(
-        $.escaped_sequence,
+        // $.escaped_sequence,
         alias(/[^\(\)\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '()\\'),
         $.new_line
@@ -308,7 +305,7 @@ const tags = {
             $.token)),
     alias(
       repeat(choice(
-        $.escaped_sequence,
+        // $.escaped_sequence,
         alias(/[^\{\}\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '{}\\'),
         $.new_line
@@ -342,7 +339,7 @@ const tags = {
       )),
       $.content),
     $.end_tag,
-    choice($.comment, $.eol, $.blank_line)
+    // choice($.comment, $.eol, $.blank_line)
   ),
 
   // The content of this tag will be parsed by this parser.
@@ -364,7 +361,7 @@ const tags = {
     optional(
       alias($.tag_content, $.content)),
     $.end_tag,
-    choice($.comment, $.eol)
+    // choice($.comment, $.eol)
   ),
 
   // Content move into separate node, make it appears in a tree as one node,
@@ -377,6 +374,31 @@ const tags = {
     $.comment,
     $.blank_line,
   ]),
+
+}
+
+const links = {
+  link: $ => seq(
+    field('open_label',
+          alias('[', $.token)),
+    alias(
+      repeat(choice(
+        // $.escaped_sequence,
+        // alias(/[^\[\]\s\\]+/, $.word),
+        expression($, 'non-immediate', token, '[]\\'),
+        $.inline_tag,
+        $.new_line
+      )),
+      $.label),
+    field('close_label',
+          alias(']', $.token)),
+
+    field('open_content',
+          alias(token.immediate('('), $.token)),
+    alias(token.immediate(/[^\(\)\s\\]+/), $.content),
+    field('close_content',
+          alias(')', $.token))
+  )
 }
 
 /**
@@ -422,7 +444,7 @@ function content($, elements) {
 }
 
 // Object.assign(skald_grammar.rules, sections, lists, markup)
-Object.assign(blueflower_grammar.rules, sections, lists, tags)
+Object.assign(blueflower_grammar.rules, sections, lists, tags, links)
 
 module.exports = grammar(blueflower_grammar)
 

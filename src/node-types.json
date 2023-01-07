@@ -20,7 +20,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "blank_line",
@@ -32,10 +32,6 @@
         },
         {
           "type": "eof",
-          "named": true
-        },
-        {
-          "type": "escaped_sequence",
           "named": true
         },
         {
@@ -211,6 +207,10 @@
           "named": true
         },
         {
+          "type": "link",
+          "named": true
+        },
+        {
           "type": "list_block",
           "named": true
         },
@@ -224,29 +224,6 @@
         },
         {
           "type": "tag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "escaped_sequence",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "raw_word",
-          "named": true
-        },
-        {
-          "type": "space",
-          "named": true
-        },
-        {
-          "type": "token",
           "named": true
         }
       ]
@@ -416,10 +393,6 @@
       "required": true,
       "types": [
         {
-          "type": "escaped_sequence",
-          "named": true
-        },
-        {
           "type": "inline_tag",
           "named": true
         },
@@ -428,7 +401,75 @@
           "named": true
         },
         {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "symbol",
+          "named": true
+        },
+        {
           "type": "word",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "link",
+    "named": true,
+    "fields": {
+      "close_content": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "close_label": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "open_content": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "open_label": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "content",
+          "named": true
+        },
+        {
+          "type": "label",
           "named": true
         }
       ]
@@ -544,10 +585,6 @@
       "required": true,
       "types": [
         {
-          "type": "escaped_sequence",
-          "named": true
-        },
-        {
           "type": "inline_tag",
           "named": true
         },
@@ -574,10 +611,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "escaped_sequence",
-          "named": true
-        },
         {
           "type": "new_line",
           "named": true
@@ -650,23 +683,11 @@
       "required": true,
       "types": [
         {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "comment",
-          "named": true
-        },
-        {
           "type": "content",
           "named": true
         },
         {
           "type": "end_tag",
-          "named": true
-        },
-        {
-          "type": "eof",
           "named": true
         },
         {
@@ -712,10 +733,6 @@
       "required": true,
       "types": [
         {
-          "type": "escaped_sequence",
-          "named": true
-        },
-        {
           "type": "inline_tag",
           "named": true
         },
@@ -744,10 +761,6 @@
       "types": [
         {
           "type": "eof",
-          "named": true
-        },
-        {
-          "type": "escaped_sequence",
           "named": true
         },
         {
@@ -839,10 +852,6 @@
   },
   {
     "type": "soft_break",
-    "named": true
-  },
-  {
-    "type": "space",
     "named": true
   },
   {
