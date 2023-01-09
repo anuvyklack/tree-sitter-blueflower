@@ -21,11 +21,9 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
-        (new_line)
         (word)
         (word)
-        (symbol))
-      (eof))
+        (symbol)))
 
 ================================================================================
 Paragraph.2 - Two paragraphs
@@ -53,11 +51,9 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
-        (new_line)
         (word)
         (word)
-        (symbol)
-        (new_line))
+        (symbol))
       (blank_line)
       (paragraph
         (word)
@@ -74,53 +70,12 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
-        (new_line)
         (word)
         (word)
-        (symbol))
-      (eof))
+        (symbol)))
 
 ================================================================================
-Paragraph.3 - Paragraph with one directive
-================================================================================
-#tag param1 param2
-Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
-consectetur cupidatat.
---------------------------------------------------------------------------------
-
-    (document
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (word)
-          (number)
-          (word)
-          (number))
-        (new_line))
-      (paragraph
-        (word)
-        (word)
-        (word)
-        (word)
-        (word)
-        (symbol)
-        (word)
-        (word)
-        (word)
-        (word)
-        (word)
-        (word)
-        (word)
-        (word)
-        (new_line)
-        (word)
-        (word)
-        (symbol))
-      (eof))
-
-================================================================================
-Paragraph.4 - Hashtag, blank_line and paragraph
+Paragraph.3 - Hashtag, blank_line and paragraph
 ================================================================================
 #tag param1 param2
 
@@ -136,8 +91,7 @@ consectetur cupidatat.
           (word)
           (number)
           (word)
-          (number))
-        (new_line))
+          (number)))
       (blank_line)
       (paragraph
         (word)
@@ -154,192 +108,9 @@ consectetur cupidatat.
         (word)
         (word)
         (word)
-        (new_line)
         (word)
         (word)
-        (symbol))
-      (eof))
-
-================================================================================
-Definition.1 - The simplest case
-================================================================================
-: term : description :
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word))
-        (token)
-        (description
-          (paragraph
-            (word)))
-        (token)
-        (eof)))
-
-================================================================================
-Definition.2 - Two terms
-================================================================================
-: term :
-: term :
-description :
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word))
-        (token)
-        (description
-          (paragraph
-            (new_line)
-            (symbol)
-            (word)))
-        (token)
-        (new_line))
-      (paragraph
-        (word)
-        (symbol))
-      (eof))
-
-================================================================================
-Definition.3 - End token on new line
-================================================================================
-: term :
-    description
-:
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word))
-        (token)
-        (description
-          (paragraph
-            (new_line)
-            (word)
-            (new_line)))
-        (token)
-        (eof)))
-
-================================================================================
-Definition.4 - Multiline term
-================================================================================
-: term
-  term :                Description. :
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word)
-          (new_line)
-          (word))
-        (token)
-        (description
-          (paragraph
-            (word)
-            (symbol)))
-        (token)
-        (eof)))
-
-================================================================================
-Definition.5 - Complex description with list
-================================================================================
-: term :
-: term :                List:
-                        - item
-                        - item
-                        ---
-                        continue description. :
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word))
-        (token)
-        (description
-          (paragraph
-            (new_line)
-            (symbol)
-            (word)
-            (symbol)
-            (word)
-            (symbol)
-            (new_line))
-          (list_block
-            (list
-              (list_start)
-              (list_item
-                (token)
-                (paragraph
-                  (word)
-                  (new_line)))
-              (list_item
-                (token)
-                (paragraph
-                  (word)
-                  (new_line)))
-              (list_end))
-            (list_break)
-            (new_line))
-          (paragraph
-            (word)
-            (word)
-            (symbol)))
-        (token)
-        (eof)))
-
-================================================================================
-Definition.6 - Complex description with list
-================================================================================
-: term :
-: term :                Description:
-                        @code lua
-                        ...
-                        @end
-                        continue description. :
---------------------------------------------------------------------------------
-
-    (document
-      (definition
-        (token)
-        (term
-          (word))
-        (token)
-        (description
-          (paragraph
-            (new_line)
-            (symbol)
-            (word)
-            (symbol)
-            (word)
-            (symbol)
-            (new_line))
-          (tag
-            (token)
-            (tag_name
-              (word))
-            (tag_parameter)
-            (new_line)
-            (content
-              (raw_word)
-              (new_line))
-            (end_tag)
-            (new_line))
-          (paragraph
-            (word)
-            (word)
-            (symbol)))
-        (token)
-        (eof)))
+        (symbol)))
 
 ================================================================================
 List.1 - Simple list
@@ -352,20 +123,16 @@ List.1 - Simple list
     (document
       (list_block
         (list
-          (list_start)
           (list_item
             (token)
             (paragraph
               (word)
-              (new_line)))
+              ))
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
-          (list_end))
-        (list_break)
-        (eof)))
+              (word))))
+        (list_break)))
 
 ================================================================================
 List.2a - Hashtag with immediate list
@@ -383,24 +150,19 @@ List.2a - Hashtag with immediate list
         (content
           (symbol)
           (word)
-          (word))
-        (new_line))
+          (word)))
       (list_block
         (list
-          (list_start)
+          
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
+              (word)))
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
-          (list_end))
-        (list_break)
-        (eof)))
+              (word))))
+        (list_break)))
 
 ================================================================================
 List.2b - Hashtag blank line and list
@@ -419,25 +181,18 @@ List.2b - Hashtag blank line and list
         (content
           (symbol)
           (word)
-          (word))
-        (new_line))
+          (word)))
       (blank_line)
       (list_block
         (list
-          (list_start)
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
-          (list_item
+              (word))) (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
-          (list_end))
-        (list_break)
-        (eof)))
+              (word))))
+        (list_break)))
 
 ================================================================================
 List.2c - Two hashtags, blank_line, hashtag and list
@@ -458,16 +213,14 @@ List.2c - Two hashtags, blank_line, hashtag and list
         (content
           (symbol)
           (word)
-          (word))
-        (new_line))
+          (word)))
       (hashtag
         (token)
         (tag_name)
         (content
           (symbol)
           (word)
-          (word))
-        (new_line))
+          (word)))
       (blank_line)
       (hashtag
         (token)
@@ -475,24 +228,18 @@ List.2c - Two hashtags, blank_line, hashtag and list
         (content
           (symbol)
           (word)
-          (word))
-        (new_line))
+          (word)))
       (list_block
         (list
-          (list_start)
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
+              (word)))
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line)))
-          (list_end))
-        (list_break)
-        (eof)))
+              (word))))
+        (list_break)))
 
 ================================================================================
 List.3 - Arbitrary indented list
@@ -507,33 +254,435 @@ List.3 - Arbitrary indented list
     (document
       (list_block
         (list
-          (list_start)
           (list_item
             (token)
             (paragraph
-              (word)
-              (new_line))
+              (word))
             (list
-              (list_start)
+              (list_item
+                (token)
+                (paragraph
+                  (word))
+                (list
+                  (list_item
+                    (token)
+                    (paragraph
+                      (word)))))))
+          (list_item
+            (token)
+            (paragraph
+              (word))))
+        (list_break)))
+
+================================================================================
+Definition.1 - The simplest case
+================================================================================
+: term : description :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)))
+        (token)))
+
+================================================================================
+Definition.2 - Two terms
+================================================================================
+: term :
+: term :
+description :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (token)
+        (term
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)))
+        (token)))
+
+================================================================================
+Definition.3 - End token on new line
+================================================================================
+: term :
+    description
+:
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)))
+        (token)))
+
+================================================================================
+Definition.4 - Multiline term
+================================================================================
+: term
+  term :                Description. :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word)
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)
+            (symbol)))
+        (token)))
+
+================================================================================
+Definition.5 - Complex description with list
+================================================================================
+: term :
+: term :                List:
+                        - item
+                        - item
+                        ---
+                        continue description. :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (token)
+        (term
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)
+            (symbol))
+          (list_block
+            (list
+              (list_item
+                (token)
+                (paragraph
+                  (word)))
               (list_item
                 (token)
                 (paragraph
                   (word)
-                  (new_line))
-                (list
-                  (list_start)
-                  (list_item
-                    (token)
-                    (paragraph
-                      (word)
-                      (new_line)))
-                  (list_end)))
-              (list_end)))
-          (list_item
+                  )))
+            (list_break))
+          (paragraph
+            (word)
+            (word)
+            (symbol)))
+        (token)))
+
+================================================================================
+Definition.6 - Complex description with list
+================================================================================
+: term :
+: term :                Description:
+                        @code lua
+                        ...
+                        @end
+                        continue description. :
+--------------------------------------------------------------------------------
+
+    (document
+      (definition
+        (token)
+        (term
+          (word))
+        (token)
+        (token)
+        (term
+          (word))
+        (token)
+        (description
+          (paragraph
+            (word)
+            (symbol))
+          (tag
             (token)
-            (paragraph
-              (word)
-              (new_line)))
-          (list_end))
-        (list_break)
-        (eof)))
+            (tag_name
+              (word))
+            (tag_parameter)
+            (content
+              (raw_word))
+            (end_tag))
+          (paragraph
+            (word)
+            (word)
+            (symbol)))
+        (token)))
+
+================================================================================
+Link.1 - Link
+================================================================================
+[label](target)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token))))
+
+================================================================================
+Link.2 - Reference link
+================================================================================
+[label][target]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Link.3 - Short reference link
+================================================================================
+[label]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Link.4 - Short reference link and raw text
+================================================================================
+[label] (word)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)))
+
+================================================================================
+Link.5 - short reference link and continue text
+================================================================================
+(word) [label] (word)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (symbol)
+        (word)
+        (symbol)
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)))
+
+================================================================================
+Link.6 - Reference link and text
+================================================================================
+[label][target] (word)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)))
+
+================================================================================
+Link.7 - Reference link definition
+================================================================================
+[ref]: https://url
+--------------------------------------------------------------------------------
+
+    (document
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (link
+          (raw_word))))
+
+================================================================================
+Link.8a - Paragraph with reference link definition after
+================================================================================
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+[ref]: https://url
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (word)
+        (symbol))
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (link
+          (raw_word))))
+
+================================================================================
+Link.8b - Paragraph with reference link definition after
+================================================================================
+text @tag[label] [ref] [label][ref] [label](link)
+[ref]: https://url
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (word)
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token)))
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (link
+          (raw_word))))
+
+================================================================================
+Link.8c - Paragraph with reference link definition after
+================================================================================
+[label](link) @tag[label] [ref] [label][ref]
+[ref]: https://url
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token))
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token)))
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (link
+          (raw_word))))

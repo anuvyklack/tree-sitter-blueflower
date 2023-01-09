@@ -2,6 +2,8 @@ const blueflower_grammar = {
   name: 'blueflower',
 
   externals: $ => [
+    $._paragraph_end,
+
     $.heading_token,
     $.section_end,
 
@@ -9,36 +11,37 @@ const blueflower_grammar = {
     $.definition_term_end,
     $.definition_end,
 
-    $.list_start,
+    $._list_start,
     $.list_token,
-    $.list_end,
+    $._list_end,
 
-    $.tag_token,
-    $.extended_tag_token,
+    $._tag_begin,
     $.hashtag_token,
-    $.tag_parameter,
-    $.end_tag,
 
     $.blank_line,
     $.soft_break,
     $.hard_break,
 
-    // I need to parse new lines myself, becausea
-    //    new_line: $ => choice('\r\n', '\r', '\n')
-    // rule return two new line chars in a row as one new_line token, and
-    // I miss blank lines, which I need, to separate paragraphs.
-    $.new_line,
-    $.eof,
-    $.error
+    // We need to parse newline char as a separate node, because it
+    // triggers the external scanner at the begging of the next line (column 0)
+    // but not at the first non-blank character, as parser do without this rule.
+    //
+    // We need to parse newlines ourself, because this rule:
+    // ```
+    //    _new_line: $ => choice('\r\n', '\r', '\n')
+    // ```
+    // returns two new line chars in a row as one "$._new_line" node, and
+    // we miss all "$.blank_line" nodes, which we need, to separate paragraphs.
+    $._new_line,
+    $._eof, // end of the file
+
+    $.error,
   ],
 
   conflicts: $ => [
     [$.section],
-    [$.section, $.section_content],
-    [$.section_content],
-    [$.paragraph],
-    [$.inline_tag, $.verbatim_tag],
-    [$.list],
+    [$._paragraph_content],
+    [$.tag_content],
   ],
 
   inline: $ => [
@@ -52,27 +55,52 @@ const blueflower_grammar = {
   ],
 
   rules: {
-    document: $ => content($, [
-      $.section,
-      $.definition,
-      $.hashtag,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.list_block,
-      $.link,
-      $.comment,
-      $.blank_line,
-      $.hard_break,
-    ]),
+    document: $ => seq(
+      repeat(choice(
+        $.paragraph,
+        $._paragraph_and_reference_link_definition,
+        $.reference_link_definition,
+        $.section,
+        $.definition,
+        $.hashtag,
+        alias($.verbatim_tag, $.tag),
+        alias($.tag_with_syntax, $.tag),
+        $.list_block,
+        $.comment,
+        $.blank_line,
+        $.hard_break,
+      )),
+      optional($._eof)
+    ),
 
-    paragraph: $ => repeat1(choice(
+    paragraph: $ => seq(
+      $._paragraph_content,
+      choice($._paragraph_end, $._eof)
+    ),
+
+    _paragraph_and_reference_link_definition: $ => seq(
+      alias($._paragraph_content, $.paragraph),
+      $._new_line,
+      $.reference_link_definition
+    ),
+
+    _paragraph_content: $ => seq(
+      $._general_text,
+      repeat(choice(
+        $._general_text,
+        $._new_line
+      )),
+    ),
+
+    _general_text: $ => choice(
       // $.escaped_sequence,
       $.word,
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-      // $.link, $.link_reference, $.short_link_reference,
-      $.new_line,
-    )),
+      $.link,
+      $.reference_link,
+      $.short_reference_link,
+    ),
 
     // escaped_sequence: $ => seq(
     //   alias('\\', $.token),
@@ -98,43 +126,49 @@ const blueflower_grammar = {
       field('term_close', alias($.definition_term_end, $.token)),
 
       repeat(seq(
-        field('term_open', alias($.definition_term_begin, $.token)),
-        alias($.paragraph, $.term),
-        field('term_close', alias($.definition_term_end, $.token)),
+          $._new_line,
+          field('term_open', alias($.definition_term_begin, $.token)),
+          alias($.paragraph, $.term),
+          field('term_close', alias($.definition_term_end, $.token)),
       )),
 
       // repeat(seq(
-      //   optional(alias($.paragraph, $.description)),
+      //   optional(alias($.general_text, $.description)),
       //   field('term_open', alias($.definition_term_begin, $.token)),
-      //   alias($.paragraph, $.term),
+      //   alias($.general_text, $.term),
       //   field('term_close', alias($.definition_term_end, $.token)),
       // )),
 
+      optional($._new_line),
       $.description,
       field('description_end', alias($.definition_end, $.token)),
       $.eol
     ),
 
-    description: $ => content($, [
-      $.list_block,
+    description: $ => repeat1(choice(
+      $.paragraph,
+      $._paragraph_and_reference_link_definition,
+      $.reference_link_definition,
       $.hashtag,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
+      $.list_block,
       $.comment,
-    ]),
+      $.blank_line,
+    )),
 
     comment: $ => seq(
       '#',
       optional(seq(
-        ' ',
+        $._whitespace,
         repeat(alias($.raw_word, "word"))
       )),
-      $.new_line,
+      $._new_line,
     ),
 
-    // new_line: _ => choice('\n\r', '\n', '\r'),
-    // new_line: _ => /\n|\r\n?/,
-    eol: $ => choice($.new_line, $.eof),
+    // _new_line: _ => choice('\n\r', '\n', '\r'),
+    // _new_line: _ => /\n|\r\n?/,
+    eol: $ => choice($._new_line, $._eof),
 
     word: $ => expression($, 'non-immediate', token, '@#['),
     // word: $ => /[^\s@#\[]+/,
@@ -144,6 +178,8 @@ const blueflower_grammar = {
     //   expression('non-immediate', token),
     //   repeat(expression('immediate', token.immediate))
     // ),
+
+    _whitespace: $ => /[ \t]+/,
 
     // // - Alphabetic (Alpha) – letters,
     // // - Mark (M) – для акцентов,
@@ -160,39 +196,30 @@ const sections = {
     $.heading,
     // optional(prec(1, $.blank_line)),
     optional(alias($.section_content, $.content)),
-    choice($.section_end, $.eof),
+    choice($.section_end, $._eof),
     optional(seq(
       (optional($.soft_break)),
       $.eol
     ))
   ),
 
-  section_content: $ => content($, [
+  section_content: $ => repeat1(choice(
+    $.section,
+    $.paragraph,
+    $._paragraph_and_reference_link_definition,
+    $.reference_link_definition,
+    $.definition,
+    $.list_block,
+    $.comment,
     $.hashtag,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
-    $.list_block,
-    $.comment,
     $.blank_line,
-    $.section
-  ]),
+  )),
 
   heading: $ => seq(
     field("level", alias($.heading_token, $.token)),
-    $.title,
-  ),
-
-  title: $ => seq(
-    repeat1(choice(
-      // $.escaped_sequence,
-      $.word,
-      $.inline_tag,
-      // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-      // $.link, $.link_reference, $.short_link_reference,
-      // prec.dynamic(2, $.new_line),
-      prec(1, $.new_line),
-    )),
-    $.eol,
+    alias($.paragraph, $.title),
   ),
 }
 
@@ -203,21 +230,23 @@ const lists = {
   ),
 
   list: $ => seq(
-    $.list_start,
+    $._list_start,
     repeat1($.list_item),
-    $.list_end,
+    $._list_end,
   ),
 
   list_item: $ => seq(
     field("level", alias($.list_token, $.token)),
     optional($.checkbox),
-    content($, [
+    repeat(choice(
+      $.paragraph,
+      $.definition,
       $.hashtag,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.comment,
       $.blank_line
-    ]),
+    )),
     optional($.list)
   ),
 
@@ -226,6 +255,52 @@ const lists = {
     token.immediate( choice(' ', /\S/) ),
     token.immediate(']'),
   )),
+}
+
+const links = {
+  link_label: $ => repeat1(choice(
+    // $.escaped_sequence,
+    // alias(/[^\[\]\s\\]+/, $.word),
+    expression($, 'non-immediate', token, '[]\\'),
+    $.inline_tag,
+    $._new_line
+  )),
+
+  reference_link_definition: $ => prec.dynamic(1, seq(
+    field('open_reference', alias('[', $.token)),
+    alias($.link_label, $.reference),
+    field('close_reference', alias(']:', $.token)),
+    $._whitespace,
+
+    alias(repeat($.raw_word), $.link),
+    $.eol
+  )),
+
+  short_reference_link: $ => seq(
+    field('open_reference', alias('[', $.token)),
+    alias($.link_label, $.reference),
+    field('close_reference', alias(']', $.token)),
+  ),
+
+  reference_link: $ => seq(
+    field('open_label', alias('[', $.token)),
+    optional(alias($.link_label, $.label)),
+    field('close_label', alias(']', $.token)),
+
+    field('open_reference', alias(token.immediate('['), $.token)),
+    optional(alias($.link_label, $.reference)),
+    field('close_reference', alias(']', $.token)),
+  ),
+
+  link: $ => seq(
+    field('open_label', alias('[', $.token)),
+    optional(alias($.link_label, $.label)),
+    field('close_label', alias(']', $.token)),
+
+    field('open_target', alias(token.immediate('('), $.token)),
+    alias(token.immediate(/[^\(\)\s\\]+/), $.target),
+    field('close_target', alias(')', $.token))
+  ),
 }
 
 const tags = {
@@ -244,12 +319,47 @@ const tags = {
 
   inline_tag: $ => seq(
     alias(
-      choice($.tag_token, '@', ':'),
+      choice('@', ':'),
+      // choice('@', ':'),
       $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
             $.tag_name)),
+
+    // field('open_label',
+    //       alias(
+    //         token.immediate('['),
+    //         $.token)),
+    // alias(
+    //   repeat(choice(
+    //     // $.escaped_sequence,
+    //     // alias(/[^\[\]\s\\]+/, $.word),
+    //     expression($, 'non-immediate', token, '[]\\'),
+    //     $.inline_tag,
+    //     $._new_line
+    //   )),
+    //   $.label),
+    // field('close_label',
+    //       alias(']', $.token)),
+
+    // field('open_content',
+    //       alias(
+    //         token.immediate(prec('immediate', '(')),
+    //         // token.immediate('('),
+    //         $.token)),
+    // alias(
+    //   repeat( choice(
+    //     // $.escaped_sequence,
+    //     alias(/[^\(\)\s\\]+/, $.raw_word),
+    //     // expression($, 'non-immediate', token, '()\\'),
+    //     $._new_line
+    //   )),
+    //   $.content),
+    // field('close_content',
+    //       alias(
+    //         prec('non-immediate', ')'),
+    //         $.token))
 
     choice(
       seq(
@@ -268,38 +378,30 @@ const tags = {
         $._inline_tag_parameters
       )
     )
+
   ),
 
-  _inline_tag_label: $ => seq(
-    field('open_label',
-          alias(
-            token.immediate('['),
-            $.token)),
-    alias(
-      repeat(choice(
-        // $.escaped_sequence,
-        // alias(/[^\[\]\s\\]+/, $.word),
-        expression($, 'non-immediate', token, '[]\\'),
-        $.inline_tag,
-        $.new_line
-      )),
-      $.label),
-    field('close_label',
-          alias(']', $.token)),
+  _inline_tag_label: $ => choice(
+    seq(
+      field('open_label', alias(token.immediate('['), $.token)),
+      alias($.link_label, $.label),
+      field('close_label', alias(']', $.token)),
+    ),
+    '[]'
   ),
 
   _inline_tag_content: $ => seq(
     field('open_content',
           alias(
-            // token.immediate(prec('immediate', '(')),
-            token.immediate('('),
+            token.immediate(prec('immediate', '(')),
+            // token.immediate('('),
             $.token)),
     alias(
       repeat( choice(
         // $.escaped_sequence,
         alias(/[^\(\)\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '()\\'),
-        $.new_line
+        $._new_line
       )),
       $.content),
     field('close_content',
@@ -318,7 +420,7 @@ const tags = {
         // $.escaped_sequence,
         alias(/[^\{\}\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '{}\\'),
-        $.new_line
+        $._new_line
       )),
       $.parameters),
     field('close_parameters',
@@ -327,7 +429,8 @@ const tags = {
 
   // The content of this tag tree-sitter parser will skip.
   verbatim_tag: $ => seq(
-    alias($.tag_token, $.token),
+    $._tag_begin,
+    alias('@', $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate)),
@@ -339,23 +442,36 @@ const tags = {
             repeat(
               alias($.raw_word, $.tag_parameter))),
     )),
-    $.new_line,
+    $._new_line,
 
     alias(
       repeat(choice(
         alias($.verbatim_tag, $.tag),
         alias($.tag_with_syntax, $.tag),
-        seq( repeat($.raw_word), $.new_line),
+
+        // alias(/[^@\s]+/, $.raw_word),
+        alias(/[^@*\s]+/, $.raw_word),
+        alias('@', $.at),
+        $._new_line,
+        $.blank_line,
+        // seq(
+        //   repeat(choice(
+        //     alias(/[^@\s]+/, $.raw_word),
+        //     alias('@', $.at),
+        //   )),
+        //   $._new_line
+        // ),
       )),
       $.content),
+
     $.end_tag,
-    // choice($.comment, $.eol, $.blank_line)
     $.eol
   ),
 
   // The content of this tag will be parsed by this parser.
   tag_with_syntax: $ => seq(
-    alias($.extended_tag_token, $.token),
+    $._tag_begin,
+    alias('@+', $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate)),
@@ -367,18 +483,22 @@ const tags = {
             repeat(
               alias($.raw_word, $.tag_parameter))),
     )),
-    $.new_line,
+    $._new_line,
 
     optional(
       alias($.tag_content, $.content)),
+
     $.end_tag,
-    // choice($.comment, $.eol)
     $.eol
   ),
 
   // Content move into separate node, make it appears in a tree as one node,
   // not a sequence of "$.content" nodes.
   tag_content: $ => content($, [
+    $.paragraph,
+    $._paragraph_and_reference_link_definition,
+    $.reference_link_definition,
+    $.definition,
     $.hashtag,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
@@ -387,30 +507,7 @@ const tags = {
     $.blank_line,
   ]),
 
-}
-
-const links = {
-  link: $ => seq(
-    field('open_label',
-          alias('[', $.token)),
-    alias(
-      repeat(choice(
-        // $.escaped_sequence,
-        // alias(/[^\[\]\s\\]+/, $.word),
-        expression($, 'non-immediate', token, '[]\\'),
-        $.inline_tag,
-        $.new_line
-      )),
-      $.label),
-    field('close_label',
-          alias(']', $.token)),
-
-    field('open_content',
-          alias(token.immediate('('), $.token)),
-    alias(token.immediate(/[^\(\)\s\\]+/), $.content),
-    field('close_content',
-          alias(')', $.token))
-  )
+  end_tag: $ => seq($._tag_begin, '@end'),
 }
 
 /**
@@ -441,7 +538,7 @@ function content($, elements) {
       repeat1(choice(
         seq(
           $.paragraph,
-          choice($.blank_line, $.eof)
+          choice($.blank_line, $._eof)
         ),
         ...elements,
         seq(

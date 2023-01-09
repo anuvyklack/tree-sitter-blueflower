@@ -11,12 +11,9 @@ Tag.1 - Verbatim tag
         (token)
         name: (tag_name
           (word))
-        (new_line)
         (content
-          (raw_word)
-          (new_line))
-        (end_tag)
-        (eof)))
+          (raw_word))
+        (end_tag)))
 
 ================================================================================
 Tag.2 - Tag with syntax
@@ -33,18 +30,14 @@ Tag.2 - Tag with syntax
         (token)
         (tag_name
           (word))
-        (new_line)
         (content
           (paragraph
             (word)
-            (word)
-            (new_line))
+            (word))
           (blank_line)
           (paragraph
-            (word)
-            (new_line)))
-        (end_tag)
-        (eof)))
+            (word)))
+        (end_tag)))
 
 ================================================================================
 Tag.3 - Nested tags
@@ -65,7 +58,6 @@ Tag.3 - Nested tags
         (token)
         (tag_name
           (word))
-        (new_line)
         (content
           (tag
             (token)
@@ -73,32 +65,24 @@ Tag.3 - Nested tags
               (word)
               (symbol)
               (word))
-            (new_line)
             (content
               (paragraph
-                (word)
-                (new_line)))
-            (end_tag)
-            (new_line))
+                (word)))
+            (end_tag))
           (tag
             (token)
             (tag_name
               (word))
             (tag_parameter)
-            (new_line)
             (content
               (raw_word)
               (raw_word)
               (raw_word)
               (raw_word)
-              (new_line)
               (raw_word)
-              (raw_word)
-              (new_line))
-            (end_tag)
-            (new_line)))
-        (end_tag)
-        (eof)))
+              (raw_word))
+            (end_tag)))
+        (end_tag)))
 
 ================================================================================
 Tag.4 - Hashtags, verbatim tag and blank_line after
@@ -117,29 +101,23 @@ text
         (token)
         (tag_name)
         (content
-          (word))
-        (new_line))
+          (word)))
       (hashtag
         (token)
         (tag_name)
         (content
-          (word))
-        (new_line))
+          (word)))
       (tag
         (token)
         name: (tag_name
           (word))
         parameter: (tag_parameter)
-        (new_line)
         (content
-          (raw_word)
-          (new_line))
-        (end_tag)
-        (new_line))
+          (raw_word))
+        (end_tag))
       (blank_line)
       (paragraph
-        (word))
-      (eof))
+        (word)))
 
 ================================================================================
 Tag.6 - Hashtags and verbatim tag
@@ -157,26 +135,21 @@ Tag.6 - Hashtags and verbatim tag
         (token)
         (tag_name)
         (content
-          (word))
-        (new_line))
+          (word)))
       (blank_line)
       (hashtag
         (token)
         (tag_name)
         (content
-          (word))
-        (new_line))
+          (word)))
       (tag
         (token)
         (tag_name
           (word))
         (tag_parameter)
-        (new_line)
         (content
-          (raw_word)
-          (new_line))
-        (end_tag)
-        (eof)))
+          (raw_word))
+        (end_tag)))
 
 ================================================================================
 Hashtag.1 - Hashtag
@@ -190,5 +163,224 @@ Hashtag.1 - Hashtag
         (tag_name)
         (content
           (word)
-          (word))
-        (eof)))
+          (word))))
+
+================================================================================
+Inline tag.1 - Simplest case
+================================================================================
+@tag[label](content){params}
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (content
+            (raw_word))
+          (token)
+          (token)
+          (parameters
+            (raw_word))
+          (token))))
+
+================================================================================
+Inline tag.2 - Only label
+================================================================================
+@tag[label] (content){params}
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)
+        (symbol)
+        (word)
+        (symbol)))
+
+================================================================================
+Inline tag.3 - Only content
+================================================================================
+@tag(content) [label]{params}
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (content
+            (raw_word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)))
+
+================================================================================
+Inline tag.4a - Content with parameter
+================================================================================
+@tag(content){param=val} [label]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (content
+            (raw_word))
+          (token)
+          (token)
+          (parameters
+            (raw_word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Inline tag.4b - Content with parameter
+================================================================================
+@tag(content){param = val} [label]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (content
+            (raw_word))
+          (token)
+          (token)
+          (parameters
+            (raw_word)
+            (raw_word)
+            (raw_word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Conflict.1 - inline_tag with link
+================================================================================
+@tag(content) [label](params)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (content
+            (raw_word))
+          (token))
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token))))
+
+================================================================================
+Conflict.2 - inline_tag with short_reference_link
+================================================================================
+ [label] @tag[label](content) [label]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (content
+            (raw_word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Conflict.3 - reference_link with inline_tag
+================================================================================
+ [label][ref] @tag[label](content){param = val}
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (content
+            (raw_word))
+          (token)
+          (token)
+          (parameters
+            (raw_word)
+            (raw_word)
+            (raw_word))
+          (token))))
+

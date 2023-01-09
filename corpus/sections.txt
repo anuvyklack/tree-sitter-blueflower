@@ -1,0 +1,180 @@
+================================================================================
+Section.1 - Title only
+================================================================================
+* Title
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))))
+
+================================================================================
+Section.2 - Multi line title
+================================================================================
+* Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum
+  sint consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)))))
+
+================================================================================
+Section.3 - Two multiline titles
+================================================================================
+* Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum
+  sint consectetur cupidatat.
+* Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum
+  sint consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)))
+        (section_end))
+      (section
+        (heading
+          (token)
+          (title
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)))))
+
+================================================================================
+Section.4 - Six level titles
+================================================================================
+* Title
+** Title
+*** Title
+**** Title
+***** Title
+****** Title
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (content
+          (section
+            (heading
+              (token)
+              (title
+                (word)))
+            (content
+              (section
+                (heading
+                  (token)
+                  (title
+                    (word)))
+                (content
+                  (section
+                    (heading
+                      (token)
+                      (title
+                        (word)))
+                    (content
+                      (section
+                        (heading
+                          (token)
+                          (title
+                            (word)))
+                        (content
+                          (section
+                            (heading
+                              (token)
+                              (title
+                                (word)))))))))))))))
+
+================================================================================
+Section.5 - Title with multiline text
+================================================================================
+* Title
+
+Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint
+consectetur cupidatat.
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (content
+          (blank_line)
+          (paragraph
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (word)
+            (symbol)))))
