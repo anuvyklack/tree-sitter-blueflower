@@ -644,6 +644,10 @@
           "named": true
         },
         {
+          "type": "raw_link",
+          "named": true
+        },
+        {
           "type": "reference_link",
           "named": true
         },
@@ -680,6 +684,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "raw_link",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "raw_word",
@@ -780,28 +789,7 @@
   {
     "type": "reference_link_definition",
     "named": true,
-    "fields": {
-      "close_reference": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "open_reference": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": true,
@@ -812,6 +800,10 @@
         },
         {
           "type": "reference",
+          "named": true
+        },
+        {
+          "type": "token",
           "named": true
         }
       ]
@@ -977,6 +969,10 @@
           "named": true
         },
         {
+          "type": "raw_link",
+          "named": true
+        },
+        {
           "type": "reference_link",
           "named": true
         },
@@ -1020,6 +1016,10 @@
           "named": true
         },
         {
+          "type": "raw_link",
+          "named": true
+        },
+        {
           "type": "reference_link",
           "named": true
         },
@@ -1045,6 +1045,14 @@
   },
   {
     "type": "#",
+    "named": false
+  },
+  {
+    "type": "<",
+    "named": false
+  },
+  {
+    "type": ">",
     "named": false
   },
   {

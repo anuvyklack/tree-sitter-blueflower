@@ -101,6 +101,7 @@ const blueflower_grammar = {
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
       $.link,
+      $.raw_link,
       $.reference_link,
       $.short_reference_link,
     ),
@@ -169,7 +170,7 @@ const blueflower_grammar = {
     eol: $ => choice($._new_line, $._eof),
 
     word: $ => seq(
-      expression($, 'non-immediate', token, '@[:'),
+      expression($, 'non-immediate', token, '@[:<'),
       optional(expression($, 'immediate', token.immediate)),
     ),
     // word: $ => /[^\s@\[]+/,
@@ -273,9 +274,9 @@ const links = {
   )),
 
   reference_link_definition: $ => prec.dynamic(1, seq(
-    field('open_reference', alias('[', $.token)),
+    alias('[', $.token),
     alias($.link_label, $.reference),
-    field('close_reference', alias(']:', $.token)),
+    alias(']:', $.token),
     $._whitespace,
 
     alias(repeat($.raw_word), $.link),
@@ -307,6 +308,12 @@ const links = {
     alias(token.immediate(/[^\(\)\s\\]+/), $.target),
     field('close_target', alias(')', $.token))
   ),
+
+  raw_link: _ => seq(
+    '<',
+    token.immediate(/[^>\s]+/),
+    token.immediate('>'),
+  )
 }
 
 const tags = {

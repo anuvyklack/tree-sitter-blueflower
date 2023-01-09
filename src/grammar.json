@@ -178,6 +178,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "raw_link"
+        },
+        {
+          "type": "SYMBOL",
           "name": "reference_link"
         },
         {
@@ -718,22 +722,6 @@
                   "content": {
                     "type": "STRING",
                     "value": ";"
-                  }
-                }
-              },
-              "named": true,
-              "value": "symbol"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "TOKEN",
-                "content": {
-                  "type": "PREC",
-                  "value": "non-immediate",
-                  "content": {
-                    "type": "STRING",
-                    "value": "<"
                   }
                 }
               },
@@ -5526,17 +5514,13 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "FIELD",
-            "name": "open_reference",
+            "type": "ALIAS",
             "content": {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "["
-              },
-              "named": true,
-              "value": "token"
-            }
+              "type": "STRING",
+              "value": "["
+            },
+            "named": true,
+            "value": "token"
           },
           {
             "type": "ALIAS",
@@ -5548,17 +5532,13 @@
             "value": "reference"
           },
           {
-            "type": "FIELD",
-            "name": "close_reference",
+            "type": "ALIAS",
             "content": {
-              "type": "ALIAS",
-              "content": {
-                "type": "STRING",
-                "value": "]:"
-              },
-              "named": true,
-              "value": "token"
-            }
+              "type": "STRING",
+              "value": "]:"
+            },
+            "named": true,
+            "value": "token"
           },
           {
             "type": "SYMBOL",
@@ -5802,6 +5782,29 @@
             },
             "named": true,
             "value": "token"
+          }
+        }
+      ]
+    },
+    "raw_link": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "[^>\\s]+"
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ">"
           }
         }
       ]
