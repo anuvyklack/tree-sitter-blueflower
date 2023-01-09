@@ -113,6 +113,91 @@ consectetur cupidatat.
         (symbol)))
 
 ================================================================================
+Escaped sequence.1
+================================================================================
+\@tag[label] (word)
+[foo]: https://
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (escaped_sequence
+          (token)
+          (raw_word))
+        (symbol)
+        (word)
+        (symbol))
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (link
+          (raw_word))))
+
+================================================================================
+Escaped sequence.2
+================================================================================
+@tag[label] (word)
+\[foo]: https://
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)
+        (escaped_sequence
+          (token)
+          (raw_word))
+        (word)
+        (symbol)
+        (symbol)
+        (symbol)))
+
+================================================================================
+Escaped sequence.3
+================================================================================
+@tag[label] (word)\
+[foo]: https://
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)
+        (escaped_sequence
+          (token)
+          (space))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)
+        (word)
+        (symbol)
+        (symbol)
+        (symbol)))
+
+================================================================================
 List.1 - Simple list
 ================================================================================
 - item
@@ -686,3 +771,30 @@ Link.8c - Paragraph with reference link definition after
         (token)
         (link
           (raw_word))))
+
+================================================================================
+Code block.1
+================================================================================
+```python
+@njit(parallel=True)
+def logistic_regression(Y, X, w, iterations):
+    ...
+    return w
+```
+--------------------------------------------------------------------------------
+
+    (document
+      (code_block
+        (code_block_token)
+        (tag_parameter)
+        (content
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word)
+          (raw_word))
+        (code_block_token)))

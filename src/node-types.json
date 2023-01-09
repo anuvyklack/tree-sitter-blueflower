@@ -1,5 +1,35 @@
 [
   {
+    "type": "code_block",
+    "named": true,
+    "fields": {
+      "parameter": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "tag_parameter",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "code_block_token",
+          "named": true
+        },
+        {
+          "type": "content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "comment",
     "named": true,
     "fields": {}
@@ -13,11 +43,11 @@
       "required": false,
       "types": [
         {
-          "type": "at",
+          "type": "blank_line",
           "named": true
         },
         {
-          "type": "blank_line",
+          "type": "code_block",
           "named": true
         },
         {
@@ -138,6 +168,10 @@
           "named": true
         },
         {
+          "type": "code_block",
+          "named": true
+        },
+        {
           "type": "comment",
           "named": true
         },
@@ -174,6 +208,10 @@
       "types": [
         {
           "type": "blank_line",
+          "named": true
+        },
+        {
+          "type": "code_block",
           "named": true
         },
         {
@@ -547,6 +585,10 @@
           "named": true
         },
         {
+          "type": "code_block",
+          "named": true
+        },
+        {
           "type": "comment",
           "named": true
         },
@@ -638,6 +680,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "raw_word",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "reference",
@@ -901,6 +948,11 @@
     }
   },
   {
+    "type": "tag_parameter",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "term",
     "named": true,
     "fields": {},
@@ -987,8 +1039,9 @@
     }
   },
   {
-    "type": " ",
-    "named": false
+    "type": "word",
+    "named": false,
+    "fields": {}
   },
   {
     "type": "#",
@@ -1003,15 +1056,15 @@
     "named": false
   },
   {
-    "type": "at",
-    "named": true
-  },
-  {
     "type": "blank_line",
     "named": true
   },
   {
     "type": "checkbox",
+    "named": true
+  },
+  {
+    "type": "code_block_token",
     "named": true
   },
   {
@@ -1024,10 +1077,6 @@
   },
   {
     "type": "number",
-    "named": true
-  },
-  {
-    "type": "raw_word",
     "named": true
   },
   {
@@ -1047,23 +1096,11 @@
     "named": true
   },
   {
-    "type": "tag_parameter",
-    "named": true
-  },
-  {
     "type": "target",
     "named": true
   },
   {
     "type": "token",
     "named": true
-  },
-  {
-    "type": "word",
-    "named": true
-  },
-  {
-    "type": "word",
-    "named": false
   }
 ]

@@ -37,6 +37,8 @@ enum TokenType : unsigned char {
     TAG_BEGIN,
     HASHTAG,
 
+    CODE_BLOCK,
+
     BLANK_LINE,
     SOFT_BREAK,
     HARD_BREAK,
@@ -64,6 +66,8 @@ vector<string> tokens_names = {
 
     "tag_begin",
     "hashtag",
+
+    "code_block",
 
     "blank_line",
     "soft_break",
@@ -105,6 +109,8 @@ struct Scanner
     vector<stack_t> heading_stack;
     vector<stack_t> list_stack;
     deque<char> markup_stack;
+
+    bool inside_code_block = false;
 
     bool scan () {
         /**
@@ -381,10 +387,25 @@ struct Scanner
             if (!is_inline_tag_control_character(lexer->lookahead)) {
                 if (valid_tokens[PARAGRAPH_END])
                     return found(PARAGRAPH_END);
-                else
+                else if (!inside_code_block)
                     return found(TAG_BEGIN);
             }
 
+            break;
+        case '`': // CODE_BLOCK
+            while (lexer->lookahead == '`') {
+                advance();
+                ++n;
+            }
+            if (n == 3) {
+                if (valid_tokens[PARAGRAPH_END])
+                    return found(PARAGRAPH_END);
+                else {
+                    lexer->mark_end(lexer);
+                    inside_code_block = !inside_code_block;
+                    return found(CODE_BLOCK);
+                }
+            }
             break;
         }
 
@@ -510,6 +531,86 @@ struct Scanner
 // #endif
 //     }
 
+    unsigned int serialize(char* buffer)
+    {
+        /// Heading stack length in bytes.
+        stack_t hsl = heading_stack.size() * sizeof(stack_t);
+
+        /// List stack length in bytes.
+        stack_t lsl = list_stack.size() * sizeof(stack_t);
+
+        /// Markup stack length.
+        uint8_t msl = markup_stack.size();
+
+        if (sizeof(hsl) + hsl + sizeof(lsl) + lsl + sizeof(msl) + msl
+            + sizeof(inside_code_block)
+            >= TREE_SITTER_SERIALIZATION_BUFFER_SIZE)
+            return 0;
+
+        uint16_t n = 0;
+
+        buffer[n++] = inside_code_block;
+
+        memcpy(buffer + n, &hsl, sizeof(hsl));
+        n += sizeof(hsl);
+        if (hsl) {
+            memcpy(buffer + n, heading_stack.data(), hsl);
+            n += hsl;
+        }
+
+        memcpy(buffer + n, &lsl, sizeof(lsl));
+        n += sizeof(lsl);
+        if (lsl) {
+            memcpy(buffer + n, list_stack.data(), lsl);
+            n += lsl;
+        }
+
+        memcpy(buffer + n, &msl, sizeof(msl));
+        n += sizeof(msl);
+        if (msl)
+            for (char m : markup_stack)
+                buffer[n++] = m;
+
+        return n;
+    };
+
+    void deserialize(const char* buffer, unsigned length)
+    {
+        current = 0;
+        parsed_chars = 0;
+
+        heading_stack.clear();
+        list_stack.clear();
+        markup_stack.clear();
+
+        if (!length) return;
+
+        uint16_t n = 0;
+        inside_code_block = buffer[n++] ;
+
+        stack_t sl; //< stack length
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        if (sl) {
+            heading_stack.resize(sl / sizeof(stack_t));
+            memcpy(heading_stack.data(), buffer + n, sl);
+            n += sl;
+        }
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        if (sl) {
+            list_stack.resize(sl / sizeof(stack_t));
+            memcpy(list_stack.data(), buffer + n, sl);
+            n += sl;
+        }
+
+        memcpy(&sl, buffer + n, sizeof(sl));
+        n += sizeof(sl);
+        for (uint8_t i = 0; i < n; ++i)
+            markup_stack.push_back(buffer[n + i]);
+    };
 };
 
 extern "C"
@@ -536,43 +637,7 @@ extern "C"
     unsigned tree_sitter_blueflower_external_scanner_serialize(void* payload, char* buffer)
     {
         Scanner* scanner = static_cast<Scanner*>(payload);
-
-        /// Heading stack length in bytes.
-        stack_t hsl = scanner->heading_stack.size() * sizeof(stack_t);
-
-        /// List stack length in bytes.
-        stack_t lsl = scanner->list_stack.size() * sizeof(stack_t);
-
-        /// Markup stack length.
-        uint8_t msl = scanner->markup_stack.size();
-
-        if (sizeof(hsl) + hsl + sizeof(lsl) + lsl + sizeof(msl) + msl
-            >= TREE_SITTER_SERIALIZATION_BUFFER_SIZE)
-            return 0;
-
-        uint16_t n = 0;
-
-        memcpy(buffer + n, &hsl, sizeof(hsl));
-        n += sizeof(hsl);
-        if (hsl) {
-            memcpy(buffer + n, scanner->heading_stack.data(), hsl);
-            n += hsl;
-        }
-
-        memcpy(buffer + n, &lsl, sizeof(lsl));
-        n += sizeof(lsl);
-        if (lsl) {
-            memcpy(buffer + n, scanner->list_stack.data(), lsl);
-            n += lsl;
-        }
-
-        memcpy(buffer + n, &msl, sizeof(msl));
-        n += sizeof(msl);
-        if (msl)
-            for (char m : scanner->markup_stack)
-                buffer[n++] = m;
-
-        return n;
+        return scanner->serialize(buffer);
     }
 
     /// Load another Scanner state into Scanner object,
@@ -580,38 +645,6 @@ extern "C"
                             void* payload, const char* buffer, unsigned length)
     {
         Scanner* scanner = static_cast<Scanner*>(payload);
-        scanner->current = 0;
-        scanner->parsed_chars = 0;
-
-        scanner->heading_stack.clear();
-        scanner->list_stack.clear();
-        scanner->markup_stack.clear();
-
-        if (!length) return;
-
-        uint16_t n = 0;
-        stack_t sl; //< stack length
-
-        memcpy(&sl, buffer + n, sizeof(sl));
-        n += sizeof(sl);
-        if (sl) {
-            scanner->heading_stack.resize(sl / sizeof(stack_t));
-            memcpy(scanner->heading_stack.data(), buffer + n, sl);
-            n += sl;
-        }
-
-        memcpy(&sl, buffer + n, sizeof(sl));
-        n += sizeof(sl);
-        if (sl) {
-            scanner->list_stack.resize(sl / sizeof(stack_t));
-            memcpy(scanner->list_stack.data(), buffer + n, sl);
-            n += sl;
-        }
-
-        memcpy(&sl, buffer + n, sizeof(sl));
-        n += sizeof(sl);
-        for (uint8_t i = 0; i < n; ++i)
-            scanner->markup_stack.push_back(buffer[n + i]);
-
+        scanner->deserialize(buffer, length);
     }
 }

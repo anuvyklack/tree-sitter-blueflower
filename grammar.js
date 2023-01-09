@@ -18,6 +18,8 @@ const blueflower_grammar = {
     $._tag_begin,
     $.hashtag_token,
 
+    $.code_block_token,
+
     $.blank_line,
     $.soft_break,
     $.hard_break,
@@ -63,6 +65,7 @@ const blueflower_grammar = {
         $.section,
         $.definition,
         $.hashtag,
+        $.code_block,
         alias($.verbatim_tag, $.tag),
         alias($.tag_with_syntax, $.tag),
         $.list_block,
@@ -144,6 +147,7 @@ const blueflower_grammar = {
       $._paragraph_and_reference_link_definition,
       $.reference_link_definition,
       $.hashtag,
+      $.code_block,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.list_block,
@@ -206,6 +210,7 @@ const sections = {
     $.list_block,
     $.comment,
     $.hashtag,
+    $.code_block,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
     $.blank_line,
@@ -239,6 +244,7 @@ const lists = {
 
       $.definition,
       $.hashtag,
+      $.code_block,
       alias($.verbatim_tag, $.tag),
       alias($.tag_with_syntax, $.tag),
       $.comment,
@@ -433,31 +439,22 @@ const tags = {
             repeat1(expression($, 'immediate', token.immediate)),
             $.tag_name)),
 
-    repeat(seq(
-      token.immediate(' '),
+    optional(seq(
+      $._whitespace,
       field('parameter',
-            repeat(
-              alias($.raw_word, $.tag_parameter))),
+            repeat(alias($.raw_word, $.tag_parameter))),
     )),
     $._new_line,
 
     alias(
       repeat(choice(
+        $.code_block,
         alias($.verbatim_tag, $.tag),
         alias($.tag_with_syntax, $.tag),
 
-        // alias(/[^@\s]+/, $.raw_word),
-        alias(/[^@*\s]+/, $.raw_word),
-        alias('@', $.at),
+        alias(/\S+/, $.raw_word),
         $._new_line,
         $.blank_line,
-        // seq(
-        //   repeat(choice(
-        //     alias(/[^@\s]+/, $.raw_word),
-        //     alias('@', $.at),
-        //   )),
-        //   $._new_line
-        // ),
       )),
       $.content),
 
@@ -474,11 +471,10 @@ const tags = {
             repeat1(expression($, 'immediate', token.immediate)),
             $.tag_name)),
 
-    repeat(seq(
-      token.immediate(' '),
+    optional(seq(
+      $._whitespace,
       field('parameter',
-            repeat(
-              alias($.raw_word, $.tag_parameter))),
+            repeat(alias($.raw_word, $.tag_parameter))),
     )),
     $._new_line,
 
@@ -486,6 +482,25 @@ const tags = {
       alias($.tag_content, $.content)),
 
     $.end_tag,
+    $.eol
+  ),
+
+  code_block: $ => seq(
+    $.code_block_token,
+    field('parameter',
+          repeat(alias($.raw_word, $.tag_parameter))),
+    $._new_line,
+
+    alias(
+      repeat(choice(
+        alias(/\S+/, $.raw_word),
+        $._tag_begin,
+        $._new_line,
+        $.blank_line,
+      )),
+      $.content),
+
+    $.code_block_token,
     $.eol
   ),
 
@@ -497,6 +512,7 @@ const tags = {
     $.reference_link_definition,
     $.definition,
     $.hashtag,
+    $.code_block,
     alias($.verbatim_tag, $.tag),
     alias($.tag_with_syntax, $.tag),
     $.list_block,
