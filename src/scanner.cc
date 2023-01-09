@@ -21,6 +21,8 @@ typedef uint16_t stack_t;
 using namespace std;
 
 enum TokenType : unsigned char {
+    PARAGRAPH_END,
+
     HEADING,
     SECTION_END,
 
@@ -32,11 +34,8 @@ enum TokenType : unsigned char {
     LIST_TOKEN,
     LIST_END,
 
-    TAG_TOKEN,
-    EXTENDED_TAG_TOKEN,
+    TAG_BEGIN,
     HASHTAG,
-    TAG_PARAMETER,
-    END_TAG,
 
     BLANK_LINE,
     SOFT_BREAK,
@@ -44,11 +43,14 @@ enum TokenType : unsigned char {
 
     NEW_LINE,
     END_OF_FILE,
+
     ERROR
 };
 
 #ifdef DEBUG
 vector<string> tokens_names = {
+    "paragraph_end",
+
     "heading",
     "section_end",
 
@@ -60,11 +62,8 @@ vector<string> tokens_names = {
     "list_token",
     "list_end",
 
-    "tag_token",
-    "extended_tag_token",
+    "tag_begin",
     "hashtag",
-    "tag_parameter",
-    "end_tag",
 
     "blank_line",
     "soft_break",
@@ -72,6 +71,7 @@ vector<string> tokens_names = {
 
     "new_line",
     "eof",
+
     "error"
 };
 #endif // DEBUG
@@ -106,8 +106,6 @@ struct Scanner
     vector<stack_t> list_stack;
     deque<char> markup_stack;
 
-    bool tag_parameter_is_valid = true;
-
     bool scan () {
         /**
          * Recover form error
@@ -131,6 +129,8 @@ struct Scanner
             return false;
         }
 
+        lexer->mark_end(lexer);
+
         if (get_column() == 0)
             if (parse_newline()) return true;
 
@@ -140,8 +140,10 @@ struct Scanner
         if (parsed_chars == 0) {
             skip_spaces();
             if (is_eof()) {
-                if (valid_tokens[END_OF_FILE])
+                if (valid_tokens[END_OF_FILE]) {
+                    lexer->mark_end(lexer);
                     return found(END_OF_FILE);
+                }
 #ifdef DEBUG
                 clog << "  false" << endl << "}" << endl;
 #endif
@@ -152,6 +154,7 @@ struct Scanner
         if (is_newline(lexer->lookahead)) {
             if (lexer->lookahead == 13) advance(); // \r
             if (lexer->lookahead == 10) advance(); // \n
+            lexer->mark_end(lexer);
             return found(NEW_LINE);
         }
 
@@ -241,21 +244,19 @@ struct Scanner
     bool parse_newline() {
         // If we're here, then we're in column 0 on a new line.
 
-        lexer->mark_end(lexer);
         skip_spaces();
         if (is_eof()) return false;
 
-        // TAG_PARAMETER token, valid only on the same line as a range tag definition.
-        // That's why if we are on the new line, then TAG_PARAMETER stops to be valid.
-        tag_parameter_is_valid = false;
-
         // Check if current line is empty line.
-        // if (valid_tokens[BLANK_LINE] && is_newline(lexer->lookahead)) {
         if (is_newline(lexer->lookahead)) {
-            if (lexer->lookahead == 13) advance(); // \r
-            if (lexer->lookahead == 10) advance(); // \n
-            lexer->mark_end(lexer);
-            return found(BLANK_LINE);
+            if (valid_tokens[PARAGRAPH_END])
+                return found(PARAGRAPH_END);
+            else {
+                if (lexer->lookahead == 13) advance(); // \r
+                if (lexer->lookahead == 10) advance(); // \n
+                lexer->mark_end(lexer);
+                return found(BLANK_LINE);
+            }
         }
 
         stack_t n = 0; //< Number of parsed chars
@@ -265,16 +266,19 @@ struct Scanner
                 advance();
                 ++n;
             }
-
-            if (valid_tokens[HEADING] && is_space(lexer->lookahead)) {
-                if (heading_stack.empty() || n > heading_stack.back()) {
-                    heading_stack.push_back(n);
-                    lexer->mark_end(lexer);
-                    return found(HEADING);
-                }
-                else {
-                    heading_stack.pop_back();
-                    return found(SECTION_END);
+            if (is_space(lexer->lookahead)) {
+                if (valid_tokens[PARAGRAPH_END])
+                    return found(PARAGRAPH_END);
+                else if (valid_tokens[HEADING]) {
+                    if (heading_stack.empty() || n > heading_stack.back()) {
+                        heading_stack.push_back(n);
+                        lexer->mark_end(lexer);
+                        return found(HEADING);
+                    }
+                    else {
+                        heading_stack.pop_back();
+                        return found(SECTION_END);
+                    }
                 }
             }
 
@@ -286,7 +290,9 @@ struct Scanner
         }
         case ':': { // DEFINITION
             advance();
-            if (valid_tokens[DEFINITION_TERM_BEGIN] && is_space(lexer->lookahead)) {
+            if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
+                return found(PARAGRAPH_END);
+            else if (valid_tokens[DEFINITION_TERM_BEGIN] && is_space(lexer->lookahead)) {
                 lexer->mark_end(lexer);
                 return found(DEFINITION_TERM_BEGIN);
             }
@@ -301,6 +307,9 @@ struct Scanner
                 advance();
                 ++n;
             }
+
+            if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
+                return found(PARAGRAPH_END);
 
             if (n == 3 && is_newline_or_eof(lexer->lookahead)) {
                 if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
@@ -348,7 +357,9 @@ struct Scanner
                 ++n;
             }
             if (n == 3 && (is_newline_or_eof(lexer->lookahead))) {
-                if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
+                if (valid_tokens[PARAGRAPH_END])
+                    return found(PARAGRAPH_END);
+                else if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
                     heading_stack.pop_back();
                     return found(SECTION_END);
                 }
@@ -362,7 +373,9 @@ struct Scanner
             //     return found(HARD_BREAK);
             break;
         case '#': // HASHTAG
-            if (valid_tokens[HASHTAG]) {
+            if (valid_tokens[PARAGRAPH_END])
+                return found(PARAGRAPH_END);
+            else if (valid_tokens[HASHTAG]) {
                 advance();
                 if (not_space_or_newline(lexer->lookahead)
                     && !is_inline_tag_control_character(lexer->lookahead))
@@ -372,41 +385,46 @@ struct Scanner
                 }
             }
             break;
-        case '@': // TAG_TOKEN
-            if (valid_tokens[TAG_TOKEN]) {
+        case '@': // TAG_BEGIN
+            while (!is_inline_tag_control_character(lexer->lookahead)
+                   && not_space_or_newline(lexer->lookahead))
                 advance();
-                if (valid_tokens[EXTENDED_TAG_TOKEN] && lexer->lookahead == '+') {
-                    advance();
-                    lexer->mark_end(lexer);
-                    return found(EXTENDED_TAG_TOKEN);
-                }
-                else if (valid_tokens[TAG_TOKEN] || valid_tokens[END_TAG]) {
-                    if (token("end") && is_space_or_newline_or_eof(lexer->lookahead)) {
-                        lexer->mark_end(lexer);
-                        return found(END_TAG);
-                    }
-                    else if (not_space_or_newline(lexer->lookahead)) {
-                        lexer->mark_end(lexer);
-                        return found(TAG_TOKEN);
-                    }
-                }
+
+            if (!is_inline_tag_control_character(lexer->lookahead)) {
+                if (valid_tokens[PARAGRAPH_END])
+                    return found(PARAGRAPH_END);
+                else
+                    return found(TAG_BEGIN);
             }
+
             break;
+        // case '[':
+        //     if (valid_tokens[LINK_REFERENCE_BEGIN]) {
+        //         while (lexer->lookahead !=) {
+        //
+        //         }
+        //
+        //     }
+        //     break;
         }
 
         return false;
     }
 
     bool parse_definition() {
-        if ((valid_tokens[DEFINITION_TERM_END] || valid_tokens[DEFINITION_END])
-            && is_space(current)
-            && lexer->lookahead == ':')
-        {
+        if (is_space(current) && lexer->lookahead == ':') {
             advance();
-            if (valid_tokens[DEFINITION_TERM_END] && iswspace(lexer->lookahead))
+            if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
+                return found(PARAGRAPH_END);
+            // else if (valid_tokens[DEFINITION_TERM_END] && iswspace(lexer->lookahead)) {
+            else if (valid_tokens[DEFINITION_TERM_END] && is_space_or_newline(lexer->lookahead)) {
+                lexer->mark_end(lexer);
                 return found(DEFINITION_TERM_END);
-            else if (valid_tokens[DEFINITION_END] && is_newline_or_eof(lexer->lookahead))
+            }
+            else if (valid_tokens[DEFINITION_END] && is_newline_or_eof(lexer->lookahead)) {
+                lexer->mark_end(lexer);
                 return found(DEFINITION_END);
+            }
         }
         return false;
     }
@@ -437,8 +455,8 @@ struct Scanner
 
     inline bool is_inline_tag_control_character(int32_t c) {
         switch (c) {
-        case '(':
         case '[':
+        case '(':
         case '{':
             return true;
         default:
@@ -458,6 +476,8 @@ struct Scanner
         }
     }
 
+    inline bool is_space_or_newline(const int32_t c) { return c && iswspace(c); }
+
     inline bool is_newline_or_eof(const int32_t c) { return !c || is_newline(c); }
 
     inline bool is_space_or_newline_or_eof(const int32_t c) { return !c || iswspace(c); }
@@ -475,7 +495,7 @@ struct Scanner
             return;
         }
 
-        for (int i = 0; i <= END_OF_FILE; ++i) {
+        for (int i = 0; i <= ERROR; ++i) {
             if (valid_tokens[i])
                 clog << tokens_names[i] << ' ';
         }
@@ -585,7 +605,6 @@ extern "C"
         Scanner* scanner = static_cast<Scanner*>(payload);
         scanner->current = 0;
         scanner->parsed_chars = 0;
-        scanner->tag_parameter_is_valid = true;
 
         scanner->heading_stack.clear();
         scanner->list_stack.clear();
