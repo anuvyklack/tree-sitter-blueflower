@@ -158,6 +158,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "escaped_sequence"
+        },
+        {
+          "type": "SYMBOL",
           "name": "word"
         },
         {
@@ -175,6 +179,49 @@
         {
           "type": "SYMBOL",
           "name": "short_reference_link"
+        }
+      ]
+    },
+    "escaped_sequence": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "STRING",
+            "value": "\\"
+          },
+          "named": true,
+          "value": "token"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\S+"
+                }
+              },
+              "named": true,
+              "value": "raw_word"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\s"
+                }
+              },
+              "named": true,
+              "value": "space"
+            }
+          ]
         }
       ]
     },
@@ -1172,6 +1219,14 @@
               {
                 "type": "SYMBOL",
                 "name": "paragraph"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_paragraph_and_reference_link_definition"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "reference_link_definition"
               },
               {
                 "type": "SYMBOL",
@@ -2601,6 +2656,10 @@
               "type": "CHOICE",
               "members": [
                 {
+                  "type": "SYMBOL",
+                  "name": "escaped_sequence"
+                },
+                {
                   "type": "ALIAS",
                   "content": {
                     "type": "PATTERN",
@@ -2668,6 +2727,10 @@
             "content": {
               "type": "CHOICE",
               "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "escaped_sequence"
+                },
                 {
                   "type": "ALIAS",
                   "content": {
@@ -4252,6 +4315,10 @@
       "content": {
         "type": "CHOICE",
         "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escaped_sequence"
+          },
           {
             "type": "CHOICE",
             "members": [

@@ -93,7 +93,7 @@ const blueflower_grammar = {
     ),
 
     _general_text: $ => choice(
-      // $.escaped_sequence,
+      $.escaped_sequence,
       $.word,
       $.inline_tag,
       // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
@@ -102,23 +102,17 @@ const blueflower_grammar = {
       $.short_reference_link,
     ),
 
-    // escaped_sequence: $ => seq(
-    //   alias('\\', $.token),
-    //     choice(
-    //       alias(/\S+/, $.raw_word),
-    //       alias(/\s/, $.space)
-    //     )
-    //   // )
-    // ),
-
-    // immediate_escaped_sequence: $ => seq(
-    //   alias(
-    //     token.immediate(prec('special', '\\')),
-    //     $.token),
-    //   alias(
-    //     token.immediate(/\S+/),
-    //     $.raw_word)
-    // ),
+    escaped_sequence: $ => seq(
+      alias('\\', $.token),
+      choice(
+        alias(
+          token.immediate(/\S+/),
+          $.raw_word),
+        alias(
+          token.immediate(/\s+/),
+          $.space)
+      )
+    ),
 
     definition: $ => seq(
       field('term_open', alias($.definition_term_begin, $.token)),
@@ -240,6 +234,9 @@ const lists = {
     optional($.checkbox),
     repeat(choice(
       $.paragraph,
+      $._paragraph_and_reference_link_definition,
+      $.reference_link_definition,
+
       $.definition,
       $.hashtag,
       alias($.verbatim_tag, $.tag),
@@ -259,7 +256,7 @@ const lists = {
 
 const links = {
   link_label: $ => repeat1(choice(
-    // $.escaped_sequence,
+    $.escaped_sequence,
     // alias(/[^\[\]\s\\]+/, $.word),
     expression($, 'non-immediate', token, '[]\\'),
     $.inline_tag,
@@ -398,7 +395,7 @@ const tags = {
             $.token)),
     alias(
       repeat( choice(
-        // $.escaped_sequence,
+        $.escaped_sequence,
         alias(/[^\(\)\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '()\\'),
         $._new_line
@@ -417,7 +414,7 @@ const tags = {
             $.token)),
     alias(
       repeat(choice(
-        // $.escaped_sequence,
+        $.escaped_sequence,
         alias(/[^\{\}\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '{}\\'),
         $._new_line
