@@ -168,8 +168,11 @@ const blueflower_grammar = {
     // _new_line: _ => /\n|\r\n?/,
     eol: $ => choice($._new_line, $._eof),
 
-    word: $ => expression($, 'non-immediate', token, '@#['),
-    // word: $ => /[^\s@#\[]+/,
+    word: $ => seq(
+      expression($, 'non-immediate', token, '@[:'),
+      optional(expression($, 'immediate', token.immediate)),
+    ),
+    // word: $ => /[^\s@\[]+/,
 
     raw_word: _ => /\S+/,
     // raw_word: _ => seq(
@@ -323,46 +326,11 @@ const tags = {
   inline_tag: $ => seq(
     alias(
       choice('@', ':'),
-      // choice('@', ':'),
       $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
             $.tag_name)),
-
-    // field('open_label',
-    //       alias(
-    //         token.immediate('['),
-    //         $.token)),
-    // alias(
-    //   repeat(choice(
-    //     // $.escaped_sequence,
-    //     // alias(/[^\[\]\s\\]+/, $.word),
-    //     expression($, 'non-immediate', token, '[]\\'),
-    //     $.inline_tag,
-    //     $._new_line
-    //   )),
-    //   $.label),
-    // field('close_label',
-    //       alias(']', $.token)),
-
-    // field('open_content',
-    //       alias(
-    //         token.immediate(prec('immediate', '(')),
-    //         // token.immediate('('),
-    //         $.token)),
-    // alias(
-    //   repeat( choice(
-    //     // $.escaped_sequence,
-    //     alias(/[^\(\)\s\\]+/, $.raw_word),
-    //     // expression($, 'non-immediate', token, '()\\'),
-    //     $._new_line
-    //   )),
-    //   $.content),
-    // field('close_content',
-    //       alias(
-    //         prec('non-immediate', ')'),
-    //         $.token))
 
     choice(
       seq(

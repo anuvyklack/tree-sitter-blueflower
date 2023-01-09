@@ -463,519 +463,1097 @@
       ]
     },
     "word": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "ALIAS",
               "content": {
-                "type": "STRING",
-                "value": "!"
-              }
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "!"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "\""
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "#"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "$"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "%"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "&"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "'"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "("
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": ")"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "*"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "+"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": ","
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "-"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "."
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "/"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": ";"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "<"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "="
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": ">"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "?"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "]"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "\\"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "^"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "_"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "`"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "{"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "|"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "}"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "STRING",
+                    "value": "~"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "\\p{L}+"
+                  }
+                }
+              },
+              "named": true,
+              "value": "word"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "\\p{N}+"
+                  }
+                }
+              },
+              "named": true,
+              "value": "number"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": "non-immediate",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "[^\\p{Z}\\p{L}\\p{N}\\t\\n\\r]"
+                  }
+                }
+              },
+              "named": true,
+              "value": "symbol"
             }
-          },
-          "named": true,
-          "value": "symbol"
+          ]
         },
         {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "\""
-              }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "!"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "\""
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "#"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "$"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "%"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "&"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "'"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "("
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": ")"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "*"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "+"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": ","
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "-"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "."
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "/"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": ":"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": ";"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "<"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "="
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": ">"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "?"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "@"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "["
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "]"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "\\"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "^"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "_"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "`"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "{"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "|"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "}"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "STRING",
+                        "value": "~"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "\\p{L}+"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "word"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "\\p{N}+"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "number"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "IMMEDIATE_TOKEN",
+                    "content": {
+                      "type": "PREC",
+                      "value": "immediate",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "[^\\p{Z}\\p{L}\\p{N}\\t\\n\\r]"
+                      }
+                    }
+                  },
+                  "named": true,
+                  "value": "symbol"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
             }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "$"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "%"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "&"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "'"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "("
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": ")"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "*"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "+"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": ","
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "-"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "."
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "/"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": ":"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": ";"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "<"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "="
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": ">"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "?"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "]"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "\\"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "^"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "_"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "`"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "{"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "|"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "}"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "STRING",
-                "value": "~"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "PATTERN",
-                "value": "\\p{L}+"
-              }
-            }
-          },
-          "named": true,
-          "value": "word"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "PATTERN",
-                "value": "\\p{N}+"
-              }
-            }
-          },
-          "named": true,
-          "value": "number"
-        },
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
-            "content": {
-              "type": "PREC",
-              "value": "non-immediate",
-              "content": {
-                "type": "PATTERN",
-                "value": "[^\\p{Z}\\p{L}\\p{N}\\t\\n\\r]"
-              }
-            }
-          },
-          "named": true,
-          "value": "symbol"
+          ]
         }
       ]
     },

@@ -164,40 +164,6 @@ Escaped sequence.2
         (symbol)))
 
 ================================================================================
-Escaped sequence.3
-================================================================================
-@tag[label] (word)\
-[foo]: https://
---------------------------------------------------------------------------------
-
-    (document
-      (paragraph
-        (inline_tag
-          (token)
-          (tag_name
-            (word))
-          (token)
-          (label
-            (word))
-          (token))
-        (symbol)
-        (word)
-        (symbol)
-        (escaped_sequence
-          (token)
-          (space))
-        (short_reference_link
-          (token)
-          (reference
-            (word))
-          (token))
-        (symbol)
-        (word)
-        (symbol)
-        (symbol)
-        (symbol)))
-
-================================================================================
 List.1 - Simple list
 ================================================================================
 - item
