@@ -113,7 +113,7 @@ consectetur cupidatat.
         (symbol)))
 
 ================================================================================
-Escaped sequence.1
+Escaped character.1
 ================================================================================
 \@tag[label] (word)
 [foo]: https://
@@ -122,7 +122,8 @@ Escaped sequence.1
     (document
       (paragraph
         (escaped_char
-          (token))
+          (token)
+          (character))
         (word)
         (symbol)
         (word)
@@ -164,11 +165,25 @@ Escaped character.2
             (word))
           (token))
         (escaped_char
-          (token))
+          (token)
+          (character))
         (word)
         (symbol)
         (symbol)
         (symbol)))
+
+================================================================================
+Force new line token.1
+================================================================================
+word~
+word
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (word)
+        (force_new_line)
+        (word)))
 
 ================================================================================
 List.1 - Simple list

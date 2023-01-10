@@ -3,7 +3,7 @@
     "type": "bold",
     "named": true,
     "fields": {
-      "close": {
+      "bold_close": {
         "multiple": false,
         "required": true,
         "types": [
@@ -13,7 +13,7 @@
           }
         ]
       },
-      "open": {
+      "bold_open": {
         "multiple": false,
         "required": true,
         "types": [
@@ -343,9 +343,17 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "new_line",
+          "named": true
+        },
         {
           "type": "token",
           "named": true
@@ -540,7 +548,7 @@
     "type": "italic",
     "named": true,
     "fields": {
-      "close": {
+      "italic_close": {
         "multiple": false,
         "required": true,
         "types": [
@@ -550,7 +558,7 @@
           }
         ]
       },
-      "open": {
+      "italic_open": {
         "multiple": false,
         "required": true,
         "types": [
@@ -801,6 +809,10 @@
         },
         {
           "type": "escaped_char",
+          "named": true
+        },
+        {
+          "type": "force_new_line",
           "named": true
         },
         {
@@ -1092,7 +1104,7 @@
     "type": "strikethrough",
     "named": true,
     "fields": {
-      "close": {
+      "strikethrough_close": {
         "multiple": false,
         "required": true,
         "types": [
@@ -1102,7 +1114,7 @@
           }
         ]
       },
-      "open": {
+      "strikethrough_open": {
         "multiple": false,
         "required": true,
         "types": [
@@ -1217,6 +1229,10 @@
           "named": true
         },
         {
+          "type": "force_new_line",
+          "named": true
+        },
+        {
           "type": "inline_math",
           "named": true
         },
@@ -1288,6 +1304,10 @@
           "named": true
         },
         {
+          "type": "force_new_line",
+          "named": true
+        },
+        {
           "type": "inline_math",
           "named": true
         },
@@ -1346,7 +1366,7 @@
     "type": "underline",
     "named": true,
     "fields": {
-      "close": {
+      "underline_close": {
         "multiple": false,
         "required": true,
         "types": [
@@ -1356,7 +1376,7 @@
           }
         ]
       },
-      "open": {
+      "underline_open": {
         "multiple": false,
         "required": true,
         "types": [
@@ -1444,6 +1464,10 @@
     "named": true
   },
   {
+    "type": "character",
+    "named": true
+  },
+  {
     "type": "checkbox",
     "named": true
   },
@@ -1452,11 +1476,19 @@
     "named": true
   },
   {
+    "type": "force_new_line",
+    "named": true
+  },
+  {
     "type": "hard_break",
     "named": true
   },
   {
     "type": "list_break",
+    "named": true
+  },
+  {
+    "type": "new_line",
     "named": true
   },
   {

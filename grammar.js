@@ -34,6 +34,11 @@ const blueflower_grammar = {
 
     $.code_block_token,
 
+    $.escape_token,
+    $.escaped_character,
+
+    $.force_new_line,
+
     $.blank_line,
     $.soft_break,
     $.hard_break,
@@ -90,6 +95,79 @@ const blueflower_grammar = {
       optional($._eof)
     ),
 
+    comment: $ => seq(
+      '#',
+      optional(seq(
+        $._whitespace,
+        repeat(alias($.raw_word, "word"))
+      )),
+      $.eol,
+    ),
+
+    escaped_char: $ => seq(
+      alias($.escape_token, $.token),
+      choice(
+        alias($.escaped_character, $.character),
+        alias($._new_line, $.new_line)
+      )
+    ),
+
+    // // - Alphabetic (Alpha) – letters,
+    // // - Mark (M) – для акцентов,
+    // // - Decimal_Number (Nd) – для цифр,
+    // // - Connector_Punctuation (Pc) – для символа подчёркивания '_' и подобных ему,
+    // // - Join_Control (Join_C) – два специальных кода 200c и 200d, используемые
+    // //   в лигатурах, например, арабских.
+    // word: _ => /[\p{Alpha}\p{M}\p{Nd}\p{Pc}\p{Join_C}]+/
+
+    // word: $ => /[^@\[\s]+/,
+    word: $ => seq(
+      expression($, 'non-immediate', token, '@[<' + '*/+_`$'),
+      // optional(expression($, 'immediate', token.immediate, '*/+_`$')),
+      optional(expression($, 'immediate', token.immediate, '~' + '*/+_`$')),
+    ),
+
+    raw_word: _ => /\S+/,
+
+    _whitespace: _ => /[ \t]+/,
+
+    eol: $ => choice($._new_line, $._eof),
+  }
+}
+
+const sections = {
+  section: $ => seq(
+    $.heading,
+    optional(alias($.section_content, $.content)),
+    choice($.section_end, $._eof),
+    optional(seq(
+      (optional($.soft_break)),
+      $.eol
+    ))
+  ),
+
+  heading: $ => seq(
+    field("level", alias($.heading_token, $.token)),
+    alias($.paragraph, $.title),
+  ),
+
+  section_content: $ => repeat1(choice(
+    $.section,
+    $.paragraph,
+    $._paragraph_and_reference_link_definition,
+    $.reference_link_definition,
+    $.definition,
+    $.list_block,
+    $.comment,
+    $.hashtag,
+    $.code_block,
+    alias($.verbatim_tag, $.tag),
+    alias($.tag_with_syntax, $.tag),
+    $.blank_line,
+  )),
+}
+
+const paragraph = {
     paragraph: $ => seq(
       $._paragraph_content,
       choice($._paragraph_end, $._eof)
@@ -111,17 +189,45 @@ const blueflower_grammar = {
 
     _general_text: $ => choice(
       $.escaped_char,
+      $.force_new_line,
       $.word,
       $.inline_tag,
       $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
       $.link, $.raw_link, $.reference_link, $.short_reference_link,
     ),
+}
 
-    escaped_char: $ => seq(
-      alias('\\', $.token),
-      token.immediate(/./, $.character)
-    ),
+const markup = {
+  bold: $ => gen_markup($, "bold",
+    [$.italic, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
 
+  italic: $ => gen_markup($, "italic",
+    [$.bold, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
+
+  underline: $ => gen_markup($, "underline",
+    [$.bold, $.italic, $.strikethrough, $.verbatim, $.inline_math]),
+
+  strikethrough: $ => gen_markup($, "strikethrough",
+    [$.bold, $.italic, $.underline, $.verbatim, $.inline_math]),
+
+  verbatim: $ => prec.right(seq(
+    field("open", alias($.verbatim_open, $.token)),
+    alias(
+      repeat1(/[^`\s]/),
+      $.content),
+    field("close", alias($.verbatim_close, $.token)),
+  )),
+
+  inline_math: $ => prec.right(seq(
+    field("open", alias($.inline_math_open, $.token)),
+    alias(
+      repeat1(/[^$\s]/),
+      $.content),
+    field("close", alias($.inline_math_close, $.token)),
+  )),
+}
+
+const definition = {
     definition: $ => seq(
       field('term_open', alias($.definition_term_begin, $.token)),
       alias($.paragraph, $.term),
@@ -159,102 +265,6 @@ const blueflower_grammar = {
       $.comment,
       $.blank_line,
     )),
-
-    comment: $ => seq(
-      '#',
-      optional(seq(
-        $._whitespace,
-        repeat(alias($.raw_word, "word"))
-      )),
-      $.eol,
-    ),
-
-    // _new_line: _ => choice('\n\r', '\n', '\r'),
-    // _new_line: _ => /\n|\r\n?/,
-    eol: $ => choice($._new_line, $._eof),
-
-    word: $ => seq(
-      expression($, 'non-immediate', token, '@[<' + '*/+_`$'),
-      optional(expression($, 'immediate', token.immediate, '*/+_`$')),
-    ),
-
-    // word: $ => /[^\s@\[]+/,
-
-    raw_word: _ => /\S+/,
-
-    _whitespace: $ => /[ \t]+/,
-
-    // // - Alphabetic (Alpha) – letters,
-    // // - Mark (M) – для акцентов,
-    // // - Decimal_Number (Nd) – для цифр,
-    // // - Connector_Punctuation (Pc) – для символа подчёркивания '_' и подобных ему,
-    // // - Join_Control (Join_C) – два специальных кода 200c и 200d, используемые
-    // //   в лигатурах, например, арабских.
-    // word: _ => /[\p{Alpha}\p{M}\p{Nd}\p{Pc}\p{Join_C}]+/
-  }
-}
-
-const sections = {
-  section: $ => seq(
-    $.heading,
-    // optional(prec(1, $.blank_line)),
-    optional(alias($.section_content, $.content)),
-    choice($.section_end, $._eof),
-    optional(seq(
-      (optional($.soft_break)),
-      $.eol
-    ))
-  ),
-
-  section_content: $ => repeat1(choice(
-    $.section,
-    $.paragraph,
-    $._paragraph_and_reference_link_definition,
-    $.reference_link_definition,
-    $.definition,
-    $.list_block,
-    $.comment,
-    $.hashtag,
-    $.code_block,
-    alias($.verbatim_tag, $.tag),
-    alias($.tag_with_syntax, $.tag),
-    $.blank_line,
-  )),
-
-  heading: $ => seq(
-    field("level", alias($.heading_token, $.token)),
-    alias($.paragraph, $.title),
-  ),
-}
-
-const markup = {
-  bold: $ => gen_markup($, "bold",
-    [$.italic, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
-
-  italic: $ => gen_markup($, "italic",
-    [$.bold, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
-
-  underline: $ => gen_markup($, "underline",
-    [$.bold, $.italic, $.strikethrough, $.verbatim, $.inline_math]),
-
-  strikethrough: $ => gen_markup($, "strikethrough",
-    [$.bold, $.italic, $.underline, $.verbatim, $.inline_math]),
-
-  verbatim: $ => prec.right(seq(
-    field("open", alias($.verbatim_open, $.token)),
-    alias(
-      repeat1(/[^`\s]/),
-      $.content),
-    field("close", alias($.verbatim_close, $.token)),
-  )),
-
-  inline_math: $ => prec.right(seq(
-    field("open", alias($.inline_math_open, $.token)),
-    alias(
-      repeat1(/[^$\s]/),
-      $.content),
-    field("close", alias($.inline_math_close, $.token)),
-  )),
 }
 
 const lists = {
@@ -528,8 +538,8 @@ const tags = {
 
 function gen_markup($, kind, other_kinds) {
   return prec.right(seq(
-    field("open", alias($[kind + "_open"],
-                        $.token)),
+    field(kind + "_open", alias($[kind + "_open"],
+                                $.token)),
     alias(
       repeat1(choice(
         $.word,
@@ -540,8 +550,8 @@ function gen_markup($, kind, other_kinds) {
       )),
       $.content),
 
-    field("close", alias($[kind + "_close"],
-                         $.token))
+    field(kind + "_close", alias($[kind + "_close"],
+                                 $.token))
   ));
 }
 
@@ -566,7 +576,8 @@ function expression($, pr, tfunc, skip = '') {
   )
 }
 
-Object.assign(blueflower_grammar.rules, sections, lists, tags, links, markup)
+Object.assign(blueflower_grammar.rules,
+  sections, paragraph, markup, definition, lists, links, tags)
 
 module.exports = grammar(blueflower_grammar)
 

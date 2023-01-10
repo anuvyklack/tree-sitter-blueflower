@@ -53,6 +53,11 @@ enum TokenType : unsigned char {
 
     CODE_BLOCK,
 
+    ESCAPE_TOKEN,
+    ESCAPED_CHAR,
+
+    FORCE_NEW_LINE,
+
     BLANK_LINE,
     SOFT_BREAK,
     HARD_BREAK,
@@ -97,6 +102,11 @@ vector<string> tokens_names = {
 
     "code_block",
 
+    "escape_token",
+    "escaped_char",
+
+    "force_new_line",
+
     "blank_line",
     "soft_break",
     "hard_break",
@@ -138,6 +148,8 @@ struct Scanner
 
     bool inside_code_block = false;
 
+    bool escaped_active = false;
+
     bool scan () {
         /**
          * Recover form error
@@ -160,6 +172,8 @@ struct Scanner
 #endif
             return false;
         }
+
+        if (parse_escaped_char()) return true;
 
         lexer->mark_end(lexer);
 
@@ -199,6 +213,7 @@ struct Scanner
         if (parse_definition()) return true;
         if (parse_open_markup()) return true;
         if (parse_close_markup()) return true;
+        if (parse_force_newline_token())  return true;
 
         // if (parse_raw_word()) return true;
         // if (parse_word()) return true;
@@ -266,6 +281,28 @@ struct Scanner
     inline void skip_newline() {
         if (lexer->lookahead == 13) skip(); // \r
         if (lexer->lookahead == 10) skip(); // \n
+    }
+
+    bool parse_escaped_char() {
+        if (escaped_active) {
+            escaped_active = false;
+            if (is_newline(lexer->lookahead)) {
+                if (lexer->lookahead == 13) advance(); // \r
+                if (lexer->lookahead == 10) advance(); // \n
+                return found(NEW_LINE);
+            }
+            else {
+                advance();
+                return found(ESCAPED_CHAR);
+            }
+        }
+        else if (valid_tokens[ESCAPE_TOKEN] && lexer->lookahead == '\\') {
+            advance();
+            escaped_active = true;
+            return found(ESCAPE_TOKEN);
+        }
+
+        return false;
     }
 
     /// Rules that decide based on the first token on the next line.
@@ -519,6 +556,17 @@ struct Scanner
         return false;
     }
 
+    bool parse_force_newline_token() {
+        if (valid_tokens[FORCE_NEW_LINE] && lexer-> lookahead == '~') {
+            advance();
+            if (is_newline_or_eof(lexer->lookahead)) {
+                lexer->mark_end(lexer);
+                return found(FORCE_NEW_LINE);
+            }
+        }
+        return false;
+    }
+
     inline bool is_inline_tag_open_char(int32_t c) {
         switch (c) {
         case '@':
@@ -665,13 +713,14 @@ struct Scanner
         stack_t msl = markup_stack.size();
 
         if (sizeof(hsl) + hsl + sizeof(lsl) + lsl + sizeof(msl) + msl
-            + sizeof(inside_code_block)
+            + sizeof(inside_code_block) + sizeof(escaped_active)
             >= TREE_SITTER_SERIALIZATION_BUFFER_SIZE)
             return 0;
 
         uint16_t n = 0;
 
         buffer[n++] = inside_code_block;
+        buffer[n++] = escaped_active;
 
         memcpy(buffer + n, &hsl, sizeof(hsl));
         n += sizeof(hsl);
@@ -709,6 +758,7 @@ struct Scanner
 
         uint16_t n = 0;
         inside_code_block = buffer[n++] ;
+        escaped_active = buffer[n++];
 
         stack_t sl; //< stack length
 
