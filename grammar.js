@@ -509,7 +509,7 @@ const tags = {
 
   // Content move into separate node, make it appears in a tree as one node,
   // not a sequence of "$.content" nodes.
-  tag_content: $ => content($, [
+  tag_content: $ => repeat1(choice(
     $.paragraph,
     $._paragraph_and_reference_link_definition,
     $.reference_link_definition,
@@ -521,7 +521,7 @@ const tags = {
     $.list_block,
     $.comment,
     $.blank_line,
-  ]),
+  )),
 
   end_tag: $ => seq($._tag_begin, '@end'),
 }
@@ -564,27 +564,6 @@ function expression($, pr, tfunc, skip = '') {
     alias(tfunc(prec(pr, /\p{N}+/)), $.number),
     alias(tfunc(prec(pr, /[^\p{Z}\p{L}\p{N}\t\n\r]/)), $.symbol),
   )
-}
-
-function content($, elements) {
-  return choice(
-    $.paragraph,
-    seq(
-      repeat1(choice(
-        seq(
-          $.paragraph,
-          choice($.blank_line, $._eof)
-        ),
-        ...elements,
-        seq(
-          $.paragraph,
-          optional($.blank_line),
-          choice(...elements)
-        ),
-      )),
-      optional($.paragraph)
-    )
-  );
 }
 
 Object.assign(blueflower_grammar.rules, sections, lists, tags, links, markup)
