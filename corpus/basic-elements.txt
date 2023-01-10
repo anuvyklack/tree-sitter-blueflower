@@ -121,9 +121,12 @@ Escaped sequence.1
 
     (document
       (paragraph
-        (escaped_sequence
-          (token)
-          (raw_word))
+        (escaped_char
+          (token))
+        (word)
+        (symbol)
+        (word)
+        (symbol)
         (symbol)
         (word)
         (symbol))
@@ -136,10 +139,10 @@ Escaped sequence.1
           (raw_word))))
 
 ================================================================================
-Escaped sequence.2
+Escaped character.2
 ================================================================================
 @tag[label] (word)
-\[foo]: https://
+[foo]\: https://
 --------------------------------------------------------------------------------
 
     (document
@@ -155,9 +158,13 @@ Escaped sequence.2
         (symbol)
         (word)
         (symbol)
-        (escaped_sequence
+        (short_reference_link
           (token)
-          (raw_word))
+          (reference
+            (word))
+          (token))
+        (escaped_char
+          (token))
         (word)
         (symbol)
         (symbol)

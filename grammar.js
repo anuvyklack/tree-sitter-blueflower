@@ -2,6 +2,20 @@ const blueflower_grammar = {
   name: 'blueflower',
 
   externals: $ => [
+    $.bold_open,
+    $.italic_open,
+    $.strikethrough_open,
+    $.underline_open,
+    $.verbatim_open,
+    $.inline_math_open,
+
+    $.bold_close,
+    $.italic_close,
+    $.strikethrough_close,
+    $.underline_close,
+    $.verbatim_close,
+    $.inline_math_close,
+
     $._paragraph_end,
 
     $.heading_token,
@@ -96,26 +110,16 @@ const blueflower_grammar = {
     ),
 
     _general_text: $ => choice(
-      $.escaped_sequence,
+      $.escaped_char,
       $.word,
       $.inline_tag,
-      // $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-      $.link,
-      $.raw_link,
-      $.reference_link,
-      $.short_reference_link,
+      $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
+      $.link, $.raw_link, $.reference_link, $.short_reference_link,
     ),
 
-    escaped_sequence: $ => seq(
+    escaped_char: $ => seq(
       alias('\\', $.token),
-      choice(
-        alias(
-          token.immediate(/\S+/),
-          $.raw_word),
-        alias(
-          token.immediate(/\s+/),
-          $.space)
-      )
+      token.immediate(/./, $.character)
     ),
 
     definition: $ => seq(
@@ -162,7 +166,7 @@ const blueflower_grammar = {
         $._whitespace,
         repeat(alias($.raw_word, "word"))
       )),
-      $._new_line,
+      $.eol,
     ),
 
     // _new_line: _ => choice('\n\r', '\n', '\r'),
@@ -170,16 +174,13 @@ const blueflower_grammar = {
     eol: $ => choice($._new_line, $._eof),
 
     word: $ => seq(
-      expression($, 'non-immediate', token, '@[:<'),
-      optional(expression($, 'immediate', token.immediate)),
+      expression($, 'non-immediate', token, '@[<' + '*/+_`$'),
+      optional(expression($, 'immediate', token.immediate, '*/+_`$')),
     ),
+
     // word: $ => /[^\s@\[]+/,
 
     raw_word: _ => /\S+/,
-    // raw_word: _ => seq(
-    //   expression('non-immediate', token),
-    //   repeat(expression('immediate', token.immediate))
-    // ),
 
     _whitespace: $ => /[ \t]+/,
 
@@ -226,6 +227,36 @@ const sections = {
   ),
 }
 
+const markup = {
+  bold: $ => gen_markup($, "bold",
+    [$.italic, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
+
+  italic: $ => gen_markup($, "italic",
+    [$.bold, $.underline, $.strikethrough, $.verbatim, $.inline_math]),
+
+  underline: $ => gen_markup($, "underline",
+    [$.bold, $.italic, $.strikethrough, $.verbatim, $.inline_math]),
+
+  strikethrough: $ => gen_markup($, "strikethrough",
+    [$.bold, $.italic, $.underline, $.verbatim, $.inline_math]),
+
+  verbatim: $ => prec.right(seq(
+    field("open", alias($.verbatim_open, $.token)),
+    alias(
+      repeat1(/[^`\s]/),
+      $.content),
+    field("close", alias($.verbatim_close, $.token)),
+  )),
+
+  inline_math: $ => prec.right(seq(
+    field("open", alias($.inline_math_open, $.token)),
+    alias(
+      repeat1(/[^$\s]/),
+      $.content),
+    field("close", alias($.inline_math_close, $.token)),
+  )),
+}
+
 const lists = {
   list_block: $ => seq(
     $.list,
@@ -266,10 +297,10 @@ const lists = {
 
 const links = {
   link_label: $ => repeat1(choice(
-    $.escaped_sequence,
-    // alias(/[^\[\]\s\\]+/, $.word),
-    expression($, 'non-immediate', token, '[]\\'),
+    expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
+    $.escaped_char,
     $.inline_tag,
+    $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
     $._new_line
   )),
 
@@ -331,9 +362,7 @@ const tags = {
   ),
 
   inline_tag: $ => seq(
-    alias(
-      choice('@', ':'),
-      $.token),
+    alias('@', $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
@@ -356,7 +385,6 @@ const tags = {
         $._inline_tag_parameters
       )
     )
-
   ),
 
   _inline_tag_label: $ => choice(
@@ -376,7 +404,7 @@ const tags = {
             $.token)),
     alias(
       repeat( choice(
-        $.escaped_sequence,
+        $.escaped_char,
         alias(/[^\(\)\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '()\\'),
         $._new_line
@@ -395,7 +423,7 @@ const tags = {
             $.token)),
     alias(
       repeat(choice(
-        $.escaped_sequence,
+        $.escaped_char,
         alias(/[^\{\}\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '{}\\'),
         $._new_line
@@ -434,7 +462,7 @@ const tags = {
       $.content),
 
     $.end_tag,
-    $.eol
+    choice($.comment, $.eol)
   ),
 
   // The content of this tag will be parsed by this parser.
@@ -457,7 +485,7 @@ const tags = {
       alias($.tag_content, $.content)),
 
     $.end_tag,
-    $.eol
+    choice($.comment, $.eol)
   ),
 
   code_block: $ => seq(
@@ -481,7 +509,7 @@ const tags = {
 
   // Content move into separate node, make it appears in a tree as one node,
   // not a sequence of "$.content" nodes.
-  tag_content: $ => content($, [
+  tag_content: $ => repeat1(choice(
     $.paragraph,
     $._paragraph_and_reference_link_definition,
     $.reference_link_definition,
@@ -493,9 +521,28 @@ const tags = {
     $.list_block,
     $.comment,
     $.blank_line,
-  ]),
+  )),
 
   end_tag: $ => seq($._tag_begin, '@end'),
+}
+
+function gen_markup($, kind, other_kinds) {
+  return prec.right(seq(
+    field("open", alias($[kind + "_open"],
+                        $.token)),
+    alias(
+      repeat1(choice(
+        $.word,
+        $.escaped_char,
+        $.inline_tag,
+        $.link, $.raw_link, $.reference_link, $.short_reference_link,
+        ...other_kinds
+      )),
+      $.content),
+
+    field("close", alias($[kind + "_close"],
+                         $.token))
+  ));
 }
 
 /**
@@ -519,29 +566,7 @@ function expression($, pr, tfunc, skip = '') {
   )
 }
 
-function content($, elements) {
-  return choice(
-    $.paragraph,
-    seq(
-      repeat1(choice(
-        seq(
-          $.paragraph,
-          choice($.blank_line, $._eof)
-        ),
-        ...elements,
-        seq(
-          $.paragraph,
-          optional($.blank_line),
-          choice(...elements)
-        ),
-      )),
-      optional($.paragraph)
-    )
-  );
-}
-
-// Object.assign(skald_grammar.rules, sections, lists, markup)
-Object.assign(blueflower_grammar.rules, sections, lists, tags, links)
+Object.assign(blueflower_grammar.rules, sections, lists, tags, links, markup)
 
 module.exports = grammar(blueflower_grammar)
 

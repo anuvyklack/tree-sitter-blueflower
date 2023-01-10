@@ -21,6 +21,20 @@ typedef uint16_t stack_t;
 using namespace std;
 
 enum TokenType : unsigned char {
+    BOLD,
+    ITALIC,
+    STRIKETHROUGH,
+    UNDERLINE,
+    VERBATIM,
+    INLINE_MATH,
+
+    BOLD_CLOSE,
+    ITALIC_CLOSE,
+    STRIKETHROUGH_CLOSE,
+    UNDERLINE_CLOSE,
+    VERBATIM_CLOSE,
+    INLINE_MATH_CLOSE,
+
     PARAGRAPH_END,
 
     HEADING,
@@ -51,6 +65,20 @@ enum TokenType : unsigned char {
 
 #ifdef DEBUG
 vector<string> tokens_names = {
+    "bold",
+    "italic",
+    "strikethrough",
+    "underline",
+    "verbatim",
+    "inline_math",
+
+    "bold_close",
+    "italic_close",
+    "strikethrough_close",
+    "underline_close",
+    "verbatim_close",
+    "inline_math_close",
+
     "paragraph_end",
 
     "heading",
@@ -80,18 +108,16 @@ vector<string> tokens_names = {
 };
 #endif // DEBUG
 
-// const unordered_map<char, TokenType> markup_tokens = {
-//     {'*', BOLD},
-//     {'/', ITALIC},
-//     {'~', STRIKETHROUGH},
-//     {'_', UNDERLINE},
-//     {'`', VERBATIM},
-//     {'$', INLINE_MATH},
-// };
+constexpr uint8_t MARKUP = 6; //< Total number of markup tokens.
 
-constexpr uint8_t MARKUP = 6;      //< Total number of markup tokens.
-constexpr uint8_t MAX_HEADING = 6; //< Maximum heading level.
-constexpr uint8_t MAX_LIST = 10;   //< Maximum list level.
+const unordered_map<char, TokenType> markup_tokens = {
+    {'*', BOLD},
+    {'/', ITALIC},
+    {'+', STRIKETHROUGH},
+    {'_', UNDERLINE},
+    {'`', VERBATIM},
+    {'$', INLINE_MATH},
+};
 
 struct Scanner
 {
@@ -169,11 +195,11 @@ struct Scanner
         //
         // if (parse_checkbox()) return true;
         // if (prase_link()) return true;
-        //
+
         if (parse_definition()) return true;
-        // if (parse_open_markup()) return true;
-        // if (parse_close_markup()) return true;
-        //
+        if (parse_open_markup()) return true;
+        if (parse_close_markup()) return true;
+
         // if (parse_raw_word()) return true;
         // if (parse_word()) return true;
 
@@ -263,7 +289,7 @@ struct Scanner
 
         stack_t n = 0; //< Number of parsed chars
         switch (lexer->lookahead) {
-        case '*': { // HEADING
+        case '*': { // HEADING, BOLD
             while (lexer->lookahead == '*') {
                 advance();
                 ++n;
@@ -284,10 +310,17 @@ struct Scanner
                 }
             }
 
-            // // We are on the first non-blank character of the line, and it is '*',
-            // // need to check bold markup.
-            // if (n == 1)
-            //     if (parse_open_markup()) return true;
+            // We are on the first non-blank character of the line, and it is '*',
+            // it may be a bold markup.
+            if (n == 1
+                && not_space_or_newline(lexer->lookahead)
+                && is_markup_allowed(current))
+            {
+                markup_stack.push_back(current);
+                debug_markup_stack();
+                lexer->mark_end(lexer);
+                return found(markup_tokens.find(current)->second);
+            }
             break;
         }
         case ':': { // DEFINITION
@@ -392,12 +425,23 @@ struct Scanner
             }
 
             break;
-        case '`': // CODE_BLOCK
+        case '`': // CODE_BLOCK, VERBATIM
             while (lexer->lookahead == '`') {
                 advance();
                 ++n;
             }
-            if (n == 3) {
+            // We are on the first non-blank character of the line, and it is '`',
+            // it may be a verbatim markup.
+            if (n == 1
+                && not_space_or_newline(lexer->lookahead)
+                && is_markup_allowed(current))
+            {
+                markup_stack.push_back(current);
+                debug_markup_stack();
+                lexer->mark_end(lexer);
+                return found(markup_tokens.find(current)->second);
+            }
+            else if (n == 3) {
                 if (valid_tokens[PARAGRAPH_END])
                     return found(PARAGRAPH_END);
                 else {
@@ -428,6 +472,84 @@ struct Scanner
         }
         return false;
     }
+
+    bool parse_open_markup() {
+        // if (parsed_chars != 1) return false;
+
+        /// Markup token
+        auto mt = markup_tokens.find(lexer->lookahead);
+
+        if (mt != markup_tokens.end() && is_markup_allowed(mt->first)) {
+            advance();
+
+            if (is_space_or_newline_or_eof(lexer->lookahead))
+                return false;
+
+            // Empty markup. I.e: **, or //, or ``, ...
+            if (lexer->lookahead == mt->first)
+                return false;
+
+            markup_stack.push_back(mt->first);
+            debug_markup_stack();
+
+            lexer->mark_end(lexer);
+            return found(mt->second);
+        }
+
+        return false;
+    };
+
+    bool parse_close_markup() {
+        if (markup_stack.empty()
+            // || parsed_chars != 1
+            || lexer->lookahead != markup_stack.back()
+            || iswspace(current))
+        {
+            return false;
+        }
+
+        if (!markup_stack.empty() && lexer->lookahead == markup_stack.back()) {
+            advance();
+            lexer->mark_end(lexer);
+            found(static_cast<TokenType>(markup_tokens.at(current) + MARKUP));
+            markup_stack.pop_back();
+            debug_markup_stack();
+            return true;
+        }
+        return false;
+    }
+
+    inline bool is_inline_tag_open_char(int32_t c) {
+        switch (c) {
+        case '@':
+        case ':':
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    inline bool is_markup_allowed(const int32_t c) {
+        if (!valid_tokens[markup_tokens.at(c)])
+            return false;
+
+        if (markup_stack.empty()) return true;
+
+        for (auto m : markup_stack)
+            if (c == m) return false;
+
+        // clog << (int)markup_stack.back() << endl;
+
+        switch (markup_tokens.at(markup_stack.back())) {
+        case VERBATIM:
+        case INLINE_MATH:
+            return false;
+        default:
+            return true;
+        }
+    };
+
+    inline bool is_markup_token(int32_t c) { return markup_tokens.find(c) != markup_tokens.end(); }
 
     bool token(const string str) {
         for (int32_t c : str)
@@ -522,14 +644,14 @@ struct Scanner
 #endif
     }
 
-//     inline void debug_markup_stack() {
-// #ifdef DEBUG
-//         cout << "  markup stack: ";
-//         for (auto m : markup_stack)
-//             cout << m << ", ";
-//         cout << endl;
-// #endif
-//     }
+    inline void debug_markup_stack() {
+#ifdef DEBUG
+        clog << "  markup stack: ";
+        for (auto m : markup_stack)
+            clog << m << ", ";
+        clog << endl;
+#endif
+    }
 
     unsigned int serialize(char* buffer)
     {
@@ -540,7 +662,7 @@ struct Scanner
         stack_t lsl = list_stack.size() * sizeof(stack_t);
 
         /// Markup stack length.
-        uint8_t msl = markup_stack.size();
+        stack_t msl = markup_stack.size();
 
         if (sizeof(hsl) + hsl + sizeof(lsl) + lsl + sizeof(msl) + msl
             + sizeof(inside_code_block)
@@ -608,7 +730,7 @@ struct Scanner
 
         memcpy(&sl, buffer + n, sizeof(sl));
         n += sizeof(sl);
-        for (uint8_t i = 0; i < n; ++i)
+        for (stack_t i = 0; i < sl; ++i)
             markup_stack.push_back(buffer[n + i]);
     };
 };
