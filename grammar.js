@@ -110,23 +110,16 @@ const blueflower_grammar = {
     ),
 
     _general_text: $ => choice(
-      $.escaped_sequence,
+      $.escaped_char,
       $.word,
       $.inline_tag,
       $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
       $.link, $.raw_link, $.reference_link, $.short_reference_link,
     ),
 
-    escaped_sequence: $ => seq(
+    escaped_char: $ => seq(
       alias('\\', $.token),
-      choice(
-        alias(
-          token.immediate(/\S+/),
-          $.raw_word),
-        alias(
-          token.immediate(/\s+/),
-          $.space)
-      )
+      token.immediate(/./, $.character)
     ),
 
     definition: $ => seq(
@@ -304,8 +297,8 @@ const lists = {
 
 const links = {
   link_label: $ => repeat1(choice(
-    $.escaped_sequence,
     expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
+    $.escaped_char,
     $.inline_tag,
     $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
     $._new_line
@@ -414,7 +407,7 @@ const tags = {
             $.token)),
     alias(
       repeat( choice(
-        $.escaped_sequence,
+        $.escaped_char,
         alias(/[^\(\)\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '()\\'),
         $._new_line
@@ -433,7 +426,7 @@ const tags = {
             $.token)),
     alias(
       repeat(choice(
-        $.escaped_sequence,
+        $.escaped_char,
         alias(/[^\{\}\s\\]+/, $.raw_word),
         // expression($, 'non-immediate', token, '{}\\'),
         $._new_line
@@ -472,7 +465,7 @@ const tags = {
       $.content),
 
     $.end_tag,
-    $.eol
+    choice($.comment, $.eol)
   ),
 
   // The content of this tag will be parsed by this parser.
