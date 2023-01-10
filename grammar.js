@@ -362,9 +362,7 @@ const tags = {
   ),
 
   inline_tag: $ => seq(
-    alias(
-      choice('@', ':'),
-      $.token),
+    alias('@', $.token),
     field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
@@ -387,7 +385,6 @@ const tags = {
         $._inline_tag_parameters
       )
     )
-
   ),
 
   _inline_tag_label: $ => choice(
@@ -488,7 +485,7 @@ const tags = {
       alias($.tag_content, $.content)),
 
     $.end_tag,
-    $.eol
+    choice($.comment, $.eol)
   ),
 
   code_block: $ => seq(
