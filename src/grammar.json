@@ -5079,6 +5079,24 @@
                 {
                   "type": "SYMBOL",
                   "name": "blank_line"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "soft_break"
+                  },
+                  "named": true,
+                  "value": "raw_word"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "hard_break"
+                  },
+                  "named": true,
+                  "value": "raw_word"
                 }
               ]
             }
@@ -5775,8 +5793,13 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "code_block_token"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "code_block_token"
+          },
+          "named": true,
+          "value": "token"
         },
         {
           "type": "FIELD",
@@ -5825,6 +5848,24 @@
                 {
                   "type": "SYMBOL",
                   "name": "blank_line"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "soft_break"
+                  },
+                  "named": true,
+                  "value": "raw_word"
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "hard_break"
+                  },
+                  "named": true,
+                  "value": "raw_word"
                 }
               ]
             }
@@ -5833,8 +5874,13 @@
           "value": "content"
         },
         {
-          "type": "SYMBOL",
-          "name": "code_block_token"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "code_block_token"
+          },
+          "named": true,
+          "value": "token"
         },
         {
           "type": "SYMBOL",

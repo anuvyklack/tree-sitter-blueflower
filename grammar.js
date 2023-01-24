@@ -464,10 +464,11 @@ const tags = {
         $.code_block,
         alias($.verbatim_tag, $.tag),
         alias($.tag_with_syntax, $.tag),
-
         alias(/\S+/, $.raw_word),
         $._new_line,
         $.blank_line,
+        alias($.soft_break, $.raw_word),
+        alias($.hard_break, $.raw_word),
       )),
       $.content),
 
@@ -499,7 +500,7 @@ const tags = {
   ),
 
   code_block: $ => seq(
-    $.code_block_token,
+    alias($.code_block_token, $.token),
     field('parameter',
           repeat(alias($.raw_word, $.tag_parameter))),
     $._new_line,
@@ -510,10 +511,12 @@ const tags = {
         $._tag_begin,
         $._new_line,
         $.blank_line,
+        alias($.soft_break, $.raw_word),
+        alias($.hard_break, $.raw_word),
       )),
       $.content),
 
-    $.code_block_token,
+    alias($.code_block_token, $.token),
     $.eol
   ),
 

@@ -823,7 +823,7 @@ def logistic_regression(Y, X, w, iterations):
 
     (document
       (code_block
-        (code_block_token)
+        (token)
         (tag_parameter)
         (content
           (raw_word)
@@ -835,4 +835,4 @@ def logistic_regression(Y, X, w, iterations):
           (raw_word)
           (raw_word)
           (raw_word))
-        (code_block_token)))
+        (token)))

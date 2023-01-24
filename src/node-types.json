@@ -55,11 +55,11 @@
       "required": true,
       "types": [
         {
-          "type": "code_block_token",
+          "type": "content",
           "named": true
         },
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -1492,10 +1492,6 @@
   },
   {
     "type": "checkbox",
-    "named": true
-  },
-  {
-    "type": "code_block_token",
     "named": true
   },
   {
