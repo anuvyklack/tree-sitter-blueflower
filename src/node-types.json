@@ -682,7 +682,7 @@
     },
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "label",
@@ -892,7 +892,38 @@
   {
     "type": "raw_link",
     "named": true,
-    "fields": {}
+    "fields": {
+      "close_link": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "open_link": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "link",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "raw_word",
@@ -1441,14 +1472,6 @@
   },
   {
     "type": "#",
-    "named": false
-  },
-  {
-    "type": "<",
-    "named": false
-  },
-  {
-    "type": ">",
     "named": false
   },
   {

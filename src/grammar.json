@@ -2920,21 +2920,44 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "<"
-        },
-        {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "FIELD",
+          "name": "open_link",
           "content": {
-            "type": "PATTERN",
-            "value": "[^>\\s]+"
+            "type": "ALIAS",
+            "content": {
+              "type": "STRING",
+              "value": "<"
+            },
+            "named": true,
+            "value": "token"
           }
         },
         {
-          "type": "IMMEDIATE_TOKEN",
+          "type": "ALIAS",
           "content": {
-            "type": "STRING",
-            "value": ">"
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "[^>\\s]+"
+            }
+          },
+          "named": true,
+          "value": "link"
+        },
+        {
+          "type": "FIELD",
+          "name": "close_link",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "IMMEDIATE_TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": ">"
+              }
+            },
+            "named": true,
+            "value": "token"
           }
         }
       ]

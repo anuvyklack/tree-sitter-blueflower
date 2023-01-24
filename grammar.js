@@ -350,10 +350,10 @@ const links = {
     field('close_target', alias(')', $.token))
   ),
 
-  raw_link: _ => seq(
-    '<',
-    token.immediate(/[^>\s]+/),
-    token.immediate('>'),
+  raw_link: $ => seq(
+    field("open_link", alias('<', $.token)),
+    alias(token.immediate(/[^>\s]+/), $.link),
+    field("close_link", alias(token.immediate('>'), $.token))
   )
 }
 
