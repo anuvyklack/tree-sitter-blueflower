@@ -348,6 +348,43 @@ List.3 - Arbitrary indented list
         (list_break)))
 
 ================================================================================
+List.4 - Checkbox
+================================================================================
+- [ ] item
+-- [x] item
+--- [!] item
+- [-] item
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (list_block
+        (list
+          (list_item
+            (token)
+            (checkbox)
+            (paragraph
+              (word))
+            (list
+              (list_item
+                (token)
+                (checkbox)
+                (paragraph
+                  (word))
+                (list
+                  (list_item
+                    (token)
+                    (checkbox)
+                    (paragraph
+                      (word)))))))
+          (list_item
+            (token)
+            (checkbox)
+            (paragraph
+              (word))))
+        (list_break)))
+
+================================================================================
 Definition.1 - The simplest case
 ================================================================================
 : term : description :
