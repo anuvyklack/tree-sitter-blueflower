@@ -384,15 +384,13 @@ struct Scanner
                 return found(PARAGRAPH_END);
 
             if (n == 3 && is_newline_or_eof(lexer->lookahead)) {
-                if (valid_tokens[SECTION_END] && !heading_stack.empty()) {
-                    heading_stack.pop_back();
-                    return found(SECTION_END);
-                }
-                else if (valid_tokens[LIST_END]) {
+                if (valid_tokens[LIST_END]) {
                     list_stack.pop_back();
                     return found(LIST_END);
                 }
                 else {
+                    if (!heading_stack.empty())
+                        heading_stack.pop_back();
                     lexer->mark_end(lexer);
                     return found(SOFT_BREAK);
                 }

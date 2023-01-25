@@ -47,9 +47,9 @@ const blueflower_grammar = {
     // triggers the external scanner at the begging of the next line (column 0)
     // but not at the first non-blank character, as parser do without this rule.
     //
-    // We need to parse newlines ourself, because this rule:
+    // We need to parse newlines ourself, because the rule:
     // ```
-    //    _new_line: $ => choice('\r\n', '\r', '\n')
+    //    new_line: $ => choice('\r\n', '\r', '\n')
     // ```
     // returns two new line chars in a row as one "$._new_line" node, and
     // we miss all "$.blank_line" nodes, which we need, to separate paragraphs.
@@ -91,6 +91,7 @@ const blueflower_grammar = {
         $.comment,
         $.blank_line,
         $.hard_break,
+        $._new_line
       )),
       optional($._eof)
     ),
@@ -139,11 +140,11 @@ const sections = {
   section: $ => seq(
     $.heading,
     optional(alias($.section_content, $.content)),
-    choice($.section_end, $._eof),
-    optional(seq(
-      (optional($.soft_break)),
-      $.eol
-    ))
+    choice(
+      seq($.soft_break, $.eol),
+      $.section_end,
+      $._eof
+    )
   ),
 
   heading: $ => seq(

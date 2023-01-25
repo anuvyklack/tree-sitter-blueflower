@@ -178,3 +178,47 @@ consectetur cupidatat.
             (word)
             (word)
             (symbol)))))
+
+================================================================================
+Section.6 - Soft break
+================================================================================
+* Title
+** Title
+*** Title
+
+text
+
+---
+---
+
+text
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (content
+          (section
+            (heading
+              (token)
+              (title
+                (word)))
+            (content
+              (section
+                (heading
+                  (token)
+                  (title
+                    (word)))
+                (content
+                  (blank_line)
+                  (paragraph
+                    (word))
+                  (blank_line))
+                (soft_break)))
+            (soft_break))
+          (blank_line)
+          (paragraph
+            (word)))))
