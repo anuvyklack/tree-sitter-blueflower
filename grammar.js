@@ -19,7 +19,7 @@ const blueflower_grammar = {
     $._paragraph_end,
 
     $.heading_token,
-    $.section_end,
+    $._section_end,
 
     $.definition_term_begin,
     $.definition_term_end,
@@ -142,7 +142,7 @@ const sections = {
     optional(alias($.section_content, $.content)),
     choice(
       seq($.soft_break, $.eol),
-      $.section_end,
+      $._section_end,
       $._eof
     )
   ),

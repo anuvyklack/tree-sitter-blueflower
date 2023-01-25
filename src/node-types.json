@@ -1085,10 +1085,6 @@
           "named": true
         },
         {
-          "type": "section_end",
-          "named": true
-        },
-        {
           "type": "soft_break",
           "named": true
         }
@@ -1512,10 +1508,6 @@
   },
   {
     "type": "number",
-    "named": true
-  },
-  {
-    "type": "section_end",
     "named": true
   },
   {

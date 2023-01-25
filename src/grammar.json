@@ -1121,7 +1121,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "section_end"
+              "name": "_section_end"
             },
             {
               "type": "SYMBOL",
@@ -6044,7 +6044,7 @@
     },
     {
       "type": "SYMBOL",
-      "name": "section_end"
+      "name": "_section_end"
     },
     {
       "type": "SYMBOL",

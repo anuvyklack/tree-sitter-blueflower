@@ -71,8 +71,7 @@ Section.3 - Two multiline titles
             (word)
             (word)
             (word)
-            (symbol)))
-        (section_end))
+            (symbol))))
       (section
         (heading
           (token)
