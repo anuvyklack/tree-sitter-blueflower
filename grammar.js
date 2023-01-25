@@ -321,7 +321,7 @@ const links = {
     alias(']:', $.token),
     $._whitespace,
 
-    alias(repeat($.raw_word), $.link),
+    alias(repeat($.raw_word), $.target),
     $.eol
   )),
 
@@ -353,7 +353,7 @@ const links = {
 
   raw_link: $ => seq(
     field("open_link", alias('<', $.token)),
-    alias(token.immediate(/[^>\s]+/), $.link),
+    alias(token.immediate(/[^>\s]+/), $.target),
     field("close_link", alias(token.immediate('>'), $.token))
   )
 }

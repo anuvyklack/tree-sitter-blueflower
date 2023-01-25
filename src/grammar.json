@@ -2672,7 +2672,7 @@
               }
             },
             "named": true,
-            "value": "link"
+            "value": "target"
           },
           {
             "type": "SYMBOL",
@@ -2930,7 +2930,7 @@
             }
           },
           "named": true,
-          "value": "link"
+          "value": "target"
         },
         {
           "type": "FIELD",

@@ -641,7 +641,7 @@
     "fields": {
       "close_label": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "token",
@@ -651,7 +651,7 @@
       },
       "close_target": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "token",
@@ -661,7 +661,7 @@
       },
       "open_label": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "token",
@@ -671,7 +671,7 @@
       },
       "open_target": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "token",
@@ -682,14 +682,10 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "label",
-          "named": true
-        },
-        {
-          "type": "raw_word",
           "named": true
         },
         {
@@ -919,7 +915,7 @@
       "required": true,
       "types": [
         {
-          "type": "link",
+          "type": "target",
           "named": true
         }
       ]
@@ -1054,11 +1050,11 @@
       "required": true,
       "types": [
         {
-          "type": "link",
+          "type": "reference",
           "named": true
         },
         {
-          "type": "reference",
+          "type": "target",
           "named": true
         },
         {
@@ -1238,6 +1234,21 @@
     "type": "tag_parameter",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "target",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "raw_word",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "term",
@@ -1516,10 +1527,6 @@
   },
   {
     "type": "symbol",
-    "named": true
-  },
-  {
-    "type": "target",
     "named": true
   },
   {

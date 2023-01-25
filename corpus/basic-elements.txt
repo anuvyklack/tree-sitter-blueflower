@@ -136,7 +136,7 @@ Escaped character.1
         (reference
           (word))
         (token)
-        (link
+        (target
           (raw_word))))
 
 ================================================================================
@@ -664,7 +664,7 @@ Link.7 - Reference link definition
         (reference
           (word))
         (token)
-        (link
+        (target
           (raw_word))))
 
 ================================================================================
@@ -699,7 +699,7 @@ consectetur cupidatat.
         (reference
           (word))
         (token)
-        (link
+        (target
           (raw_word))))
 
 ================================================================================
@@ -747,7 +747,7 @@ text @tag[label] [ref] [label][ref] [label](link)
         (reference
           (word))
         (token)
-        (link
+        (target
           (raw_word))))
 
 ================================================================================
@@ -794,7 +794,7 @@ Link.8c - Paragraph with reference link definition after
         (reference
           (word))
         (token)
-        (link
+        (target
           (raw_word))))
 
 ================================================================================
@@ -807,7 +807,7 @@ Link.9 - Raw link
       (paragraph
         (raw_link
           (token)
-          (link)
+          (target)
           (token))))
 
 ================================================================================
