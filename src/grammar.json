@@ -5067,24 +5067,6 @@
                 {
                   "type": "SYMBOL",
                   "name": "blank_line"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "soft_break"
-                  },
-                  "named": true,
-                  "value": "raw_word"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "hard_break"
-                  },
-                  "named": true,
-                  "value": "raw_word"
                 }
               ]
             }
@@ -5836,24 +5818,6 @@
                 {
                   "type": "SYMBOL",
                   "name": "blank_line"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "soft_break"
-                  },
-                  "named": true,
-                  "value": "raw_word"
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "hard_break"
-                  },
-                  "named": true,
-                  "value": "raw_word"
                 }
               ]
             }

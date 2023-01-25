@@ -388,8 +388,8 @@ struct Scanner
                     list_stack.pop_back();
                     return found(LIST_END);
                 }
-                else {
-                    if (!heading_stack.empty())
+                else if (valid_tokens[SOFT_BREAK]) {
+                    if (valid_tokens[SECTION_END] && !heading_stack.empty())
                         heading_stack.pop_back();
                     lexer->mark_end(lexer);
                     return found(SOFT_BREAK);

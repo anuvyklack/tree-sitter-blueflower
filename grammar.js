@@ -468,8 +468,6 @@ const tags = {
         alias(/\S+/, $.raw_word),
         $._new_line,
         $.blank_line,
-        alias($.soft_break, $.raw_word),
-        alias($.hard_break, $.raw_word),
       )),
       $.content),
 
@@ -512,8 +510,6 @@ const tags = {
         $._tag_begin,
         $._new_line,
         $.blank_line,
-        alias($.soft_break, $.raw_word),
-        alias($.hard_break, $.raw_word),
       )),
       $.content),
 
