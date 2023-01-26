@@ -171,15 +171,10 @@ struct Scanner
             return false;
         }
 
-        if (parse_escaped_char()) return true;
-
         lexer->mark_end(lexer);
 
         if (get_column() == 0)
             if (parse_newline()) return true;
-
-        // if (parse_ordered_list()) return true;
-        // if (parse_tag_name()) return true;
 
         if (parsed_chars == 0) {
             skip_spaces();
@@ -202,19 +197,11 @@ struct Scanner
             return found(NEW_LINE);
         }
 
-        // if (parse_comment()) return true;
-        // if (parse_escape_char()) return true;
-        //
-        // if (parse_checkbox()) return true;
-        // if (prase_link()) return true;
-
+        if (parse_escaped_char()) return true;
         if (parse_definition()) return true;
         if (parse_open_markup()) return true;
         if (parse_close_markup()) return true;
         if (parse_force_newline_token())  return true;
-
-        // if (parse_raw_word()) return true;
-        // if (parse_word()) return true;
 
 #ifdef DEBUG
         clog << "  false" << endl << "}" << endl;
@@ -287,15 +274,20 @@ struct Scanner
             if (is_newline(lexer->lookahead)) {
                 if (lexer->lookahead == 13) advance(); // \r
                 if (lexer->lookahead == 10) advance(); // \n
+                lexer->mark_end(lexer);
                 return found(NEW_LINE);
             }
             else {
                 advance();
+                lexer->mark_end(lexer);
                 return found(ESCAPED_CHAR);
             }
         }
-        else if (valid_tokens[ESCAPE_TOKEN] && lexer->lookahead == '\\') {
+        else if (valid_tokens[ESCAPE_TOKEN]
+                && lexer->lookahead == static_cast<int32_t>('\\'))
+        {
             advance();
+            lexer->mark_end(lexer);
             escaped_active = true;
             return found(ESCAPE_TOKEN);
         }
@@ -618,7 +610,6 @@ struct Scanner
         return true;
     }
 
-    // inline uint32_t get_column() { return is_eof() ? 0 : lexer->get_column(lexer); }
     inline uint32_t get_column() { return lexer->get_column(lexer); }
 
     inline bool is_inline_tag_control_character(int32_t c) {
