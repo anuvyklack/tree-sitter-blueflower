@@ -1394,8 +1394,20 @@
         {
           "type": "ALIAS",
           "content": {
-            "type": "SYMBOL",
-            "name": "paragraph"
+            "type": "REPEAT1",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "raw_word"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_new_line"
+                }
+              ]
+            }
           },
           "named": true,
           "value": "term"
@@ -1438,8 +1450,20 @@
               {
                 "type": "ALIAS",
                 "content": {
-                  "type": "SYMBOL",
-                  "name": "paragraph"
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "raw_word"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_new_line"
+                      }
+                    ]
+                  }
                 },
                 "named": true,
                 "value": "term"

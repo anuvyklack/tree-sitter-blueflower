@@ -227,22 +227,23 @@ const markup = {
 const definition = {
     definition: $ => seq(
       field('term_open', alias($.definition_term_begin, $.token)),
-      alias($.paragraph, $.term),
+      alias(
+        repeat1(choice(
+          $.raw_word, $._new_line
+        )),
+        $.term),
       field('term_close', alias($.definition_term_end, $.token)),
 
       repeat(seq(
-          $._new_line,
-          field('term_open', alias($.definition_term_begin, $.token)),
-          alias($.paragraph, $.term),
-          field('term_close', alias($.definition_term_end, $.token)),
+        $._new_line,
+        field('term_open', alias($.definition_term_begin, $.token)),
+        alias(
+          repeat1(choice(
+            $.raw_word, $._new_line
+          )),
+          $.term),
+        field('term_close', alias($.definition_term_end, $.token)),
       )),
-
-      // repeat(seq(
-      //   optional(alias($.general_text, $.description)),
-      //   field('term_open', alias($.definition_term_begin, $.token)),
-      //   alias($.general_text, $.term),
-      //   field('term_close', alias($.definition_term_end, $.token)),
-      // )),
 
       optional($._new_line),
       $.description,

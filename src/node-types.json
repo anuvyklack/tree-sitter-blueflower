@@ -1259,67 +1259,7 @@
       "required": false,
       "types": [
         {
-          "type": "bold",
-          "named": true
-        },
-        {
-          "type": "escaped_char",
-          "named": true
-        },
-        {
-          "type": "force_new_line",
-          "named": true
-        },
-        {
-          "type": "inline_math",
-          "named": true
-        },
-        {
-          "type": "inline_tag",
-          "named": true
-        },
-        {
-          "type": "italic",
-          "named": true
-        },
-        {
-          "type": "link",
-          "named": true
-        },
-        {
-          "type": "number",
-          "named": true
-        },
-        {
-          "type": "raw_link",
-          "named": true
-        },
-        {
-          "type": "reference_link",
-          "named": true
-        },
-        {
-          "type": "short_reference_link",
-          "named": true
-        },
-        {
-          "type": "strikethrough",
-          "named": true
-        },
-        {
-          "type": "symbol",
-          "named": true
-        },
-        {
-          "type": "underline",
-          "named": true
-        },
-        {
-          "type": "verbatim",
-          "named": true
-        },
-        {
-          "type": "word",
+          "type": "raw_word",
           "named": true
         }
       ]

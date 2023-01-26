@@ -425,7 +425,7 @@ Definition.1 - The simplest case
       (definition
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (description
           (paragraph
@@ -444,11 +444,11 @@ description :
       (definition
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (description
           (paragraph
@@ -467,7 +467,7 @@ Definition.3 - End token on new line
       (definition
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (description
           (paragraph
@@ -485,8 +485,8 @@ Definition.4 - Multiline term
       (definition
         (token)
         (term
-          (word)
-          (word))
+          (raw_word)
+          (raw_word))
         (token)
         (description
           (paragraph
@@ -509,11 +509,11 @@ Definition.5 - Complex description with list
       (definition
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (description
           (paragraph
@@ -552,11 +552,11 @@ Definition.6 - Complex description with list
       (definition
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (token)
         (term
-          (word))
+          (raw_word))
         (token)
         (description
           (paragraph
