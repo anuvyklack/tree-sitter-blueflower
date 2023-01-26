@@ -120,7 +120,7 @@ vector<string> tokens_names = {
 
 constexpr uint8_t MARKUP = 6; //< Total number of markup tokens.
 
-const unordered_map<char, TokenType> markup_tokens = {
+const unordered_map<int32_t, TokenType> markup_tokens = {
     {'*', BOLD},
     {'/', ITALIC},
     {'+', STRIKETHROUGH},
@@ -144,19 +144,17 @@ struct Scanner
 
     vector<stack_t> heading_stack;
     vector<stack_t> list_stack;
-    deque<char> markup_stack;
+    deque<int32_t> markup_stack;
 
     bool inside_code_block = false;
 
     bool escaped_active = false;
 
     bool scan () {
-        /**
-         * Recover form error
-         * The parser appears to call `scan` with all symbols declared as valid
-         * directly after it encountered an error. ERROR token can never be
-         * requested in normal, so if it is requested, that error occurred.
-         */
+        // Recover form error.
+        // The parser appears to call `scan` with all symbols declared as valid
+        // directly after it encountered an error. ERROR token can never be
+        // requested in normal, so if it is requested, that error occurred.
         if (valid_tokens[ERROR]) return false;
 
 #ifdef DEBUG
@@ -326,7 +324,7 @@ struct Scanner
 
         stack_t n = 0; //< Number of parsed chars
         switch (lexer->lookahead) {
-        case '*': { // HEADING, BOLD
+        case static_cast<int32_t>('*'): { // HEADING, BOLD
             while (lexer->lookahead == '*') {
                 advance();
                 ++n;
@@ -360,7 +358,7 @@ struct Scanner
             }
             break;
         }
-        case ':': { // DEFINITION
+        case static_cast<int32_t>(':'): { // DEFINITION
             advance();
             if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
                 return found(PARAGRAPH_END);
@@ -374,8 +372,8 @@ struct Scanner
             }
             break;
         }
-        case '-': { // LIST, SOFT_BREAK
-            while (lexer->lookahead == '-') {
+        case static_cast<int32_t>('-'): { // LIST, SOFT_BREAK
+            while (lexer->lookahead == static_cast<int32_t>('-')) {
                 advance();
                 ++n;
             }
@@ -416,8 +414,8 @@ struct Scanner
 
             break;
         }
-        case '=': // HARD_BREAK
-            while (lexer->lookahead == '=') {
+        case static_cast<int32_t>('='): // HARD_BREAK
+            while (lexer->lookahead == static_cast<int32_t>('=')) {
                 advance();
                 ++n;
             }
@@ -434,7 +432,7 @@ struct Scanner
                 }
             }
             break;
-        case '#': // HASHTAG
+        case static_cast<int32_t>('#'): // HASHTAG
             if (valid_tokens[PARAGRAPH_END])
                 return found(PARAGRAPH_END);
             else if (valid_tokens[HASHTAG]) {
@@ -447,7 +445,7 @@ struct Scanner
                 }
             }
             break;
-        case '@': // TAG_BEGIN
+        case static_cast<int32_t>('@'): // TAG_BEGIN
             while (!is_inline_tag_control_character(lexer->lookahead)
                    && not_space_or_newline(lexer->lookahead))
                 advance();
@@ -460,8 +458,8 @@ struct Scanner
             }
 
             break;
-        case '`': // CODE_BLOCK, VERBATIM
-            while (lexer->lookahead == '`') {
+        case static_cast<int32_t>('`'): // CODE_BLOCK, VERBATIM
+            while (lexer->lookahead == static_cast<int32_t>('`')) {
                 advance();
                 ++n;
             }
@@ -492,7 +490,7 @@ struct Scanner
     }
 
     bool parse_definition() {
-        if (is_space(current) && lexer->lookahead == ':') {
+        if (is_space(current) && lexer->lookahead == static_cast<int32_t>(':')) {
             advance();
             if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
                 return found(PARAGRAPH_END);
@@ -555,7 +553,9 @@ struct Scanner
     }
 
     bool parse_force_newline_token() {
-        if (valid_tokens[FORCE_NEW_LINE] && lexer-> lookahead == '~') {
+        if (valid_tokens[FORCE_NEW_LINE]
+            && lexer->lookahead == static_cast<int32_t>('~'))
+        {
             advance();
             if (is_newline_or_eof(lexer->lookahead)) {
                 lexer->mark_end(lexer);
@@ -567,8 +567,8 @@ struct Scanner
 
     inline bool is_inline_tag_open_char(int32_t c) {
         switch (c) {
-        case '@':
-        case ':':
+        case static_cast<int32_t>('@'):
+        case static_cast<int32_t>(':'):
             return true;
         default:
             return false;
@@ -623,9 +623,9 @@ struct Scanner
 
     inline bool is_inline_tag_control_character(int32_t c) {
         switch (c) {
-        case '[':
-        case '(':
-        case '{':
+        case static_cast<int32_t>('['):
+        case static_cast<int32_t>('('):
+        case static_cast<int32_t>('{'):
             return true;
         default:
             return false;
