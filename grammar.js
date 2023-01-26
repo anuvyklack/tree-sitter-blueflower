@@ -347,7 +347,9 @@ const links = {
     field('close_label', alias(']', $.token)),
 
     field('open_target', alias(token.immediate('('), $.token)),
-    alias(token.immediate(/[^\(\)\s\\]+/), $.target),
+    alias(
+      repeat(/[^\(\)\s\\]+/),
+      $.target),
     field('close_target', alias(')', $.token))
   ),
 
