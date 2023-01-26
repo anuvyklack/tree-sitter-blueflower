@@ -125,7 +125,38 @@ Escaped character.1
           (token)
           (character))
         (word)
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
         (symbol)
+        (word)
+        (symbol))
+      (reference_link_definition
+        (token)
+        (reference
+          (word))
+        (token)
+        (target
+          (raw_word))))
+
+================================================================================
+Escaped character.2
+================================================================================
+\@tag\[label] (word)
+[foo]: https://
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (escaped_char
+          (token)
+          (character))
+        (word)
+        (escaped_char
+          (token)
+          (character))
         (word)
         (symbol)
         (symbol)
@@ -140,7 +171,7 @@ Escaped character.1
           (raw_word))))
 
 ================================================================================
-Escaped character.2
+Escaped character.3
 ================================================================================
 @tag[label] (word)
 [foo]\: https://
@@ -798,7 +829,62 @@ Link.8c - Paragraph with reference link definition after
           (raw_word))))
 
 ================================================================================
-Link.9 - Raw link
+Link.9a - link in braces
+================================================================================
+([label](target))
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (symbol)
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token))
+        (symbol)))
+
+================================================================================
+Link.9b - reference link in braces
+================================================================================
+([label][reference])
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (symbol)
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)))
+
+================================================================================
+Link.9c - short reference link in braces
+================================================================================
+([reference])
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (symbol)
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (symbol)))
+
+================================================================================
+Link.10 - Raw link
 ================================================================================
 <https://github.com/shaunsingh/nord.nvim>
 --------------------------------------------------------------------------------

@@ -122,11 +122,7 @@ const blueflower_grammar = {
     // word: _ => /[\p{Alpha}\p{M}\p{Nd}\p{Pc}\p{Join_C}]+/
 
     // word: $ => /[^@\[\s]+/,
-    word: $ => seq(
-      expression($, 'non-immediate', token, '@[<' + '*/+_`$'),
-      // optional(expression($, 'immediate', token.immediate, '*/+_`$')),
-      optional(expression($, 'immediate', token.immediate, '~' + '*/+_`$')),
-    ),
+    word: $ => expression($, 'non-immediate', token, '@[<' + '*/+_`$'),
 
     raw_word: _ => /\S+/,
 
@@ -214,7 +210,7 @@ const markup = {
   verbatim: $ => prec.right(seq(
     field("open", alias($.verbatim_open, $.token)),
     alias(
-      repeat1(/[^`\s]/),
+      repeat1(choice(/[^`\s]/, $._new_line)),
       $.content),
     field("close", alias($.verbatim_close, $.token)),
   )),
@@ -307,38 +303,10 @@ const lists = {
 }
 
 const links = {
-  link_label: $ => repeat1(choice(
-    expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
-    $.escaped_char,
-    $.inline_tag,
-    $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-    $._new_line
-  )),
-
-  reference_link_definition: $ => prec.dynamic(1, seq(
-    alias('[', $.token),
-    alias($.link_label, $.reference),
-    alias(']:', $.token),
-    $._whitespace,
-
-    alias(repeat($.raw_word), $.target),
-    $.eol
-  )),
-
-  short_reference_link: $ => seq(
-    field('open_reference', alias('[', $.token)),
-    alias($.link_label, $.reference),
-    field('close_reference', alias(']', $.token)),
-  ),
-
-  reference_link: $ => seq(
-    field('open_label', alias('[', $.token)),
-    optional(alias($.link_label, $.label)),
-    field('close_label', alias(']', $.token)),
-
-    field('open_reference', alias(token.immediate('['), $.token)),
-    optional(alias($.link_label, $.reference)),
-    field('close_reference', alias(']', $.token)),
+  raw_link: $ => seq(
+    field("open_link", alias('<', $.token)),
+    alias(token.immediate(/[^>\s]+/), $.target),
+    field("close_link", alias(token.immediate('>'), $.token))
   ),
 
   link: $ => seq(
@@ -353,11 +321,43 @@ const links = {
     field('close_target', alias(')', $.token))
   ),
 
-  raw_link: $ => seq(
-    field("open_link", alias('<', $.token)),
-    alias(token.immediate(/[^>\s]+/), $.target),
-    field("close_link", alias(token.immediate('>'), $.token))
-  )
+  reference_link: $ => seq(
+    field('open_label', alias('[', $.token)),
+    optional(alias($.link_label, $.label)),
+    field('close_label', alias(']', $.token)),
+
+    field('open_reference', alias(token.immediate('['), $.token)),
+    optional(alias($.link_label, $.reference)),
+    field('close_reference', alias(']', $.token)),
+  ),
+
+  short_reference_link: $ => seq(
+    // field('open_reference', alias('[', $.token)),
+    field('open_reference',
+      alias(
+        prec('special', '['),
+        $.token)),
+    alias($.link_label, $.reference),
+    field('close_reference', alias(']', $.token)),
+  ),
+
+  reference_link_definition: $ => prec.dynamic(1, seq(
+    alias('[', $.token),
+    alias($.link_label, $.reference),
+    alias(']:', $.token),
+    $._whitespace,
+
+    alias(repeat($.raw_word), $.target),
+    $.eol
+  )),
+
+  link_label: $ => repeat1(choice(
+    expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
+    $.escaped_char,
+    $.inline_tag,
+    $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
+    $._new_line
+  )),
 }
 
 const tags = {
@@ -562,10 +562,9 @@ function gen_markup($, kind, other_kinds) {
  * @param {Function} tfunc Token function: `token` or `token.immediate`.
  */
 function expression($, pr, tfunc, skip = '') {
-  const asciiSymbols = [ '!', '"', '#', '$', '%', '&', "'", '(', ')', '*',
-    '+', ',', '-', '.', '/',  ':', ';', '<', '=', '>', '?', '@', '[', ']',
-    '\\', '^', '_', '`', '{', '|', '}', '~' ]
-
+  const asciiSymbols = [ '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+',
+                         ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@',
+                         '[', ']', '^', '_', '`', '{', '|', '}', '~', '\\' ]
   skip = skip.split("")
   return choice(
     ...asciiSymbols.filter(c => !skip.includes(c))
