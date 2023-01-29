@@ -187,8 +187,8 @@ Section.6 - Soft break
 
 text
 
----
----
+***
+***
 
 text
 --------------------------------------------------------------------------------
@@ -216,8 +216,8 @@ text
                   (paragraph
                     (word))
                   (blank_line))
-                (soft_break)))
-            (soft_break))
+                (dinkus)))
+            (dinkus))
           (blank_line)
           (paragraph
             (word)))))

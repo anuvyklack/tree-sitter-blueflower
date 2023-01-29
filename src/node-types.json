@@ -1077,11 +1077,11 @@
           "named": true
         },
         {
-          "type": "heading",
+          "type": "dinkus",
           "named": true
         },
         {
-          "type": "soft_break",
+          "type": "heading",
           "named": true
         }
       ]
@@ -1442,6 +1442,10 @@
     "named": true
   },
   {
+    "type": "dinkus",
+    "named": true
+  },
+  {
     "type": "force_new_line",
     "named": true
   },
@@ -1459,10 +1463,6 @@
   },
   {
     "type": "number",
-    "named": true
-  },
-  {
-    "type": "soft_break",
     "named": true
   },
   {

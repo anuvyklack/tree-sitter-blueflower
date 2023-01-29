@@ -60,6 +60,7 @@ enum TokenType : unsigned char {
 
     BLANK_LINE,
     SOFT_BREAK,
+    DINKUS,
     HARD_BREAK,
 
     NEW_LINE,
@@ -109,6 +110,7 @@ vector<string> tokens_names = {
 
     "blank_line",
     "soft_break",
+    "dinkus",
     "hard_break",
 
     "new_line",
@@ -321,9 +323,17 @@ struct Scanner
                 advance();
                 ++n;
             }
-            if (is_space(lexer->lookahead)) {
+            if (is_space_or_newline_or_eof(lexer->lookahead)) {
                 if (valid_tokens[PARAGRAPH_END])
                     return found(PARAGRAPH_END);
+                else if (valid_tokens[DINKUS] && n == 3
+                         && is_newline_or_eof(lexer->lookahead))
+                {
+                    if (valid_tokens[SECTION_END] && !heading_stack.empty())
+                        heading_stack.pop_back();
+                    lexer->mark_end(lexer);
+                    return found(DINKUS);
+                }
                 else if (valid_tokens[HEADING]) {
                     if (heading_stack.empty() || n > heading_stack.back()) {
                         heading_stack.push_back(n);
@@ -379,8 +389,6 @@ struct Scanner
                     return found(LIST_END);
                 }
                 else if (valid_tokens[SOFT_BREAK]) {
-                    if (valid_tokens[SECTION_END] && !heading_stack.empty())
-                        heading_stack.pop_back();
                     lexer->mark_end(lexer);
                     return found(SOFT_BREAK);
                 }

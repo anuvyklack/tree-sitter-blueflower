@@ -645,7 +645,7 @@
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "soft_break"
+                  "name": "dinkus"
                 },
                 {
                   "type": "SYMBOL",
@@ -5636,6 +5636,10 @@
     {
       "type": "SYMBOL",
       "name": "soft_break"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "dinkus"
     },
     {
       "type": "SYMBOL",

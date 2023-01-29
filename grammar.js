@@ -41,6 +41,7 @@ const blueflower_grammar = {
 
     $.blank_line,
     $.soft_break,
+    $.dinkus,
     $.hard_break,
 
     // We need to parse newline char as a separate node, because it
@@ -137,7 +138,7 @@ const sections = {
     $.heading,
     optional(alias($.section_content, $.content)),
     choice(
-      seq($.soft_break, $.eol),
+      seq($.dinkus, $.eol),
       $._section_end,
       $._eof
     )
