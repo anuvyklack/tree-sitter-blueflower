@@ -9,9 +9,9 @@ Tag.1a - Verbatim tag
     (document
       (tag
         (token)
-        name: (tag_name
+        tag: (tag_name
           (word))
-        (content
+        content: (content
           (raw_word))
         (end_tag)))
 
@@ -283,20 +283,20 @@ text
     (document
       (hashtag
         (token)
-        (tag_name)
-        (content
+        tag: (tag_name)
+        content: (content
           (word)))
       (hashtag
         (token)
-        (tag_name)
-        (content
+        tag: (tag_name)
+        content: (content
           (word)))
       (tag
         (token)
-        name: (tag_name
+        tag: (tag_name
           (word))
         parameter: (tag_parameter)
-        (content
+        content: (content
           (raw_word))
         (end_tag))
       (blank_line)

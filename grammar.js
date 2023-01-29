@@ -146,7 +146,7 @@ const sections = {
 
   heading: $ => seq(
     field("level", alias($.heading_token, $.token)),
-    alias($.paragraph, $.title),
+    field("title", alias($.paragraph, $.title)),
   ),
 
   section_content: $ => repeat1(choice(
@@ -191,7 +191,7 @@ const paragraph = {
       $.word,
       $.inline_tag,
       $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-      $.link, $.raw_link, $.reference_link, $.short_reference_link,
+      $.link, $.direct_link, $.reference_link, $.short_reference_link,
     ),
 }
 
@@ -208,62 +208,64 @@ const markup = {
   strikethrough: $ => gen_markup($, "strikethrough",
     [$.bold, $.italic, $.underline, $.verbatim, $.inline_math]),
 
-  verbatim: $ => prec.right(seq(
-    field("open", alias($.verbatim_open, $.token)),
-    alias(
-      repeat1(choice(/[^`\s]/, $._new_line)),
-      $.content),
-    field("close", alias($.verbatim_close, $.token)),
-  )),
+  verbatim: $ => seq(
+    alias($.verbatim_open, $.token),
+    field("verbatim",
+          alias(
+            repeat1(choice(/[^`\s]/, $._new_line)),
+            $.content)),
+    alias($.verbatim_close, $.token),
+  ),
 
-  inline_math: $ => prec.right(seq(
-    field("open", alias($.inline_math_open, $.token)),
-    alias(
-      repeat1(/[^$\s]/),
-      $.content),
-    field("close", alias($.inline_math_close, $.token)),
-  )),
+  inline_math: $ => seq(
+    alias($.inline_math_open, $.token),
+    field("inline_math",
+          alias(
+            repeat1(/[^$\s]/),
+            $.content)),
+    alias($.inline_math_close, $.token),
+  ),
 }
 
 const definition = {
-    definition: $ => seq(
+  definition: $ => seq(
+    field('term_open', alias($.definition_term_begin, $.token)),
+    field('term',
+          alias(
+            repeat1(choice(
+              $.raw_word, $._new_line)),
+            $.term)),
+    field('term_close', alias($.definition_term_end, $.token)),
+
+    repeat(seq(
+      $._new_line,
       field('term_open', alias($.definition_term_begin, $.token)),
-      alias(
-        repeat1(choice(
-          $.raw_word, $._new_line
-        )),
-        $.term),
+      field('term',
+            alias(
+              repeat1(choice(
+                $.raw_word, $._new_line)),
+              $.term)),
       field('term_close', alias($.definition_term_end, $.token)),
-
-      repeat(seq(
-        $._new_line,
-        field('term_open', alias($.definition_term_begin, $.token)),
-        alias(
-          repeat1(choice(
-            $.raw_word, $._new_line
-          )),
-          $.term),
-        field('term_close', alias($.definition_term_end, $.token)),
-      )),
-
-      optional($._new_line),
-      $.description,
-      field('description_end', alias($.definition_end, $.token)),
-      $.eol
-    ),
-
-    description: $ => repeat1(choice(
-      $.paragraph,
-      $._paragraph_and_reference_link_definition,
-      $.reference_link_definition,
-      $.hashtag,
-      $.code_block,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.list_block,
-      $.comment,
-      $.blank_line,
     )),
+
+    optional($._new_line),
+    field('description', $.description),
+    field('description_end', alias($.definition_end, $.token)),
+    $.eol
+  ),
+
+  description: $ => repeat1(choice(
+    $.paragraph,
+    $._paragraph_and_reference_link_definition,
+    $.reference_link_definition,
+    $.hashtag,
+    $.code_block,
+    alias($.verbatim_tag, $.tag),
+    alias($.tag_with_syntax, $.tag),
+    $.list_block,
+    $.comment,
+    $.blank_line,
+  )),
 }
 
 const lists = {
@@ -274,27 +276,28 @@ const lists = {
 
   list: $ => seq(
     $._list_start,
-    repeat1($.list_item),
+   field("list_item", repeat1($.list_item)),
     $._list_end,
   ),
 
   list_item: $ => seq(
     field("level", alias($.list_token, $.token)),
-    optional($.checkbox),
-    repeat(choice(
-      $.paragraph,
-      $._paragraph_and_reference_link_definition,
-      $.reference_link_definition,
+    field("checkbox", optional($.checkbox)),
+    field("content",
+      repeat(choice(
+        $.paragraph,
+        $._paragraph_and_reference_link_definition,
+        $.reference_link_definition,
 
-      $.definition,
-      $.hashtag,
-      $.code_block,
-      alias($.verbatim_tag, $.tag),
-      alias($.tag_with_syntax, $.tag),
-      $.comment,
-      $.blank_line
-    )),
-    optional($.list)
+        $.definition,
+        $.hashtag,
+        $.code_block,
+        alias($.verbatim_tag, $.tag),
+        alias($.tag_with_syntax, $.tag),
+        $.comment,
+        $.blank_line
+      ))),
+    field("nested_list", optional($.list))
   ),
 
   checkbox: _ => token(seq(
@@ -305,51 +308,52 @@ const lists = {
 }
 
 const links = {
-  raw_link: $ => seq(
-    field("open_link", alias('<', $.token)),
-    alias(token.immediate(/[^>\s]+/), $.target),
-    field("close_link", alias(token.immediate('>'), $.token))
+  direct_link: $ => seq(
+    alias('<', $.token),
+    field("target", alias(token.immediate(/[^>\s]+/), $.target)),
+    alias(token.immediate('>'), $.token)
   ),
 
   link: $ => seq(
     field('open_label', alias('[', $.token)),
-    optional(alias($.link_label, $.label)),
+    field("label", optional(alias($.link_label, $.label))),
     field('close_label', alias(']', $.token)),
 
     field('open_target', alias(token.immediate('('), $.token)),
-    alias(
-      repeat(/[^\(\)\s\\]+/),
-      $.target),
+    field("target",
+      alias(
+        repeat(/[^\(\)\s\\]+/),
+        $.target)),
     field('close_target', alias(')', $.token))
   ),
 
   reference_link: $ => seq(
     field('open_label', alias('[', $.token)),
-    optional(alias($.link_label, $.label)),
+    field('label', optional(alias($.link_label, $.label))),
     field('close_label', alias(']', $.token)),
 
     field('open_reference', alias(token.immediate('['), $.token)),
-    optional(alias($.link_label, $.reference)),
+    field('target', optional(alias($.link_label, $.reference))),
     field('close_reference', alias(']', $.token)),
   ),
 
   short_reference_link: $ => seq(
-    // field('open_reference', alias('[', $.token)),
-    field('open_reference',
-      alias(
-        prec('special', '['),
-        $.token)),
-    alias($.link_label, $.reference),
+    field('open_reference', alias('[', $.token)),
+    // field('open_reference',
+    //   alias(
+    //     prec('special', '['),
+    //     $.token)),
+    field('target', alias($.link_label, $.reference)),
     field('close_reference', alias(']', $.token)),
   ),
 
   reference_link_definition: $ => prec.dynamic(1, seq(
     alias('[', $.token),
-    alias($.link_label, $.reference),
+    field('reference', alias($.link_label, $.reference)),
     alias(']:', $.token),
     $._whitespace,
 
-    alias(repeat($.raw_word), $.target),
+    field('target', alias(repeat($.raw_word), $.target)),
     $.eol
   )),
 
@@ -368,17 +372,18 @@ const tags = {
 
     // Any except:
     //    `[`, `(`, `{`, white space
-    alias(token.immediate(/[^\[({\s]+/), $.tag_name),
+    field('tag', alias(token.immediate(/[^\[({\s]+/), $.tag_name)),
 
-    alias(
-      repeat(expression($, 'non-immediate', token)),
-      $.content),
+    field('content',
+      alias(
+        repeat(expression($, 'non-immediate', token)),
+        $.content)),
     $.eol
   ),
 
   inline_tag: $ => seq(
     alias('@', $.token),
-    field('name',
+    field('tag',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
             $.tag_name)),
@@ -405,7 +410,7 @@ const tags = {
   _inline_tag_label: $ => choice(
     seq(
       field('open_label', alias(token.immediate('['), $.token)),
-      alias($.link_label, $.label),
+      field('label', alias($.link_label, $.label)),
       field('close_label', alias(']', $.token)),
     ),
     '[]'
@@ -417,14 +422,15 @@ const tags = {
             token.immediate(prec('immediate', '(')),
             // token.immediate('('),
             $.token)),
-    alias(
-      repeat( choice(
-        $.escaped_char,
-        alias(/[^\(\)\s\\]+/, $.raw_word),
-        // expression($, 'non-immediate', token, '()\\'),
-        $._new_line
-      )),
-      $.content),
+    field('content',
+          alias(
+            repeat( choice(
+              $.escaped_char,
+              alias(/[^\(\)\s\\]+/, $.raw_word),
+              // expression($, 'non-immediate', token, '()\\'),
+              $._new_line
+            )),
+            $.content)),
     field('close_content',
           alias(
             prec('non-immediate', ')'),
@@ -436,14 +442,15 @@ const tags = {
           alias(
             token.immediate(prec('immediate', '{')),
             $.token)),
-    alias(
-      repeat(choice(
-        $.escaped_char,
-        alias(/[^\{\}\s\\]+/, $.raw_word),
-        // expression($, 'non-immediate', token, '{}\\'),
-        $._new_line
-      )),
-      $.parameters),
+    field('parameters',
+          alias(
+            repeat(choice(
+              $.escaped_char,
+              alias(/[^\{\}\s\\]+/, $.raw_word),
+              // expression($, 'non-immediate', token, '{}\\'),
+              $._new_line
+            )),
+            $.parameters)),
     field('close_parameters',
           alias('}', $.token))
   ),
@@ -452,10 +459,10 @@ const tags = {
   verbatim_tag: $ => seq(
     $._tag_begin,
     alias('@', $.token),
-    field('name',
-          alias(
-            repeat1(expression($, 'immediate', token.immediate)),
-            $.tag_name)),
+    field('tag',
+      alias(
+        repeat1(expression($, 'immediate', token.immediate)),
+        $.tag_name)),
 
     optional(seq(
       $._whitespace,
@@ -464,16 +471,17 @@ const tags = {
     )),
     $._new_line,
 
-    alias(
-      repeat(choice(
-        $.code_block,
-        alias($.verbatim_tag, $.tag),
-        alias($.tag_with_syntax, $.tag),
-        alias(/\S+/, $.raw_word),
-        $._new_line,
-        $.blank_line,
-      )),
-      $.content),
+    field('content',
+      alias(
+        repeat(choice(
+          $.code_block,
+          alias($.verbatim_tag, $.tag),
+          alias($.tag_with_syntax, $.tag),
+          alias(/\S+/, $.raw_word),
+          $._new_line,
+          $.blank_line,
+        )),
+        $.content)),
 
     $.end_tag,
     choice($.comment, $.eol)
@@ -483,7 +491,7 @@ const tags = {
   tag_with_syntax: $ => seq(
     $._tag_begin,
     alias('@+', $.token),
-    field('name',
+    field('tag',
           alias(
             repeat1(expression($, 'immediate', token.immediate)),
             $.tag_name)),
@@ -495,8 +503,9 @@ const tags = {
     )),
     $._new_line,
 
-    optional(
-      alias($.tag_content, $.content)),
+    field('content',
+      optional(
+        alias($.tag_content, $.content))),
 
     $.end_tag,
     choice($.comment, $.eol)
@@ -508,14 +517,15 @@ const tags = {
           repeat(alias($.raw_word, $.tag_parameter))),
     $._new_line,
 
-    alias(
-      repeat(choice(
-        alias(/\S+/, $.raw_word),
-        $._tag_begin,
-        $._new_line,
-        $.blank_line,
-      )),
-      $.content),
+    field('code',
+      alias(
+        repeat(choice(
+          alias(/\S+/, $.raw_word),
+          $._tag_begin,
+          $._new_line,
+          $.blank_line,
+        )),
+        $.content)),
 
     alias($.code_block_token, $.token),
     $.eol
@@ -541,22 +551,21 @@ const tags = {
 }
 
 function gen_markup($, kind, other_kinds) {
-  return prec.right(seq(
-    field(kind + "_open", alias($[kind + "_open"],
-                                $.token)),
-    alias(
-      repeat1(choice(
-        $.word,
-        $.escaped_char,
-        $.inline_tag,
-        $.link, $.raw_link, $.reference_link, $.short_reference_link,
-        ...other_kinds
-      )),
-      $.content),
+  return seq(
+    alias($[kind + "_open"], $.token),
+    field(kind,
+      alias(
+        repeat1(choice(
+          $.word,
+          $.escaped_char,
+          $.inline_tag,
+          $.link, $.direct_link, $.reference_link, $.short_reference_link,
+          ...other_kinds
+        )),
+        $.content)),
 
-    field(kind + "_close", alias($[kind + "_close"],
-                                 $.token))
-  ));
+    alias($[kind + "_close"], $.token)
+  );
 }
 
 /**

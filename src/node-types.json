@@ -3,33 +3,23 @@
     "type": "bold",
     "named": true,
     "fields": {
-      "bold_close": {
+      "bold": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "bold_open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -39,6 +29,16 @@
     "type": "code_block",
     "named": true,
     "fields": {
+      "code": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "content",
+            "named": true
+          }
+        ]
+      },
       "parameter": {
         "multiple": true,
         "required": false,
@@ -54,10 +54,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "content",
-          "named": true
-        },
         {
           "type": "token",
           "named": true
@@ -99,6 +95,10 @@
           "named": true
         },
         {
+          "type": "direct_link",
+          "named": true
+        },
+        {
           "type": "escaped_char",
           "named": true
         },
@@ -132,10 +132,6 @@
         },
         {
           "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "raw_link",
           "named": true
         },
         {
@@ -189,12 +185,32 @@
     "type": "definition",
     "named": true,
     "fields": {
+      "description": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "description",
+            "named": true
+          }
+        ]
+      },
       "description_end": {
         "multiple": false,
         "required": true,
         "types": [
           {
             "type": "token",
+            "named": true
+          }
+        ]
+      },
+      "term": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "term",
             "named": true
           }
         ]
@@ -219,20 +235,6 @@
           }
         ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "description",
-          "named": true
-        },
-        {
-          "type": "term",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -273,6 +275,32 @@
         },
         {
           "type": "tag",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "direct_link",
+    "named": true,
+    "fields": {
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "target",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "token",
           "named": true
         }
       ]
@@ -364,19 +392,32 @@
   {
     "type": "hashtag",
     "named": true,
-    "fields": {},
+    "fields": {
+      "content": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "content",
+            "named": true
+          }
+        ]
+      },
+      "tag": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "tag_name",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "content",
-          "named": true
-        },
-        {
-          "type": "tag_name",
-          "named": true
-        },
         {
           "type": "token",
           "named": true
@@ -397,50 +438,40 @@
             "named": true
           }
         ]
+      },
+      "title": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "title",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "title",
-          "named": true
-        }
-      ]
     }
   },
   {
     "type": "inline_math",
     "named": true,
     "fields": {
-      "close": {
+      "inline_math": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -480,12 +511,22 @@
           }
         ]
       },
-      "name": {
+      "content": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
-            "type": "tag_name",
+            "type": "content",
+            "named": true
+          }
+        ]
+      },
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label",
             "named": true
           }
         ]
@@ -519,24 +560,32 @@
             "named": true
           }
         ]
+      },
+      "parameters": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "parameters",
+            "named": true
+          }
+        ]
+      },
+      "tag": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "tag_name",
+            "named": true
+          }
+        ]
       }
     },
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "content",
-          "named": true
-        },
-        {
-          "type": "label",
-          "named": true
-        },
-        {
-          "type": "parameters",
-          "named": true
-        },
         {
           "type": "token",
           "named": true
@@ -548,33 +597,23 @@
     "type": "italic",
     "named": true,
     "fields": {
-      "italic_close": {
+      "italic": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "italic_open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -659,6 +698,16 @@
           }
         ]
       },
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label",
+            "named": true
+          }
+        ]
+      },
       "open_label": {
         "multiple": false,
         "required": true,
@@ -678,36 +727,33 @@
             "named": true
           }
         ]
+      },
+      "target": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "target",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "label",
-          "named": true
-        },
-        {
-          "type": "target",
-          "named": true
-        }
-      ]
     }
   },
   {
     "type": "list",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "list_item",
-          "named": true
-        }
-      ]
+    "fields": {
+      "list_item": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "list_item",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -733,6 +779,54 @@
     "type": "list_item",
     "named": true,
     "fields": {
+      "checkbox": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "checkbox",
+            "named": true
+          }
+        ]
+      },
+      "content": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "blank_line",
+            "named": true
+          },
+          {
+            "type": "code_block",
+            "named": true
+          },
+          {
+            "type": "comment",
+            "named": true
+          },
+          {
+            "type": "definition",
+            "named": true
+          },
+          {
+            "type": "hashtag",
+            "named": true
+          },
+          {
+            "type": "paragraph",
+            "named": true
+          },
+          {
+            "type": "reference_link_definition",
+            "named": true
+          },
+          {
+            "type": "tag",
+            "named": true
+          }
+        ]
+      },
       "level": {
         "multiple": false,
         "required": true,
@@ -742,53 +836,17 @@
             "named": true
           }
         ]
+      },
+      "nested_list": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "list",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "blank_line",
-          "named": true
-        },
-        {
-          "type": "checkbox",
-          "named": true
-        },
-        {
-          "type": "code_block",
-          "named": true
-        },
-        {
-          "type": "comment",
-          "named": true
-        },
-        {
-          "type": "definition",
-          "named": true
-        },
-        {
-          "type": "hashtag",
-          "named": true
-        },
-        {
-          "type": "list",
-          "named": true
-        },
-        {
-          "type": "paragraph",
-          "named": true
-        },
-        {
-          "type": "reference_link_definition",
-          "named": true
-        },
-        {
-          "type": "tag",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -801,6 +859,10 @@
       "types": [
         {
           "type": "bold",
+          "named": true
+        },
+        {
+          "type": "direct_link",
           "named": true
         },
         {
@@ -829,10 +891,6 @@
         },
         {
           "type": "number",
-          "named": true
-        },
-        {
-          "type": "raw_link",
           "named": true
         },
         {
@@ -880,42 +938,6 @@
         },
         {
           "type": "raw_word",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "raw_link",
-    "named": true,
-    "fields": {
-      "close_link": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "open_link": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "target",
           "named": true
         }
       ]
@@ -1005,6 +1027,16 @@
           }
         ]
       },
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "label",
+            "named": true
+          }
+        ]
+      },
       "open_label": {
         "multiple": false,
         "required": true,
@@ -1024,39 +1056,48 @@
             "named": true
           }
         ]
+      },
+      "target": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "reference",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "label",
-          "named": true
-        },
-        {
-          "type": "reference",
-          "named": true
-        }
-      ]
     }
   },
   {
     "type": "reference_link_definition",
     "named": true,
-    "fields": {},
+    "fields": {
+      "reference": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "reference",
+            "named": true
+          }
+        ]
+      },
+      "target": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "target",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "reference",
-          "named": true
-        },
-        {
-          "type": "target",
-          "named": true
-        },
         {
           "type": "token",
           "named": true
@@ -1110,50 +1151,40 @@
             "named": true
           }
         ]
+      },
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "reference",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "reference",
-          "named": true
-        }
-      ]
     }
   },
   {
     "type": "strikethrough",
     "named": true,
     "fields": {
-      "strikethrough_close": {
+      "strikethrough": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "strikethrough_open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -1163,12 +1194,12 @@
     "type": "tag",
     "named": true,
     "fields": {
-      "name": {
+      "content": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
-            "type": "tag_name",
+            "type": "content",
             "named": true
           }
         ]
@@ -1182,6 +1213,16 @@
             "named": true
           }
         ]
+      },
+      "tag": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "tag_name",
+            "named": true
+          }
+        ]
       }
     },
     "children": {
@@ -1190,10 +1231,6 @@
       "types": [
         {
           "type": "comment",
-          "named": true
-        },
-        {
-          "type": "content",
           "named": true
         },
         {
@@ -1278,6 +1315,10 @@
           "named": true
         },
         {
+          "type": "direct_link",
+          "named": true
+        },
+        {
           "type": "escaped_char",
           "named": true
         },
@@ -1303,10 +1344,6 @@
         },
         {
           "type": "number",
-          "named": true
-        },
-        {
-          "type": "raw_link",
           "named": true
         },
         {
@@ -1344,33 +1381,23 @@
     "type": "underline",
     "named": true,
     "fields": {
-      "underline_close": {
+      "underline": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "underline_open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]
@@ -1380,33 +1407,23 @@
     "type": "verbatim",
     "named": true,
     "fields": {
-      "close": {
+      "verbatim": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "open": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
+            "type": "content",
             "named": true
           }
         ]
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "content",
+          "type": "token",
           "named": true
         }
       ]

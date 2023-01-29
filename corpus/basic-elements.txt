@@ -884,14 +884,14 @@ Link.9c - short reference link in braces
         (symbol)))
 
 ================================================================================
-Link.10 - Raw link
+Link.10 - Direct link
 ================================================================================
 <https://github.com/shaunsingh/nord.nvim>
 --------------------------------------------------------------------------------
 
     (document
       (paragraph
-        (raw_link
+        (direct_link
           (token)
           (target)
           (token))))
