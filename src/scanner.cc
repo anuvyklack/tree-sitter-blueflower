@@ -206,7 +206,9 @@ struct Scanner
         if (parse_force_newline_token())  return true;
 
 #ifdef DEBUG
-        clog << "  false" << endl << "}" << endl;
+        clog << "  next char:";
+        pick_char(lexer->lookahead);
+        clog << "  found: false" << endl << "}" << endl;
 #endif
 
         return false;
@@ -226,9 +228,13 @@ struct Scanner
         lexer->advance(lexer, false);
         ++parsed_chars;
 
+        pick_char(current);
+    }
+
+    inline void pick_char(int32_t c) {
 #ifdef DEBUG_CURRENT_CHAR
-        clog << "  -> " << setw(3) << current << ' ';
-        switch (current) {
+        clog << "  -> " << setw(3) << c << ' ';
+        switch (c) {
         case 13:
             clog << "\\r";
             break;
@@ -239,7 +245,7 @@ struct Scanner
             clog << "\\0";
             break;
         default:
-            clog << static_cast<char>(current);
+            clog << static_cast<char>(c);
         }
         clog << endl;
 #endif
