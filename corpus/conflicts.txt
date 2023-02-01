@@ -1,0 +1,129 @@
+================================================================================
+Conflict.1 - inline_tag with link
+================================================================================
+@tag(content) [label](params)
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (content
+            (raw_word))
+          (token))
+        (link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (target)
+          (token))))
+
+================================================================================
+Conflict.2 - inline_tag with short_reference_link
+================================================================================
+ [label] @tag[label](content) [label]
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (content
+            (raw_word))
+          (token))
+        (short_reference_link
+          (token)
+          (reference
+            (word))
+          (token))))
+
+================================================================================
+Conflict.3 - reference_link with inline_tag
+================================================================================
+ [label][ref] @tag[label](content){param = val}
+--------------------------------------------------------------------------------
+
+    (document
+      (paragraph
+        (reference_link
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (reference
+            (word))
+          (token))
+        (inline_tag
+          (token)
+          (tag_name
+            (word))
+          (token)
+          (label
+            (word))
+          (token)
+          (token)
+          (content
+            (raw_word))
+          (token)
+          (token)
+          (parameters
+            (raw_word)
+            (raw_word)
+            (raw_word))
+          (token))))
+
+================================================================================
+Conflict.4
+================================================================================
+- [label]
+  [label](link)
+  [foo]: https
+---
+--------------------------------------------------------------------------------
+
+    (document
+      (list_block
+        (list
+          (list_item
+            (token)
+            (paragraph
+              (short_reference_link
+                (token)
+                (reference
+                  (word))
+                (token))
+              (link
+                (token)
+                (label
+                  (word))
+                (token)
+                (token)
+                (target)
+                (token)))
+            (reference_link_definition
+              (token)
+              (reference
+                (word))
+              (token)
+              (target
+                (raw_word)))))
+        (list_break)))
+

@@ -1,3 +1,4 @@
+/// tree-sitter generate && tree-sitter parse -d test-file
 const blueflower_grammar = {
   name: 'blueflower',
 
@@ -80,7 +81,6 @@ const blueflower_grammar = {
     document: $ => seq(
       repeat(choice(
         $.paragraph,
-        $._paragraph_and_reference_link_definition,
         $.reference_link_definition,
         $.section,
         $.definition,
@@ -152,7 +152,6 @@ const sections = {
   section_content: $ => repeat1(choice(
     $.section,
     $.paragraph,
-    $._paragraph_and_reference_link_definition,
     $.reference_link_definition,
     $.definition,
     $.list_block,
@@ -169,12 +168,6 @@ const paragraph = {
     paragraph: $ => seq(
       $._paragraph_content,
       choice($._paragraph_end, $._eof)
-    ),
-
-    _paragraph_and_reference_link_definition: $ => seq(
-      alias($._paragraph_content, $.paragraph),
-      $._new_line,
-      $.reference_link_definition
     ),
 
     _paragraph_content: $ => seq(
@@ -256,7 +249,6 @@ const definition = {
 
   description: $ => repeat1(choice(
     $.paragraph,
-    $._paragraph_and_reference_link_definition,
     $.reference_link_definition,
     $.hashtag,
     $.code_block,
@@ -286,7 +278,6 @@ const lists = {
     field("content",
       repeat(choice(
         $.paragraph,
-        $._paragraph_and_reference_link_definition,
         $.reference_link_definition,
 
         $.definition,
@@ -314,7 +305,7 @@ const links = {
     alias(token.immediate('>'), $.token)
   ),
 
-  link: $ => seq(
+  link: $ => prec(1, seq(
     field('open_label', alias('[', $.token)),
     field("label", optional(alias($.link_label, $.label))),
     field('close_label', alias(']', $.token)),
@@ -325,9 +316,9 @@ const links = {
         repeat(/[^\(\)\s\\]+/),
         $.target)),
     field('close_target', alias(')', $.token))
-  ),
+  )),
 
-  reference_link: $ => seq(
+  reference_link: $ => prec.dynamic(2, seq(
     field('open_label', alias('[', $.token)),
     field('label', optional(alias($.link_label, $.label))),
     field('close_label', alias(']', $.token)),
@@ -335,19 +326,15 @@ const links = {
     field('open_reference', alias(token.immediate('['), $.token)),
     field('target', optional(alias($.link_label, $.reference))),
     field('close_reference', alias(']', $.token)),
-  ),
+  )),
 
-  short_reference_link: $ => seq(
+  short_reference_link: $ => prec.dynamic(1, seq(
     field('open_reference', alias('[', $.token)),
-    // field('open_reference',
-    //   alias(
-    //     prec('special', '['),
-    //     $.token)),
     field('target', alias($.link_label, $.reference)),
     field('close_reference', alias(']', $.token)),
-  ),
+  )),
 
-  reference_link_definition: $ => prec.dynamic(1, seq(
+  reference_link_definition: $ => prec.dynamic(2, seq(
     alias('[', $.token),
     field('reference', alias($.link_label, $.reference)),
     alias(']:', $.token),
@@ -535,7 +522,6 @@ const tags = {
   // not a sequence of "$.content" nodes.
   tag_content: $ => repeat1(choice(
     $.paragraph,
-    $._paragraph_and_reference_link_definition,
     $.reference_link_definition,
     $.definition,
     $.hashtag,
