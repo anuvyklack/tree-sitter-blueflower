@@ -9,7 +9,7 @@ Tag.1a - Verbatim tag
     (document
       (tag
         (token)
-        tag: (tag_name
+        name: (tag_name
           (word))
         content: (content
           (raw_word))
@@ -269,10 +269,10 @@ Tag.4g - Complex tag name
         (comment)))
 
 ================================================================================
-Tag.5a - Hashtags, verbatim tag and blank_line after
+Tag.5a - verbatim tag with directives and blank_line after
 ================================================================================
-#propertie val
-#propertie val
+:propertie: val
+:propertie: val
 @footnote name
     text
 @end
@@ -281,59 +281,29 @@ text
 --------------------------------------------------------------------------------
 
     (document
-      (hashtag
-        (token)
-        tag: (tag_name)
-        content: (content
-          (word)))
-      (hashtag
-        (token)
-        tag: (tag_name)
-        content: (content
-          (word)))
       (tag
-        (token)
-        tag: (tag_name
-          (word))
-        parameter: (tag_parameter)
-        content: (content
-          (raw_word))
-        (end_tag))
-      (blank_line)
-      (paragraph
-        (word)))
-
-================================================================================
-Tag.5b - Hashtags and verbatim tag
-================================================================================
-#propertie val
-
-#propertie val
-@footnote name
-    text
-@end
---------------------------------------------------------------------------------
-
-    (document
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (word)))
-      (blank_line)
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (word)))
-      (tag
+        (directive
+          (token)
+          (name)
+          (token)
+          (content
+            (word)))
+        (directive
+          (token)
+          (name)
+          (token)
+          (content
+            (word)))
         (token)
         (tag_name
           (word))
         (tag_parameter)
         (content
           (raw_word))
-        (end_tag)))
+        (end_tag))
+      (blank_line)
+      (paragraph
+        (word)))
 
 ================================================================================
 Hashtag.1 - Hashtag

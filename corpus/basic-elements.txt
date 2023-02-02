@@ -239,25 +239,25 @@ List.1 - Simple list
         (list_break)))
 
 ================================================================================
-List.2a - Hashtag with immediate list
+List.2a - immediate list with directive
 ================================================================================
-#tag :key value
+:directive: :key value
 - item
 - item
 ---
 --------------------------------------------------------------------------------
 
     (document
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (symbol)
-          (word)
-          (word)))
       (list_block
         (list
-          
+          (directive
+            (token)
+            (name)
+            (token)
+            (content
+              (symbol)
+              (word)
+              (word)))
           (list_item
             (token)
             (paragraph
@@ -271,70 +271,23 @@ List.2a - Hashtag with immediate list
 ================================================================================
 List.2b - Hashtag blank line and list
 ================================================================================
-#tag :key value
-
+:directive: :key value
 - item
 - item
 ---
 --------------------------------------------------------------------------------
 
     (document
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (symbol)
-          (word)
-          (word)))
-      (blank_line)
       (list_block
         (list
-          (list_item
+          (directive
             (token)
-            (paragraph
-              (word))) (list_item
+            (name)
             (token)
-            (paragraph
-              (word))))
-        (list_break)))
-
-================================================================================
-List.2c - Two hashtags, blank_line, hashtag and list
-================================================================================
-#tag :key value
-#tag :key value
-
-#tag :key value
-- item
-- item
----
---------------------------------------------------------------------------------
-
-    (document
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (symbol)
-          (word)
-          (word)))
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (symbol)
-          (word)
-          (word)))
-      (blank_line)
-      (hashtag
-        (token)
-        (tag_name)
-        (content
-          (symbol)
-          (word)
-          (word)))
-      (list_block
-        (list
+            (content
+              (symbol)
+              (word)
+              (word)))
           (list_item
             (token)
             (paragraph

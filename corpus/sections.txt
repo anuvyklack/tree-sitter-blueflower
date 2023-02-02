@@ -221,3 +221,97 @@ text
           (blank_line)
           (paragraph
             (word)))))
+
+================================================================================
+Section.7a - Section with directive
+================================================================================
+* Title
+:tags: home hobby
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (directive
+          (token)
+          (name)
+          (token)
+          (content
+            (word)
+            (word)))))
+
+================================================================================
+Section.7b - Section with directive contains tag
+================================================================================
+* Title
+:tags: home hobby
+@tag
+...
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (directive
+          (token)
+          (name)
+          (token)
+          (content
+            (word)
+            (word)))
+        (content
+          (tag
+            (token)
+            (tag_name
+              (word))
+            (content
+              (raw_word))
+            (end_tag)))))
+
+================================================================================
+Section.7c - Section with directive contains tag with directive
+================================================================================
+* Title
+:tags: home hobby
+
+:label: tag
+@tag
+...
+@end
+--------------------------------------------------------------------------------
+
+    (document
+      (section
+        (heading
+          (token)
+          (title
+            (word)))
+        (directive
+          (token)
+          (name)
+          (token)
+          (content
+            (word)
+            (word)))
+        (content
+          (blank_line)
+          (tag
+            (directive
+              (token)
+              (name)
+              (token)
+              (content
+                (word)))
+            (token)
+            (tag_name
+              (word))
+            (content
+              (raw_word))
+            (end_tag)))))

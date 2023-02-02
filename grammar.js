@@ -35,6 +35,8 @@ const blueflower_grammar = {
 
     $.code_block_token,
 
+    $._directive_begin,
+
     $.escape_token,
     $.escaped_character,
 
@@ -114,6 +116,20 @@ const blueflower_grammar = {
       )
     ),
 
+    directive: $ => seq(
+      $._directive_begin,
+      alias(':', $.token),
+      field('name', alias(token.immediate(/[^:\[({\s]+/), $.name)),
+      alias(token.immediate(':'), $.token),
+      $._whitespace,
+
+      field('content',
+        alias(
+          repeat(expression($, 'non-immediate', token)),
+          $.content)),
+      $.eol
+    ),
+
     // // - Alphabetic (Alpha) – letters,
     // // - Mark (M) – для акцентов,
     // // - Decimal_Number (Nd) – для цифр,
@@ -136,6 +152,7 @@ const blueflower_grammar = {
 const sections = {
   section: $ => seq(
     $.heading,
+    field('directive', repeat(prec(3, $.directive))),
     optional(alias($.section_content, $.content)),
     choice(
       seq($.dinkus, $.eol),
@@ -222,6 +239,8 @@ const markup = {
 
 const definition = {
   definition: $ => seq(
+    field('directive', repeat($.directive)),
+
     field('term_open', alias($.definition_term_begin, $.token)),
     field('term',
           alias(
@@ -267,8 +286,9 @@ const lists = {
   ),
 
   list: $ => seq(
+    field('directive', repeat($.directive)),
     $._list_start,
-   field("list_item", repeat1($.list_item)),
+    field("list_item", repeat1($.list_item)),
     $._list_end,
   ),
 
@@ -359,7 +379,7 @@ const tags = {
 
     // Any except:
     //    `[`, `(`, `{`, white space
-    field('tag', alias(token.immediate(/[^\[({\s]+/), $.tag_name)),
+    field('name', alias(token.immediate(/[^\[({\s]+/), $.tag_name)),
 
     field('content',
       alias(
@@ -370,7 +390,7 @@ const tags = {
 
   inline_tag: $ => seq(
     alias('@', $.token),
-    field('tag',
+    field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate, '[({' )),
             $.tag_name)),
@@ -444,9 +464,11 @@ const tags = {
 
   // The content of this tag tree-sitter parser will skip.
   verbatim_tag: $ => seq(
+    field('directive', repeat($.directive)),
+
     $._tag_begin,
     alias('@', $.token),
-    field('tag',
+    field('name',
       alias(
         repeat1(expression($, 'immediate', token.immediate)),
         $.tag_name)),
@@ -476,9 +498,11 @@ const tags = {
 
   // The content of this tag will be parsed by this parser.
   tag_with_syntax: $ => seq(
+    field('directive', repeat($.directive)),
+
     $._tag_begin,
     alias('@+', $.token),
-    field('tag',
+    field('name',
           alias(
             repeat1(expression($, 'immediate', token.immediate)),
             $.tag_name)),
@@ -499,6 +523,8 @@ const tags = {
   ),
 
   code_block: $ => seq(
+    field('directive', repeat($.directive)),
+
     alias($.code_block_token, $.token),
     field('parameter',
           repeat(alias($.raw_word, $.tag_parameter))),

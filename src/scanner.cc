@@ -59,6 +59,8 @@ enum TokenType : unsigned char {
 
     CODE_BLOCK,
 
+    DIRECTIVE_BEGIN,
+
     ESCAPE_TOKEN,
     ESCAPED_CHAR,
 
@@ -108,6 +110,8 @@ vector<string> tokens_names = {
     "hashtag",
 
     "code_block",
+
+    "directive_begin",
 
     "escape_token",
     "escaped_char",
@@ -353,10 +357,27 @@ struct Scanner
             }
             break;
         }
-        case I(':'): { // DEFINITION
+        case I(':'): { // DEFINITION, DIRECTIVE
             advance();
-            if (valid_tokens[PARAGRAPH_END] && is_space_or_newline_or_eof(lexer->lookahead))
-                return found(PARAGRAPH_END);
+            if (valid_tokens[PARAGRAPH_END]) {
+                if (is_space_or_newline_or_eof(lexer->lookahead))
+                    // Definitiwn
+                    return found(PARAGRAPH_END);
+                else { // Directive
+                    while (lexer->lookahead != I(':')
+                           || is_space_or_newline_or_eof(lexer->lookahead))
+                    {
+                        advance();
+                        ++n;
+                    }
+                    if (n && lexer->lookahead == I(':')) {
+                        advance();
+                        if (is_space_or_newline(lexer->lookahead))
+                            return found(PARAGRAPH_END);
+                    }
+                    return FINISH;
+                }
+            }
             else if (valid_tokens[DEFINITION_TERM_BEGIN] && is_space(lexer->lookahead)) {
                 lexer->mark_end(lexer);
                 return found(DEFINITION_TERM_BEGIN);
@@ -364,6 +385,20 @@ struct Scanner
             else if (valid_tokens[DEFINITION_END] && is_newline_or_eof(lexer->lookahead)) {
                 lexer->mark_end(lexer);
                 return found(DEFINITION_END);
+            }
+            else if (valid_tokens[DIRECTIVE_BEGIN]) {
+                while (lexer->lookahead != I(':')
+                       || is_space_or_newline_or_eof(lexer->lookahead))
+                {
+                    advance();
+                    ++n;
+                }
+                if (n && lexer->lookahead == I(':')) {
+                    advance();
+                    if (is_space_or_newline(lexer->lookahead))
+                        return found(DIRECTIVE_BEGIN);
+                }
+                return FINISH;
             }
 
             return FINISH;
