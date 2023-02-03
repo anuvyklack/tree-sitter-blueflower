@@ -48,7 +48,7 @@ enum TokenType : unsigned char {
 
     DEFINITION_TERM_BEGIN,
     DEFINITION_TERM_END,
-    DEFINITION_END,
+    // DEFINITION_END,
 
     LIST_START,
     LIST_TOKEN,
@@ -100,7 +100,7 @@ vector<string> tokens_names = {
 
     "definition_term_begin",
     "definition_term_end",
-    "definition_end",
+    // "definition_end",
 
     "list_start",
     "list_token",
@@ -536,13 +536,13 @@ struct Scanner
             mark_end();
             found(DEFINITION_TERM_END);
         }
-        else if (valid_tokens[DEFINITION_END] && next(':')) {
-            advance();
-            if (is_newline_or_eof(lexer->lookahead)) {
-                mark_end();
-                found(DEFINITION_END);
-            }
-        }
+        // else if (valid_tokens[DEFINITION_END] && next(':')) {
+        //     advance();
+        //     if (is_newline_or_eof(lexer->lookahead)) {
+        //         mark_end();
+        //         found(DEFINITION_END);
+        //     }
+        // }
         return FINISH;
     }
 
