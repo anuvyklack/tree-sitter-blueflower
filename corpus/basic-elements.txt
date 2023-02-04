@@ -125,18 +125,16 @@ Escaped character.1
           (token)
           (character))
         (word)
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
+          (target)
           (token))
         (symbol)
         (word)
         (symbol))
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -164,8 +162,7 @@ Escaped character.2
         (symbol))
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -190,10 +187,9 @@ Escaped character.3
         (symbol)
         (word)
         (symbol)
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
+          (target)
           (token))
         (escaped_char
           (token)
@@ -532,112 +528,34 @@ Definition.6 - Complex description with list
 ================================================================================
 Link.1 - Link
 ================================================================================
-[label](target)
+[label][target]
 --------------------------------------------------------------------------------
 
     (document
       (paragraph
         (link
           (token)
-          (label
-            (word))
+          (label)
           (token)
           (token)
           (target)
           (token))))
 
 ================================================================================
-Link.2 - Reference link
-================================================================================
-[label][target]
---------------------------------------------------------------------------------
-
-    (document
-      (paragraph
-        (reference_link
-          (token)
-          (label
-            (word))
-          (token)
-          (token)
-          (reference
-            (word))
-          (token))))
-
-================================================================================
-Link.3 - Short reference link
+Link.2 - Short link
 ================================================================================
 [label]
 --------------------------------------------------------------------------------
 
     (document
       (paragraph
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
+          (target)
           (token))))
 
 ================================================================================
-Link.4 - Short reference link and raw text
-================================================================================
-[label] (word)
---------------------------------------------------------------------------------
-
-    (document
-      (paragraph
-        (short_reference_link
-          (token)
-          (reference
-            (word))
-          (token))
-        (symbol)
-        (word)
-        (symbol)))
-
-================================================================================
-Link.5 - short reference link and continue text
-================================================================================
-(word) [label] (word)
---------------------------------------------------------------------------------
-
-    (document
-      (paragraph
-        (symbol)
-        (word)
-        (symbol)
-        (short_reference_link
-          (token)
-          (reference
-            (word))
-          (token))
-        (symbol)
-        (word)
-        (symbol)))
-
-================================================================================
-Link.6 - Reference link and text
-================================================================================
-[label][target] (word)
---------------------------------------------------------------------------------
-
-    (document
-      (paragraph
-        (reference_link
-          (token)
-          (label
-            (word))
-          (token)
-          (token)
-          (reference
-            (word))
-          (token))
-        (symbol)
-        (word)
-        (symbol)))
-
-================================================================================
-Link.7 - Reference link definition
+Link.3 - Reference link definition
 ================================================================================
 [ref]: https://url
 --------------------------------------------------------------------------------
@@ -645,8 +563,7 @@ Link.7 - Reference link definition
     (document
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -680,8 +597,7 @@ consectetur cupidatat.
         (symbol))
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -704,32 +620,27 @@ text @tag[label] [ref] [label][ref] [label](link)
           (label
             (word))
           (token))
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
-          (token))
-        (reference_link
-          (token)
-          (label
-            (word))
-          (token)
-          (token)
-          (reference
-            (word))
+          (target)
           (token))
         (link
           (token)
-          (label
-            (word))
+          (label)
           (token)
           (token)
           (target)
-          (token)))
+          (token))
+        (short_link
+          (token)
+          (target)
+          (token))
+        (symbol)
+        (word)
+        (symbol))
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -743,14 +654,13 @@ Link.8c - Paragraph with reference link definition after
 
     (document
       (paragraph
-        (link
-          (token)
-          (label
-            (word))
-          (token)
+        (short_link
           (token)
           (target)
           (token))
+        (symbol)
+        (word)
+        (symbol)
         (inline_tag
           (token)
           (tag_name
@@ -759,24 +669,20 @@ Link.8c - Paragraph with reference link definition after
           (label
             (word))
           (token))
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
+          (target)
           (token))
-        (reference_link
+        (link
           (token)
-          (label
-            (word))
+          (label)
           (token)
           (token)
-          (reference
-            (word))
+          (target)
           (token)))
       (reference_link_definition
         (token)
-        (reference
-          (word))
+        (label)
         (token)
         (target
           (raw_word))))
@@ -784,7 +690,7 @@ Link.8c - Paragraph with reference link definition after
 ================================================================================
 Link.9a - link in braces
 ================================================================================
-([label](target))
+([label][target])
 --------------------------------------------------------------------------------
 
     (document
@@ -792,8 +698,7 @@ Link.9a - link in braces
         (symbol)
         (link
           (token)
-          (label
-            (word))
+          (label)
           (token)
           (token)
           (target)
@@ -803,20 +708,18 @@ Link.9a - link in braces
 ================================================================================
 Link.9b - reference link in braces
 ================================================================================
-([label][reference])
+([label][link])
 --------------------------------------------------------------------------------
 
     (document
       (paragraph
         (symbol)
-        (reference_link
+        (link
           (token)
-          (label
-            (word))
+          (label)
           (token)
           (token)
-          (reference
-            (word))
+          (target)
           (token))
         (symbol)))
 
@@ -829,22 +732,21 @@ Link.9c - short reference link in braces
     (document
       (paragraph
         (symbol)
-        (short_reference_link
+        (short_link
           (token)
-          (reference
-            (word))
+          (target)
           (token))
         (symbol)))
 
 ================================================================================
 Link.10 - Direct link
 ================================================================================
-<https://github.com/shaunsingh/nord.nvim>
+[https://github.com/shaunsingh/nord.nvim]
 --------------------------------------------------------------------------------
 
     (document
       (paragraph
-        (direct_link
+        (short_link
           (token)
           (target)
           (token))))

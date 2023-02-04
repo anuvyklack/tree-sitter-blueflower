@@ -37,6 +37,8 @@ const blueflower_grammar = {
 
     $._directive_begin,
 
+    // $.link_marker,
+
     $.escape_token,
     $.escaped_character,
 
@@ -83,7 +85,7 @@ const blueflower_grammar = {
     document: $ => seq(
       repeat(choice(
         $.paragraph,
-        $.reference_link_definition,
+        $.link_definition,
         $.section,
         $.definition,
         $.hashtag,
@@ -169,7 +171,7 @@ const sections = {
   section_content: $ => repeat1(choice(
     $.section,
     $.paragraph,
-    $.reference_link_definition,
+    $.link_definition,
     $.definition,
     $.list_block,
     $.comment,
@@ -201,7 +203,8 @@ const paragraph = {
       $.word,
       $.inline_tag,
       $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
-      $.link, $.direct_link, $.reference_link, $.short_reference_link,
+      // $.link, $.direct_link, $.reference_link, $.short_reference_link,
+      $.link, $.short_link,
     ),
 }
 
@@ -270,7 +273,7 @@ const definition = {
 
   description: $ => repeat1(choice(
     $.paragraph,
-    $.reference_link_definition,
+    $.link_definition,
     $.hashtag,
     $.code_block,
     alias($.verbatim_tag, $.tag),
@@ -300,7 +303,7 @@ const lists = {
     field("content",
       repeat(choice(
         $.paragraph,
-        $.reference_link_definition,
+        $.link_definition,
 
         $.definition,
         $.hashtag,
@@ -321,58 +324,107 @@ const lists = {
 }
 
 const links = {
-  direct_link: $ => seq(
-    alias('<', $.token),
-    field("target", alias(token.immediate(/[^>\s]+/), $.target)),
-    alias(token.immediate('>'), $.token)
+  short_link: $ => seq(
+    alias('[', $.token),
+    optional(
+      field("target",
+        alias($.link_content, $.target))),
+    alias(']', $.token),
   ),
 
-  link: $ => prec(1, seq(
+  link: $ => seq(
     field('open_label', alias('[', $.token)),
-    field("label", optional(alias($.link_label, $.label))),
+    optional(
+      field('label',
+        alias($.link_content, $.label))),
+    // $.link_marker,
     field('close_label', alias(']', $.token)),
 
-    field('open_target', alias(token.immediate('('), $.token)),
-    field("target",
-      alias(
-        repeat(/[^\(\)\s\\]+/),
-        $.target)),
-    field('close_target', alias(')', $.token))
-  )),
+    field('open_target', alias(token.immediate('['), $.token)),
+    optional(
+      field("target",
+        alias($.link_content, $.target))),
+    field('close_target', alias(']', $.token))
+  ),
 
-  reference_link: $ => prec.dynamic(2, seq(
-    field('open_label', alias('[', $.token)),
-    field('label', optional(alias($.link_label, $.label))),
-    field('close_label', alias(']', $.token)),
-
-    field('open_reference', alias(token.immediate('['), $.token)),
-    field('target', optional(alias($.link_label, $.reference))),
-    field('close_reference', alias(']', $.token)),
-  )),
-
-  short_reference_link: $ => prec.dynamic(1, seq(
-    field('open_reference', alias('[', $.token)),
-    field('target', alias($.link_label, $.reference)),
-    field('close_reference', alias(']', $.token)),
-  )),
-
-  reference_link_definition: $ => prec.dynamic(2, seq(
+  link_definition: $ => seq(
     alias('[', $.token),
-    field('reference', alias($.link_label, $.reference)),
+    optional(
+      field('label',
+        alias($.link_content, $.label))),
     alias(']:', $.token),
     $._whitespace,
 
     field('target', alias(repeat($.raw_word), $.target)),
     $.eol
+  ),
+
+  link_content: $ => repeat1(choice(
+    /[^\[\]\s\\]+/,
+    $.escaped_char,
+    $._new_line
   )),
 
   link_label: $ => repeat1(choice(
-    expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
+    expression($, 'non-immediate', token, '@[]' + '*/+_`$'),
     $.escaped_char,
     $.inline_tag,
     $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
     $._new_line
   )),
+
+  // direct_link: $ => seq(
+  //   alias('<', $.token),
+  //   field("target", alias(token.immediate(/[^>\s]+/), $.target)),
+  //   alias(token.immediate('>'), $.token)
+  // ),
+  //
+  // link: $ => prec(1, seq(
+  //   field('open_label', alias('[', $.token)),
+  //   field("label", optional(alias($.link_label, $.label))),
+  //   field('close_label', alias(']', $.token)),
+  //
+  //   field('open_target', alias(token.immediate('('), $.token)),
+  //   field("target",
+  //     alias(
+  //       repeat(/[^\(\)\s\\]+/),
+  //       $.target)),
+  //   field('close_target', alias(')', $.token))
+  // )),
+  //
+  // reference_link: $ => prec.dynamic(2, seq(
+  //   field('open_label', alias('[', $.token)),
+  //   field('label', optional(alias($.link_label, $.label))),
+  //   field('close_label', alias(']', $.token)),
+  //
+  //   field('open_reference', alias(token.immediate('['), $.token)),
+  //   field('target', optional(alias($.link_label, $.reference))),
+  //   field('close_reference', alias(']', $.token)),
+  // )),
+  //
+  // short_reference_link: $ => prec.dynamic(1, seq(
+  //   field('open_reference', alias('[', $.token)),
+  //   field('target', alias($.link_label, $.reference)),
+  //   field('close_reference', alias(']', $.token)),
+  // )),
+  //
+  // reference_link_definition: $ => prec.dynamic(2, seq(
+  //   alias('[', $.token),
+  //   field('reference', alias($.link_label, $.reference)),
+  //   alias(']:', $.token),
+  //   $._whitespace,
+  //
+  //   field('target', alias(repeat($.raw_word), $.target)),
+  //   $.eol
+  // )),
+  //
+  // link_label: $ => repeat1(choice(
+  //   expression($, 'non-immediate', token, '@[]<>' + '*/+_`$'),
+  //   $.escaped_char,
+  //   $.inline_tag,
+  //   $.bold, $.italic, $.strikethrough, $.underline, $.verbatim, $.inline_math,
+  //   $._new_line
+  // )),
 }
 
 const tags = {
@@ -550,7 +602,7 @@ const tags = {
   // not a sequence of "$.content" nodes.
   tag_content: $ => repeat1(choice(
     $.paragraph,
-    $.reference_link_definition,
+    $.link_definition,
     $.definition,
     $.hashtag,
     $.code_block,
@@ -573,7 +625,8 @@ function gen_markup($, kind, other_kinds) {
           $.word,
           $.escaped_char,
           $.inline_tag,
-          $.link, $.direct_link, $.reference_link, $.short_reference_link,
+          // $.link, $.direct_link, $.reference_link, $.short_reference_link,
+          $.link, $.short_link,
           ...other_kinds
         )),
         $.content)),

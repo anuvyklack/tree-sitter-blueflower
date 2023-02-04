@@ -61,6 +61,8 @@ enum TokenType : unsigned char {
 
     DIRECTIVE_BEGIN,
 
+    // LINK_MARKER,
+
     ESCAPE_TOKEN,
     ESCAPED_CHAR,
 
@@ -112,6 +114,8 @@ vector<string> tokens_names = {
     "code_block",
 
     "directive_begin",
+
+    // "link_marker",
 
     "escape_token",
     "escaped_char",
@@ -217,6 +221,7 @@ struct Scanner
 
         if (parse_escaped_char())        return token_is_found;
         if (parse_definition())          return token_is_found;
+        // if (parse_link())                return token_is_found;
         if (parse_open_markup())         return token_is_found;
         if (parse_close_markup())        return token_is_found;
         if (parse_force_newline_token()) return token_is_found;
@@ -545,6 +550,16 @@ struct Scanner
         // }
         return FINISH;
     }
+
+    // bool parse_link() {
+    //     if (valid_tokens[LINK_MARKER] && next(']')) {
+    //         advance();
+    //         if (next('['))
+    //             return found(LINK_MARKER);
+    //         return FINISH;
+    //     }
+    //     return CONTINUE;
+    // }
 
     bool parse_open_markup() {
         /// Markup token
