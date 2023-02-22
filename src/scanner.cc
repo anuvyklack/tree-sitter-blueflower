@@ -321,7 +321,7 @@ struct Scanner
         stack_t n = 0; //< Number of parsed chars
         switch (lexer->lookahead) {
         case I('*'): { // HEADING, BOLD
-            while (next('*')) {
+            while (is_next('*')) {
                 advance();
                 ++n;
             }
@@ -368,14 +368,14 @@ struct Scanner
             if (valid_tokens[PARAGRAPH_END])
                 return found(PARAGRAPH_END);
             advance();
-            if (valid_tokens[DIRECTIVE_BEGIN] && !next(':')
+            if (valid_tokens[DIRECTIVE_BEGIN] && !is_next(':')
                 && !is_space_or_newline_or_eof(lexer->lookahead))
             {
-                while (!next(':') || is_space_or_newline_or_eof(lexer->lookahead)) {
+                while (!is_next(':') || is_space_or_newline_or_eof(lexer->lookahead)) {
                     advance();
                     ++n;
                 }
-                if (n && next(':')) {
+                if (n && is_next(':')) {
                     advance();
                     if (is_space_or_newline(lexer->lookahead))
                         return found(DIRECTIVE_BEGIN);
@@ -383,7 +383,7 @@ struct Scanner
                 return FINISH;
             }
             else if (valid_tokens[DEFINITION_TERM_BEGIN]
-                && is_space_or_newline(lexer->lookahead))
+                     && is_space_or_newline(lexer->lookahead))
             {
                 mark_end();
                 found(DEFINITION_TERM_BEGIN);
@@ -394,7 +394,7 @@ struct Scanner
             return FINISH;
         }
         case I('-'): { // LIST, SOFT_BREAK
-            while (next('-')) {
+            while (is_next('-')) {
                 advance();
                 ++n;
             }
@@ -432,7 +432,7 @@ struct Scanner
             return FINISH;
         }
         case I('='): { // HARD_BREAK
-            while (next('=')) {
+            while (is_next('=')) {
                 advance();
                 ++n;
             }
@@ -479,7 +479,7 @@ struct Scanner
             return FINISH;
         }
         case I('`'): { // CODE_BLOCK, VERBATIM
-            while (next('`')) {
+            while (is_next('`')) {
                 advance();
                 ++n;
             }
@@ -507,7 +507,7 @@ struct Scanner
         case I('['): { // $.reference_link_definition
             if (valid_tokens[PARAGRAPH_END]) {
                 while (lexer->lookahead
-                       && !next(']')
+                       && !is_next(']')
                        && !is_newline(lexer->lookahead))
                     advance();
                 if (token("]:"))
@@ -521,11 +521,14 @@ struct Scanner
     }
 
     bool parse_definition() {
-        if (is_space(current) && next(':')) {
-            if (valid_tokens[PARAGRAPH_END] && token("::")
-                && is_newline_or_eof(lexer->lookahead))
-            {
-                return found(PARAGRAPH_END);
+        if (is_space(current) && is_next(':')) {
+            if (valid_tokens[PARAGRAPH_END]) {
+                if (token("::") && is_newline_or_eof(lexer->lookahead))
+                    return found(PARAGRAPH_END);
+                // We have advanced one ':' char in token("::") function during
+                // previous condition check. So lexer is currently on ':' char.
+                else if (is_space_or_newline_or_eof(lexer->lookahead))
+                    return found(PARAGRAPH_END);
             } else {
                 advance();
                 return parse_definition_end();
@@ -533,6 +536,20 @@ struct Scanner
         }
         return CONTINUE;
     }
+
+    // bool parse_definition() {
+    //     if (is_space(current) && is_next(':')) {
+    //         if (valid_tokens[PARAGRAPH_END] && token("::")
+    //             && is_newline_or_eof(lexer->lookahead))
+    //         {
+    //             return found(PARAGRAPH_END);
+    //         } else {
+    //             advance();
+    //             return parse_definition_end();
+    //         }
+    //     }
+    //     return CONTINUE;
+    // }
 
     bool parse_definition_end() {
         if (valid_tokens[DEFINITION_TERM_END]
@@ -572,7 +589,7 @@ struct Scanner
                 return FINISH;
 
             // Empty markup. I.e: **, or //, or ``, ...
-            if (next(mt->first))
+            if (is_next(mt->first))
                 return FINISH;
 
             markup_stack.push_back(mt->first);
@@ -593,7 +610,7 @@ struct Scanner
             return CONTINUE;
         }
 
-        if (!markup_stack.empty() && next(markup_stack.back())) {
+        if (!markup_stack.empty() && is_next(markup_stack.back())) {
             advance();
             mark_end();
             found(static_cast<TokenType>(markup_tokens.at(current) + MARKUP));
@@ -620,7 +637,7 @@ struct Scanner
             }
         }
         else if (valid_tokens[ESCAPE_TOKEN]
-                 && next('\\'))
+                 && is_next('\\'))
         {
             advance();
             mark_end();
@@ -632,7 +649,7 @@ struct Scanner
     }
 
     bool parse_force_newline_token() {
-        if (valid_tokens[FORCE_NEW_LINE] && next('~'))
+        if (valid_tokens[FORCE_NEW_LINE] && is_next('~'))
         {
             advance();
             if (is_newline_or_eof(lexer->lookahead)) {
@@ -676,7 +693,7 @@ struct Scanner
 
     inline bool is_markup_token(int32_t c) { return markup_tokens.find(c) != markup_tokens.end(); }
 
-    inline bool next(const char c) { return lexer->lookahead == static_cast<int32_t>(c); }
+    inline bool is_next(const char c) { return lexer->lookahead == static_cast<int32_t>(c); }
 
     bool token(const string str) {
         for (int32_t c : str)

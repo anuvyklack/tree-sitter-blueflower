@@ -111,7 +111,7 @@ Conflict.4 List with links
                 (token)
                 (target)
                 (token)))
-            (reference_link_definition
+            (link_definition
               (token)
               (label)
               (token)
@@ -146,7 +146,7 @@ consectetur cupidatat.
         (word)
         (word)
         (symbol))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)

@@ -245,21 +245,13 @@ const definition = {
     field('directive', repeat($.directive)),
 
     field('term_open', alias($.definition_term_begin, $.token)),
-    field('term',
-          alias(
-            repeat1(choice(
-              $.raw_word, $._new_line)),
-            $.term)),
+    field('term', alias($.paragraph, $.term)),
     field('term_close', alias($.definition_term_end, $.token)),
 
     repeat(seq(
       $._new_line,
       field('term_open', alias($.definition_term_begin, $.token)),
-      field('term',
-            alias(
-              repeat1(choice(
-                $.raw_word, $._new_line)),
-              $.term)),
+      field('term', alias($.paragraph, $.term)),
       field('term_close', alias($.definition_term_end, $.token)),
     )),
 

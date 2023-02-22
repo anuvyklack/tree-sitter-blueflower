@@ -132,7 +132,7 @@ Escaped character.1
         (symbol)
         (word)
         (symbol))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)
@@ -160,7 +160,7 @@ Escaped character.2
         (symbol)
         (word)
         (symbol))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)
@@ -374,7 +374,7 @@ Definition.1 - The simplest case
       (definition
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (description
           (paragraph
@@ -393,11 +393,11 @@ description ::
       (definition
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (description
           (paragraph
@@ -416,7 +416,7 @@ Definition.3 - End token on new line
       (definition
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (description
           (paragraph
@@ -434,8 +434,8 @@ Definition.4 - Multiline term
       (definition
         (token)
         (term
-          (raw_word)
-          (raw_word))
+          (word)
+          (word))
         (token)
         (description
           (paragraph
@@ -458,11 +458,11 @@ Definition.5 - Complex description with list
       (definition
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (description
           (paragraph
@@ -501,11 +501,11 @@ Definition.6 - Complex description with list
       (definition
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (token)
         (term
-          (raw_word))
+          (word))
         (token)
         (description
           (paragraph
@@ -561,7 +561,7 @@ Link.3 - Reference link definition
 --------------------------------------------------------------------------------
 
     (document
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)
@@ -595,7 +595,7 @@ consectetur cupidatat.
         (word)
         (word)
         (symbol))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)
@@ -638,7 +638,7 @@ text @tag[label] [ref] [label][ref] [label](link)
         (symbol)
         (word)
         (symbol))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)
@@ -680,7 +680,7 @@ Link.8c - Paragraph with reference link definition after
           (token)
           (target)
           (token)))
-      (reference_link_definition
+      (link_definition
         (token)
         (label)
         (token)

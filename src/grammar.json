@@ -1940,20 +1940,8 @@
           "content": {
             "type": "ALIAS",
             "content": {
-              "type": "REPEAT1",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "raw_word"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "_new_line"
-                  }
-                ]
-              }
+              "type": "SYMBOL",
+              "name": "paragraph"
             },
             "named": true,
             "value": "term"
@@ -2000,20 +1988,8 @@
                 "content": {
                   "type": "ALIAS",
                   "content": {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "raw_word"
-                        },
-                        {
-                          "type": "SYMBOL",
-                          "name": "_new_line"
-                        }
-                      ]
-                    }
+                    "type": "SYMBOL",
+                    "name": "paragraph"
                   },
                   "named": true,
                   "value": "term"
