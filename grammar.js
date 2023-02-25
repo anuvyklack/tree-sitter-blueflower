@@ -22,8 +22,8 @@ const blueflower_grammar = {
     $.heading_token,
     $._section_end,
 
-    $.definition_term_begin,
-    $.definition_term_end,
+    $.description_begin,
+    $.description_end,
     // $.definition_end,
 
     $._list_start,
@@ -244,22 +244,15 @@ const definition = {
   definition: $ => seq(
     field('directive', repeat($.directive)),
 
-    field('term_open', alias($.definition_term_begin, $.token)),
     field('term', alias($.paragraph, $.term)),
-    field('term_close', alias($.definition_term_end, $.token)),
 
-    repeat(seq(
-      $._new_line,
-      field('term_open', alias($.definition_term_begin, $.token)),
-      field('term', alias($.paragraph, $.term)),
-      field('term_close', alias($.definition_term_end, $.token)),
-    )),
+    field('description_begin', alias($.description_begin, $.token)),
 
     optional($._new_line),
     field('description', $.description),
     // field('description_end', alias($.definition_end, $.token)),
     // $._whitespace,
-    field('description_end', alias('::', $.token)),
+    field('description_end', alias($.description_end, $.token)),
     $.eol
   ),
 

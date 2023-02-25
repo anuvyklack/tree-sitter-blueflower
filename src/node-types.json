@@ -197,6 +197,16 @@
           }
         ]
       },
+      "description_begin": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "token",
+            "named": true
+          }
+        ]
+      },
       "description_end": {
         "multiple": false,
         "required": true,
@@ -218,31 +228,11 @@
         ]
       },
       "term": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
             "type": "term",
-            "named": true
-          }
-        ]
-      },
-      "term_close": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
-            "named": true
-          }
-        ]
-      },
-      "term_open": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "token",
             "named": true
           }
         ]

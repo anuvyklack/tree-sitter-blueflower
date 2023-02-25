@@ -367,12 +367,11 @@ List.4 - Checkbox
 ================================================================================
 Definition.1 - The simplest case
 ================================================================================
-: term : description ::
+term : description :
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
           (word))
         (token)
@@ -384,19 +383,16 @@ Definition.1 - The simplest case
 ================================================================================
 Definition.2 - Two terms
 ================================================================================
-: term :
-: term :
-description ::
+: term
+  term :
+description :
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
-          (word))
-        (token)
-        (token)
-        (term
+          (symbol)
+          (word)
           (word))
         (token)
         (description
@@ -407,14 +403,13 @@ description ::
 ================================================================================
 Definition.3 - End token on new line
 ================================================================================
-: term :
+term :
     description
-::
+:
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
           (word))
         (token)
@@ -426,13 +421,12 @@ Definition.3 - End token on new line
 ================================================================================
 Definition.4 - Multiline term
 ================================================================================
-: term
-  term :                Description. ::
+term
+term :                Description. :
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
           (word)
           (word))
@@ -446,22 +440,18 @@ Definition.4 - Multiline term
 ================================================================================
 Definition.5 - Complex description with list
 ================================================================================
-: term :
-: term :                List:
+term
+term :                List:
                         - item
                         - item
                         ---
-                        continue description. ::
+                        continue description. :
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
-          (word))
-        (token)
-        (token)
-        (term
+          (word)
           (word))
         (token)
         (description
@@ -477,8 +467,7 @@ Definition.5 - Complex description with list
               (list_item
                 (token)
                 (paragraph
-                  (word)
-                  )))
+                  (word))))
             (list_break))
           (paragraph
             (word)
@@ -489,22 +478,18 @@ Definition.5 - Complex description with list
 ================================================================================
 Definition.6 - Complex description with list
 ================================================================================
-: term :
-: term :                Description:
+term
+term :                Description:
                         @code lua
                         ...
                         @end
-                        continue description. ::
+                        continue description. :
 --------------------------------------------------------------------------------
 
     (document
       (definition
-        (token)
         (term
-          (word))
-        (token)
-        (token)
-        (term
+          (word)
           (word))
         (token)
         (description
