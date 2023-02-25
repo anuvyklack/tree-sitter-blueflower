@@ -69,6 +69,7 @@ const blueflower_grammar = {
     [$.section],
     [$._paragraph_content],
     [$.tag_content],
+    [$.directive, $.paragraph],
   ],
 
   inline: $ => [
@@ -241,20 +242,34 @@ const markup = {
 }
 
 const definition = {
+  // definition: $ => seq(
+  //   field('directive', repeat($.directive)),
+  //
+  //   field('term_open', alias($.definition_term_begin, $.token)),
+  //   field('term', alias($.paragraph, $.term)),
+  //   field('term_close', alias($.definition_term_end, $.token)),
+  //
+  //   repeat(seq(
+  //     $._new_line,
+  //     field('term_open', alias($.definition_term_begin, $.token)),
+  //     field('term', alias($.paragraph, $.term)),
+  //     field('term_close', alias($.definition_term_end, $.token)),
+  //   )),
+  //
+  //   optional($._new_line),
+  //   field('description', $.description),
+  //   // field('description_end', alias($.definition_end, $.token)),
+  //   // $._whitespace,
+  //   field('description_end', alias('::', $.token)),
+  //   $.eol
+  // ),
+
   definition: $ => seq(
     field('directive', repeat($.directive)),
 
-    field('term_open', alias($.definition_term_begin, $.token)),
     field('term', alias($.paragraph, $.term)),
-    field('term_close', alias($.definition_term_end, $.token)),
 
-    repeat(seq(
-      $._new_line,
-      field('term_open', alias($.definition_term_begin, $.token)),
-      field('term', alias($.paragraph, $.term)),
-      field('term_close', alias($.definition_term_end, $.token)),
-    )),
-
+    field('description_begin', alias('::', $.token)),
     optional($._new_line),
     field('description', $.description),
     // field('description_end', alias($.definition_end, $.token)),

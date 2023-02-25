@@ -1923,19 +1923,6 @@
         },
         {
           "type": "FIELD",
-          "name": "term_open",
-          "content": {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "definition_term_begin"
-            },
-            "named": true,
-            "value": "token"
-          }
-        },
-        {
-          "type": "FIELD",
           "name": "term",
           "content": {
             "type": "ALIAS",
@@ -1949,66 +1936,15 @@
         },
         {
           "type": "FIELD",
-          "name": "term_close",
+          "name": "description_begin",
           "content": {
             "type": "ALIAS",
             "content": {
-              "type": "SYMBOL",
-              "name": "definition_term_end"
+              "type": "STRING",
+              "value": "::"
             },
             "named": true,
             "value": "token"
-          }
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_new_line"
-              },
-              {
-                "type": "FIELD",
-                "name": "term_open",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "definition_term_begin"
-                  },
-                  "named": true,
-                  "value": "token"
-                }
-              },
-              {
-                "type": "FIELD",
-                "name": "term",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "paragraph"
-                  },
-                  "named": true,
-                  "value": "term"
-                }
-              },
-              {
-                "type": "FIELD",
-                "name": "term_close",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "definition_term_end"
-                  },
-                  "named": true,
-                  "value": "token"
-                }
-              }
-            ]
           }
         },
         {
@@ -6050,6 +5986,10 @@
     ],
     [
       "tag_content"
+    ],
+    [
+      "directive",
+      "paragraph"
     ]
   ],
   "precedences": [

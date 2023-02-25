@@ -221,7 +221,6 @@ struct Scanner
 
         if (parse_escaped_char())        return token_is_found;
         if (parse_definition())          return token_is_found;
-        // if (parse_link())                return token_is_found;
         if (parse_open_markup())         return token_is_found;
         if (parse_close_markup())        return token_is_found;
         if (parse_force_newline_token()) return token_is_found;
@@ -371,7 +370,7 @@ struct Scanner
             if (valid_tokens[DIRECTIVE_BEGIN] && !is_next(':')
                 && !is_space_or_newline_or_eof(lexer->lookahead))
             {
-                while (!is_next(':') || is_space_or_newline_or_eof(lexer->lookahead)) {
+                while (!(is_next(':') || is_space_or_newline_or_eof(lexer->lookahead))) {
                     advance();
                     ++n;
                 }
@@ -382,17 +381,37 @@ struct Scanner
                 }
                 return FINISH;
             }
-            else if (valid_tokens[DEFINITION_TERM_BEGIN]
-                     && is_space_or_newline(lexer->lookahead))
-            {
-                mark_end();
-                found(DEFINITION_TERM_BEGIN);
-            }
-            else {
-                return parse_definition_end();
-            }
             return FINISH;
         }
+        // case I(':'): { // DEFINITION, DIRECTIVE
+        //     if (valid_tokens[PARAGRAPH_END])
+        //         return found(PARAGRAPH_END);
+        //     advance();
+        //     if (valid_tokens[DIRECTIVE_BEGIN] && !is_next(':')
+        //         && !is_space_or_newline_or_eof(lexer->lookahead))
+        //     {
+        //         while (!is_next(':') || is_space_or_newline_or_eof(lexer->lookahead)) {
+        //             advance();
+        //             ++n;
+        //         }
+        //         if (n && is_next(':')) {
+        //             advance();
+        //             if (is_space_or_newline(lexer->lookahead))
+        //                 return found(DIRECTIVE_BEGIN);
+        //         }
+        //         return FINISH;
+        //     }
+        //     else if (valid_tokens[DEFINITION_TERM_BEGIN]
+        //              && is_space_or_newline(lexer->lookahead))
+        //     {
+        //         mark_end();
+        //         found(DEFINITION_TERM_BEGIN);
+        //     }
+        //     else {
+        //         return parse_definition_end();
+        //     }
+        //     return FINISH;
+        // }
         case I('-'): { // LIST, SOFT_BREAK
             while (is_next('-')) {
                 advance();
@@ -521,28 +540,24 @@ struct Scanner
     }
 
     bool parse_definition() {
-        if (is_space(current) && is_next(':')) {
-            if (valid_tokens[PARAGRAPH_END]) {
-                if (token("::") && is_newline_or_eof(lexer->lookahead))
-                    return found(PARAGRAPH_END);
-                // We have advanced one ':' char in token("::") function during
-                // previous condition check. So lexer is currently on ':' char.
-                else if (is_space_or_newline_or_eof(lexer->lookahead))
-                    return found(PARAGRAPH_END);
-            } else {
-                advance();
-                return parse_definition_end();
-            }
+        if (valid_tokens[PARAGRAPH_END] && is_next(':')) {
+            if (token("::"))
+                return found(PARAGRAPH_END);
+            else
+                return FINISH;
         }
         return CONTINUE;
     }
 
     // bool parse_definition() {
     //     if (is_space(current) && is_next(':')) {
-    //         if (valid_tokens[PARAGRAPH_END] && token("::")
-    //             && is_newline_or_eof(lexer->lookahead))
-    //         {
-    //             return found(PARAGRAPH_END);
+    //         if (valid_tokens[PARAGRAPH_END]) {
+    //             if (token("::") && is_newline_or_eof(lexer->lookahead))
+    //                 return found(PARAGRAPH_END);
+    //             // We have advanced one ':' char in token("::") function during
+    //             // previous condition check. So lexer is currently on ':' char.
+    //             else if (is_space_or_newline_or_eof(lexer->lookahead))
+    //                 return found(PARAGRAPH_END);
     //         } else {
     //             advance();
     //             return parse_definition_end();
@@ -551,31 +566,21 @@ struct Scanner
     //     return CONTINUE;
     // }
 
-    bool parse_definition_end() {
-        if (valid_tokens[DEFINITION_TERM_END]
-            && is_space_or_newline(lexer->lookahead))
-        {
-            mark_end();
-            found(DEFINITION_TERM_END);
-        }
-        // else if (valid_tokens[DEFINITION_END] && next(':')) {
-        //     advance();
-        //     if (is_newline_or_eof(lexer->lookahead)) {
-        //         mark_end();
-        //         found(DEFINITION_END);
-        //     }
-        // }
-        return FINISH;
-    }
-
-    // bool parse_link() {
-    //     if (valid_tokens[LINK_MARKER] && next(']')) {
-    //         advance();
-    //         if (next('['))
-    //             return found(LINK_MARKER);
-    //         return FINISH;
+    // bool parse_definition_end() {
+    //     if (valid_tokens[DEFINITION_TERM_END]
+    //         && is_space_or_newline(lexer->lookahead))
+    //     {
+    //         mark_end();
+    //         found(DEFINITION_TERM_END);
     //     }
-    //     return CONTINUE;
+    //     // else if (valid_tokens[DEFINITION_END] && next(':')) {
+    //     //     advance();
+    //     //     if (is_newline_or_eof(lexer->lookahead)) {
+    //     //         mark_end();
+    //     //         found(DEFINITION_END);
+    //     //     }
+    //     // }
+    //     return FINISH;
     // }
 
     bool parse_open_markup() {
