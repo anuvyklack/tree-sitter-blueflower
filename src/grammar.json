@@ -1940,8 +1940,8 @@
           "content": {
             "type": "ALIAS",
             "content": {
-              "type": "SYMBOL",
-              "name": "description_begin"
+              "type": "STRING",
+              "value": "::"
             },
             "named": true,
             "value": "token"
@@ -6064,10 +6064,6 @@
     {
       "type": "SYMBOL",
       "name": "_section_end"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "description_begin"
     },
     {
       "type": "SYMBOL",

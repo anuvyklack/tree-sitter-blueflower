@@ -46,7 +46,7 @@ enum TokenType : unsigned char {
     HEADING,
     SECTION_END,
 
-    DESCRIPTION_BEGIN,
+    // DESCRIPTION_BEGIN,
     DESCRIPTION_END,
     // DEFINITION_END,
 
@@ -100,7 +100,7 @@ vector<string> tokens_names = {
     "heading",
     "section_end",
 
-    "description_begin",
+    // "description_begin",
     "description_end",
     // "definition_end",
 
@@ -406,7 +406,7 @@ struct Scanner
                 }
             }
             else if (valid_tokens[LIST_START] || valid_tokens[LIST_END] || valid_tokens[LIST_TOKEN]
-                && is_space(lexer->lookahead))
+                     && is_space(lexer->lookahead))
             {
                 if (list_stack.empty() || n > list_stack.back())
                 {
@@ -517,8 +517,11 @@ struct Scanner
     bool parse_definition() {
         if (is_space(current) && is_next(':')) {
             if (valid_tokens[PARAGRAPH_END]) {
-                advance();
-                if (is_space_or_newline_or_eof(lexer->lookahead))
+                if (token("::") && is_newline_or_eof(lexer->lookahead))
+                    return found(PARAGRAPH_END);
+                // We have advanced one ':' char in token("::") function during
+                // previous condition check. So lexer is currently on a ':' char.
+                else if (is_space_or_newline_or_eof(lexer->lookahead))
                     return found(PARAGRAPH_END);
             } else {
                 advance();
@@ -543,13 +546,13 @@ struct Scanner
     // }
 
     bool parse_description() {
-        if (valid_tokens[DESCRIPTION_BEGIN]
-            && is_space_or_newline(lexer->lookahead))
-        {
-            mark_end();
-            found(DESCRIPTION_BEGIN);
-        }
-        else if (valid_tokens[DESCRIPTION_END]
+        // if (valid_tokens[DESCRIPTION_BEGIN]
+        //     && is_space_or_newline(lexer->lookahead))
+        // {
+        //     mark_end();
+        //     found(DESCRIPTION_BEGIN);
+        // }
+        if (valid_tokens[DESCRIPTION_END]
             && is_space_or_newline_or_eof(lexer->lookahead))
         {
             mark_end();

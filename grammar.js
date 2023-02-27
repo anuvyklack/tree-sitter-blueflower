@@ -22,7 +22,7 @@ const blueflower_grammar = {
     $.heading_token,
     $._section_end,
 
-    $.description_begin,
+    // $.description_begin,
     $.description_end,
     // $.definition_end,
 
@@ -246,7 +246,8 @@ const definition = {
 
     field('term', alias($.paragraph, $.term)),
 
-    field('description_begin', alias($.description_begin, $.token)),
+    // field('description_begin', alias($.description_begin, $.token)),
+    field('description_begin', alias('::', $.token)),
 
     optional($._new_line),
     field('description', $.description),
